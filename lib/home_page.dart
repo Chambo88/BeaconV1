@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
         actions: [
           ElevatedButton(
             onPressed: () {
-              context.read<AuthService>().signIn();
+              context.read<AuthService>().signOut();
             },
             child: Text("Sign out"),
           )
@@ -46,7 +46,10 @@ class _HomePageState extends State<HomePage> {
           return new ListView(
             children: snapshot.data.docs.map((DocumentSnapshot document) {
               return new ListTile(
-                title: new Text("document.data()['first_name']"),
+                title: new Text(document.data()['firstName'] +
+                    " " +
+                    document.data()['lastName']),
+                subtitle: new Text(document.data()['email']),
               );
             }).toList(),
           );
