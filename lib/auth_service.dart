@@ -8,15 +8,15 @@ class AuthService {
 
   Stream<User> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  Future<void> signOut() async {
+  Future<String> signOut() async {
     await _firebaseAuth.signOut();
   }
 
-  Future<void> signIn({String email, String password}) async {
+  Future<String> signIn({String email, String password}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      return "User sign in";
+      return "";
     } on FirebaseAuthException catch (e) {
       return e.message;
     }
@@ -35,7 +35,7 @@ class AuthService {
           .doc(userCred.user.uid)
           .set({'firstName': firstName, 'lastName': lastName, 'email': email});
 
-      return "User signed in";
+      return "";
     } on FirebaseAuthException catch (e) {
       return e.message;
     }

@@ -44,12 +44,19 @@ class _SignInPageState extends State<SignInPage> {
           ),
         ),
         ElevatedButton(
-          onPressed: () {
-            context.read<AuthService>().signUp(
+          onPressed: () async {
+            var text = await context.read<AuthService>().signUp(
                 firstName: firstNameController.text.trim(),
                 lastName: lastNameController.text.trim(),
                 email: emailController.text.trim(),
                 password: passwordController.text.trim());
+            if (text != "") {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    _buildPopupDialog(context, text),
+              );
+            }
           },
           child: Text("Create Account"),
         ),
@@ -81,11 +88,18 @@ class _SignInPageState extends State<SignInPage> {
           ),
         ),
         ElevatedButton(
-          onPressed: () {
-            context.read<AuthService>().signIn(
+          onPressed: () async {
+            var text = await context.read<AuthService>().signIn(
                   email: emailController.text.trim(),
                   password: passwordController.text.trim(),
                 );
+            if (text != "") {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    _buildPopupDialog(context, text),
+              );
+            }
           },
           child: Text("Sign in"),
         ),
@@ -97,6 +111,27 @@ class _SignInPageState extends State<SignInPage> {
               });
             },
             child: Text("Create Account"))
+      ],
+    );
+  }
+
+  Widget _buildPopupDialog(BuildContext context, String text) {
+    return new AlertDialog(
+      title: const Text('POP!'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(text),
+        ],
+      ),
+      actions: <Widget>[
+        new ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text("Ok"),
+        ),
       ],
     );
   }
