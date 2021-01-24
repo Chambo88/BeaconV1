@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
               create: (context) => context.read<AuthService>().authStateChanges)
         ],
         child: MaterialApp(
-            title: 'Flutter Demo',
+            title: 'Flutter Deeeeemo',
             theme: ThemeData(
               // This is the theme of your application.
               //
