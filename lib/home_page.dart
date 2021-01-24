@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
-
 import 'auth_service.dart';
 
 class HomePage extends StatefulWidget {
