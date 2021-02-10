@@ -17,13 +17,18 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   CollectionReference users = FirebaseFirestore.instance.collection('beacons');
   var showBeaconEditor = false;
-  var _selectedColour = BeaconColours.green;
+  var _selectedColour = "Green";
+  var beaconActive = false;
+  Color beaconColor = Colors.grey;
 
   Location location = new Location();
 
   bool _serviceEnabled;
   PermissionStatus _permissionGranted;
   LocationData _locationData;
+
+  final TextEditingController beaconDescriptionController =
+      TextEditingController();
 
   Future<LocationData> getLocationStuff() async {
     _serviceEnabled = await location.serviceEnabled();
@@ -47,17 +52,49 @@ class _HomePageState extends State<HomePage> {
     return _locationData;
   }
 
-  Future<void> _activateBeacon(BuildContext context) async {
+  Future<void> _lightBeacon(BuildContext context) async {
+    setState(() {
+      beaconActive = true;
+      beaconColor = _selectedColour == "Orange" ? Colors.orange : Colors.green;
+    });
+
     LocationData data = await getLocationStuff();
 
     var user = context.read<AuthService>().getUserId;
 
     await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
       'beacon': {
-        'active': true,
+        'active': beaconActive,
         'color': _selectedColour.toString(),
         'lat': data.latitude,
         'long': data.longitude,
+        'description': beaconDescriptionController.text,
+      }
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> _extinguishBeacon(BuildContext context) async {
+    setState(() {
+      beaconActive = false;
+      beaconColor = Colors.grey;
+      showBeaconEditor = false;
+    });
+
+    var user = context.read<AuthService>().getUserId;
+
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      'beacon': {
+        'active': beaconActive,
+      }
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> _updateBeacon(BuildContext context) async {
+    var user = context.read<AuthService>().getUserId;
+
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      'beacon': {
+        'color': _selectedColour.toString(),
       }
     }, SetOptions(merge: true));
   }
@@ -68,59 +105,72 @@ class _HomePageState extends State<HomePage> {
       children: [
         !showBeaconEditor
             ? new Container()
-            : new Container(
-                child: new Column(
-                  children: [
-                    RadioListTile(
-                      value: BeaconColours.green,
-                      groupValue: _selectedColour,
-                      onChanged: (BeaconColours value) {
-                        setState(() {
-                          _selectedColour = BeaconColours.green;
-                        });
-                      },
-                      title: Text("Green"),
-                    ),
-                    RadioListTile(
-                      value: BeaconColours.blue,
-                      groupValue: _selectedColour,
-                      onChanged: (BeaconColours value) {
-                        setState(() {
-                          _selectedColour = BeaconColours.blue;
-                        });
-                      },
-                      title: Text("Blue"),
-                    ),
-                    ElevatedButton(
-                        onPressed: () => _activateBeacon(context),
-                        child: Text("Activate"))
-                  ],
+            : Stack(children: [
+                new Container(
+                  color: Colors.white,
+                  child: new Column(
+                    children: [
+                      RadioListTile(
+                        value: "Green",
+                        groupValue: _selectedColour,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedColour = value;
+                            if (beaconActive) {
+                              _updateBeacon(context);
+                              beaconColor = Colors.green;
+                            }
+                          });
+                        },
+                        title: Text("Green"),
+                      ),
+                      RadioListTile(
+                        value: "Orange",
+                        groupValue: _selectedColour,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedColour = value;
+                            if (beaconActive) {
+                              _updateBeacon(context);
+                              beaconColor = Colors.orange;
+                            }
+                          });
+                        },
+                        title: Text("Orange"),
+                      ),
+                      TextField(
+                        controller: beaconDescriptionController,
+                        decoration: InputDecoration(
+                          labelText: "Description",
+                        ),
+                      ),
+                      beaconActive
+                          ? ElevatedButton(
+                              onPressed: () => _extinguishBeacon(context),
+                              child: Text("Extinguish"))
+                          : ElevatedButton(
+                              onPressed: () => _lightBeacon(context),
+                              child: Text("Light"))
+                    ],
+                  ),
                 ),
-              ),
+              ]),
         Center(
-          child: ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  showBeaconEditor = !showBeaconEditor;
-                });
-              },
-              child: Text("Beacon")),
-        )
+            child: Padding(
+                padding: EdgeInsets.all(30),
+                child: RawMaterialButton(
+                  onPressed: () {
+                    setState(() {
+                      showBeaconEditor = !showBeaconEditor;
+                    });
+                  },
+                  elevation: 2.0,
+                  fillColor: beaconColor,
+                  constraints: BoxConstraints.tight(Size(80, 80)),
+                  shape: CircleBorder(),
+                )))
       ],
     );
-  }
-
-  Widget _getUser(BuildContext context, String id) {
-    var doc = FirebaseFirestore.instance.doc('users/' + id);
-    return FutureBuilder(
-        future: doc.get(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            return Text("Created by: " + snapshot.data["firstName"]);
-          } else {
-            return Text("not yet bud");
-          }
-        });
   }
 
   @override
@@ -154,15 +204,15 @@ class _HomePageState extends State<HomePage> {
               return new ListView(
                 children: snapshot.data.docs.map((DocumentSnapshot document) {
                   return new ListTile(
-                    tileColor: (document.data()['color'].toString() ==
-                            "BeaconColours.blue")
-                        ? Colors.blue
+                    tileColor: (document.data()['color'].toString() == "Orange")
+                        ? Colors.orange
                         : Colors.green,
-                    title: new Text(document.data()['lat'].toString() +
+                    title: new Text(document.data()['userName']),
+                    subtitle: new Text(document.data()['description'] +
+                        "\n" +
+                        document.data()['lat'].toString() +
                         " + " +
                         document.data()['long'].toString()),
-                    subtitle:
-                        new Text("Created by: " + document.data()['userName']),
                   );
                 }).toList(),
               );
@@ -172,5 +222,3 @@ class _HomePageState extends State<HomePage> {
         ]));
   }
 }
-
-enum BeaconColours { green, blue }
