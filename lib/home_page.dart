@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   PermissionStatus _permissionGranted;
   LocationData _locationData;
 
-  Future<LocationData> getLocaitonStuff() async {
+  Future<LocationData> getLocationStuff() async {
     _serviceEnabled = await location.serviceEnabled();
 
     if (!_serviceEnabled) {
@@ -48,16 +48,18 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _activateBeacon(BuildContext context) async {
-    LocationData data = await getLocaitonStuff();
+    LocationData data = await getLocationStuff();
 
-    var userId = context.read<AuthService>().getUserId;
+    var user = context.read<AuthService>().getUserId;
 
-    await FirebaseFirestore.instance.collection('beacons').doc().set({
-      'color': _selectedColour.toString(),
-      'lat': data.latitude,
-      'long': data.longitude,
-      'userId': userId
-    });
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+      'beacon': {
+        'active': true,
+        'color': _selectedColour.toString(),
+        'lat': data.latitude,
+        'long': data.longitude,
+      }
+    }, SetOptions(merge: true));
   }
 
   Widget _buildBeaconEditor(BuildContext context) {
@@ -159,7 +161,8 @@ class _HomePageState extends State<HomePage> {
                     title: new Text(document.data()['lat'].toString() +
                         " + " +
                         document.data()['long'].toString()),
-                    subtitle: _getUser(context, document.data()['userId']),
+                    subtitle:
+                        new Text("Created by: " + document.data()['userName']),
                   );
                 }).toList(),
               );
