@@ -1,73 +1,43 @@
+import 'package:beacon/models/user-location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
-import 'auth_service.dart';
+import '../services/auth_service.dart';
 
-class HomePage extends StatefulWidget {
-  HomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
+class BeaconSelector extends StatefulWidget {
+  BeaconSelector({Key key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _BeaconSelectorState createState() => _BeaconSelectorState();
 }
 
-class _HomePageState extends State<HomePage> {
-  CollectionReference users = FirebaseFirestore.instance.collection('beacons');
-  var showBeaconEditor = false;
+class _BeaconSelectorState extends State<BeaconSelector> {
+  var _showBeaconEditor = false;
   var _selectedColour = "Green";
-  var beaconActive = false;
-  Color beaconColor = Colors.grey;
-
-  Location location = new Location();
-
-  bool _serviceEnabled;
-  PermissionStatus _permissionGranted;
-  LocationData _locationData;
+  var _beaconActive = false;
+  Color _beaconColor = Colors.grey;
 
   final TextEditingController beaconDescriptionController =
       TextEditingController();
 
-  Future<LocationData> getLocationStuff() async {
-    _serviceEnabled = await location.serviceEnabled();
-
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return null;
-      }
-    }
-
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return null;
-      }
-    }
-
-    _locationData = await location.getLocation();
-    return _locationData;
-  }
-
   Future<void> _lightBeacon(BuildContext context) async {
     setState(() {
-      beaconActive = true;
-      beaconColor = _selectedColour == "Orange" ? Colors.orange : Colors.green;
+      _beaconActive = true;
+      _beaconColor = _selectedColour == "Orange" ? Colors.orange : Colors.green;
     });
 
-    LocationData data = await getLocationStuff();
+    var userLocation = context.read<UserLocation>();
 
     var user = context.read<AuthService>().getUserId;
 
     await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
       'beacon': {
-        'active': beaconActive,
+        'active': _beaconActive,
         'color': _selectedColour.toString(),
-        'lat': data.latitude,
-        'long': data.longitude,
+        'lat': userLocation.latitude,
+        'long': userLocation.longitude,
         'description': beaconDescriptionController.text,
       }
     }, SetOptions(merge: true));
@@ -75,16 +45,16 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _extinguishBeacon(BuildContext context) async {
     setState(() {
-      beaconActive = false;
-      beaconColor = Colors.grey;
-      showBeaconEditor = false;
+      _beaconActive = false;
+      _beaconColor = Colors.grey;
+      _showBeaconEditor = false;
     });
 
     var user = context.read<AuthService>().getUserId;
 
     await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
       'beacon': {
-        'active': beaconActive,
+        'active': _beaconActive,
       }
     }, SetOptions(merge: true));
   }
@@ -103,7 +73,7 @@ class _HomePageState extends State<HomePage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        !showBeaconEditor
+        !_showBeaconEditor
             ? new Container()
             : Stack(children: [
                 new Container(
@@ -116,9 +86,9 @@ class _HomePageState extends State<HomePage> {
                         onChanged: (value) {
                           setState(() {
                             _selectedColour = value;
-                            if (beaconActive) {
+                            if (_beaconActive) {
                               _updateBeacon(context);
-                              beaconColor = Colors.green;
+                              _beaconColor = Colors.green;
                             }
                           });
                         },
@@ -130,9 +100,9 @@ class _HomePageState extends State<HomePage> {
                         onChanged: (value) {
                           setState(() {
                             _selectedColour = value;
-                            if (beaconActive) {
+                            if (_beaconActive) {
                               _updateBeacon(context);
-                              beaconColor = Colors.orange;
+                              _beaconColor = Colors.orange;
                             }
                           });
                         },
@@ -144,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                           labelText: "Description",
                         ),
                       ),
-                      beaconActive
+                      _beaconActive
                           ? ElevatedButton(
                               onPressed: () => _extinguishBeacon(context),
                               child: Text("Extinguish"))
@@ -161,11 +131,11 @@ class _HomePageState extends State<HomePage> {
                 child: RawMaterialButton(
                   onPressed: () {
                     setState(() {
-                      showBeaconEditor = !showBeaconEditor;
+                      _showBeaconEditor = !_showBeaconEditor;
                     });
                   },
                   elevation: 2.0,
-                  fillColor: beaconColor,
+                  fillColor: _beaconColor,
                   constraints: BoxConstraints.tight(Size(80, 80)),
                   shape: CircleBorder(),
                 )))
@@ -175,50 +145,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                context.read<AuthService>().signOut();
-              },
-              child: Text("Sign out"),
-            )
-          ],
-        ),
-        body: Stack(children: [
-          Center(
-              child: StreamBuilder<QuerySnapshot>(
-            stream: users.snapshots(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasError) {
-                return Text('Something went wrong');
-              }
-
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Text("Loading");
-              }
-
-              return new ListView(
-                children: snapshot.data.docs.map((DocumentSnapshot document) {
-                  return new ListTile(
-                    tileColor: (document.data()['color'].toString() == "Orange")
-                        ? Colors.orange
-                        : Colors.green,
-                    title: new Text(document.data()['userName']),
-                    subtitle: new Text(document.data()['description'] +
-                        "\n" +
-                        document.data()['lat'].toString() +
-                        " + " +
-                        document.data()['long'].toString()),
-                  );
-                }).toList(),
-              );
-            },
-          )),
-          _buildBeaconEditor(context),
-        ]));
+    return Container(
+      child: _buildBeaconEditor(context),
+    );
   }
 }

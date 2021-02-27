@@ -1,11 +1,12 @@
-import 'package:beacon/auth_service.dart';
-import 'package:beacon/sign_in_page.dart';
+import 'package:beacon/services/location_service.dart';
+import 'package:beacon/services/auth_service.dart';
+import 'package:beacon/pages/sign_in_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'home_page.dart';
+import 'pages/home_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,8 +23,10 @@ class MyApp extends StatelessWidget {
           Provider<AuthService>(
             create: (_) => AuthService(FirebaseAuth.instance),
           ),
+          StreamProvider(create: (context) => LocationService().locationStream),
           StreamProvider(
-              create: (context) => context.read<AuthService>().authStateChanges)
+            create: (context) => context.read<AuthService>().authStateChanges,
+          ),
         ],
         child: MaterialApp(
             title: 'Flutter Deeeeemo',

@@ -1,4 +1,4 @@
-import 'package:beacon/auth_service.dart';
+import 'package:beacon/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
