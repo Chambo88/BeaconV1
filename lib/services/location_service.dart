@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:beacon/models/user-location.dart';
+import 'package:beacon/models/user-location_model.dart';
 import 'package:location/location.dart';
 
 class LocationService {

@@ -1,11 +1,15 @@
+import 'package:beacon/services/beacon_service.dart';
 import 'package:beacon/services/location_service.dart';
 import 'package:beacon/services/auth_service.dart';
 import 'package:beacon/pages/sign_in_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'models/beacon_model.dart';
+import 'models/user_model.dart';
 import 'pages/home_page.dart';
 
 Future<void> main() async {
@@ -25,7 +29,7 @@ class MyApp extends StatelessWidget {
           ),
           StreamProvider(create: (context) => LocationService().locationStream),
           StreamProvider(
-            create: (context) => context.read<AuthService>().authStateChanges,
+            create: (context) => context.read<AuthService>().userChanges,
           ),
         ],
         child: MaterialApp(
@@ -55,9 +59,9 @@ class AuthenticationWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _firebaseUser = context.watch<User>();
-    if (_firebaseUser != null) {
-      return HomePage(title: "Beacon MVP");
+    final _currentUser = context.watch<UserModel>();
+    if (_currentUser != null) {
+      return HomePage(user: _currentUser);
     }
     return SignInPage();
   }

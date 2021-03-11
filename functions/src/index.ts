@@ -24,7 +24,7 @@ exports.updateUser = functions.firestore
         return beacon.set({
             lat: user.beacon.lat,
             long: user.beacon.long,
-            color: user.beacon.color,
+            type: user.beacon.type,
             userName: user.firstName + " " + user.lastName,
             userId: context.params.userId,
             description: user.beacon.description,
