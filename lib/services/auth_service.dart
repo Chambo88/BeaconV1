@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:beacon/models/beacon_model.dart';
+import 'package:beacon/models/friend_model.dart';
+import 'package:beacon/models/group_model.dart';
 import 'package:beacon/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth;
@@ -44,7 +47,17 @@ class AuthService {
               doc.data()['beacon/long'].toString(),
               doc.data()['beacon/desc'],
               typeFromString("Type.active"),
-              doc.data()['beacon/active'])));
+              doc.data()['beacon/active']),
+
+          //THIS IS A TEMP CREAETED LIST FOR DEMO PURPOSES NEED TO STORE THE GROUPS ON THE SERVER SOMEHOW
+          [
+            GroupModel(members: [Friend(name: 'will'), Friend(name: 'Richie')], icon: (Icons.accessible), name: ('squad #1')),
+            GroupModel(members: [Friend(name: 'beth'), Friend(name: 'john'), Friend(name: 'john')], icon: (Icons.height), name: ('squad 2')),
+            GroupModel(members: [Friend(name: 'Frankie'), Friend(name: 'Megan')], icon: (Icons.eject), name: ('squad 3')),
+            GroupModel(members: [Friend(name: 'Robbie'), Friend(name: 'Richie'), Friend(name: 'john')], icon: (Icons.accessible), name: ('squad 4')),
+            GroupModel(members: [Friend(name: 'Yvie'), Friend(name: 'john'), Friend(name: 'john')], icon: (Icons.accessible), name: ('squad 5')),
+          ]),
+      );
       return "";
     } on FirebaseAuthException catch (e) {
       return e.message;

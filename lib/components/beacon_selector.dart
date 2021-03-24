@@ -12,13 +12,13 @@ import '../services/auth_service.dart';
 class BeaconSelector extends StatefulWidget {
   BeaconSelector({Key key, this.user}) : super(key: key);
 
-  final List<GroupModel> groups = [
-    GroupModel(['john', 'kasey'], Icon(Icons.accessible)),
-    GroupModel(['john', 'kasey', 'megan'], Icon(Icons.height)),
-    GroupModel(['baily', 'frankie'], Icon(Icons.eject)),
-    GroupModel(['baily', 'george', 'tom'], Icon(Icons.accessible)),
-    GroupModel(['Yvie', 'Will', 'macca'], Icon(Icons.accessible)),
-  ];
+  // final List<GroupModel> groups = [
+  //   GroupModel(['john', 'kasey'], Icon(Icons.accessible)),
+  //   GroupModel(['john', 'kasey', 'megan'], Icon(Icons.height)),
+  //   GroupModel(['baily', 'frankie'], Icon(Icons.eject)),
+  //   GroupModel(['baily', 'george', 'tom'], Icon(Icons.accessible)),
+  //   GroupModel(['Yvie', 'Will', 'macca'], Icon(Icons.accessible)),
+  // ];
 
   UserModel user;
 
@@ -190,7 +190,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
       height: 50.0,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        children: widget.groups.map((GroupModel group) {
+        children: widget.user.groups.map((GroupModel group) {
           return SingleGroup(
             group: group,
             selected: _groupList.contains(group),
@@ -323,7 +323,7 @@ class SingleGroup extends StatelessWidget {
             color: _getColor(), // button color
             child: InkWell(
               splashColor: Colors.greenAccent, // inkwell color
-              child: SizedBox(width: 45, height: 45, child: group.icon),
+              child: SizedBox(width: 45, height: 45, child: Icon(group.icon)),
               onTap: () {
                 onGroupChanged(group, selected, setState);
               },

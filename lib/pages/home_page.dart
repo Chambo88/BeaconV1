@@ -1,6 +1,7 @@
 import 'package:beacon/components/beacon_selector.dart';
 import 'package:beacon/models/beacon_model.dart';
 import 'package:beacon/models/user_model.dart';
+import 'package:beacon/pages/settings_page.dart';
 import 'package:beacon/services/beacon_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,15 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => settingsScreen(user: widget.user)
+              ));
+            },
+            icon:Icon(Icons.settings),
+            color: Colors.white
+          ),
           actions: [
             ElevatedButton(
               onPressed: () {
@@ -34,6 +44,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         body: Stack(children: [
+
           Center(
               child: StreamBuilder(
                   stream: beaconList,
