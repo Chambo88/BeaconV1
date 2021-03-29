@@ -30,6 +30,17 @@ class AuthService {
     await _firebaseAuth.signOut();
   }
 
+
+  List<String> setSearchParam(String userName) {
+    List<String> caseSearchList = [];
+    String temp = "";
+    for (int i = 0; i < userName.length; i++) {
+      temp = temp + userName[i];
+      caseSearchList.add(temp);
+    }
+    return caseSearchList;
+  }
+
   Future<String> signIn({String email, String password}) async {
     try {
       UserCredential user = await _firebaseAuth.signInWithEmailAndPassword(
@@ -75,7 +86,7 @@ class AuthService {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCred.user.uid)
-          .set({'firstName': firstName, 'lastName': lastName, 'email': email});
+          .set({'firstName': firstName, 'lastName': lastName, 'email': email, 'nameSearch': setSearchParam(firstName.toLowerCase() + lastName.toLowerCase())});
 
       return "";
     } on FirebaseAuthException catch (e) {

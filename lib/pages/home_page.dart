@@ -21,6 +21,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    //Why after calling this is it able to constantly be updated? DOes the stream builder recall it? how does this work
     var beaconList = BeaconService().getUserList();
 
     return Scaffold(

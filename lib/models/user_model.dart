@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'beacon_model.dart';
 import 'group_model.dart';
 
@@ -21,5 +23,17 @@ class UserModel {
 
   get_groups() {
     return groups;
+  }
+
+  factory UserModel.fromDocument(DocumentSnapshot doc) {
+    BeaconModel temp = BeaconModel('1.0' , '1.0', 'asidhd', Type.active, false);
+    return UserModel(
+      doc.id,
+      doc.data()['email'],
+      doc.data()['firstName'],
+      doc.data()['LastName'],
+      temp,
+      []
+    );
   }
 }
