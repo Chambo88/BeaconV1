@@ -36,7 +36,7 @@ class settingsScreen extends StatelessWidget {
               trailing: Icon(Icons.arrow_forward_ios_rounded),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AddFriendsPage()
+                    builder: (context) => AddFriendsPage(user: user)
                 )
                 );
               },

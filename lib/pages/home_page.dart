@@ -13,6 +13,7 @@ class HomePage extends StatefulWidget {
   HomePage({Key key, this.user}) : super(key: key);
 
   UserModel user;
+  BuildContext previousContext;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -20,9 +21,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
+
+  void signOut() {
+    context.read<AuthService>().signOut();
+  }
+
   Widget build(BuildContext context) {
     //Why after calling this is it able to constantly be updated? DOes the stream builder recall it? how does this work
     var beaconList = BeaconService().getUserList();
+
+
 
     return Scaffold(
         appBar: AppBar(
@@ -38,7 +46,7 @@ class _HomePageState extends State<HomePage> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                context.read<AuthService>().signOut();
+                signOut();
               },
               child: Text("Sign out"),
             )

@@ -31,22 +31,46 @@ class AuthService {
   }
 
 
-  List<String> setSearchParam(String userName) {
+  List<String> setSearchParam(String firstName, String lastName) {
     List<String> caseSearchList = [];
+    String userName = (firstName + lastName).toLowerCase();
+    lastName = lastName.toLowerCase();
     String temp = "";
     for (int i = 0; i < userName.length; i++) {
       temp = temp + userName[i];
+      caseSearchList.add(temp);
+    }
+    temp = "";
+    for (int i = 0; i < lastName.length; i++) {
+      temp = temp + lastName[i];
       caseSearchList.add(temp);
     }
     return caseSearchList;
   }
 
   Future<String> signIn({String email, String password}) async {
+    List<String> friends = [];
+    List<String> friendsRequestsSent = [];
+    List<String> friendsRequestsRecieved = [];
+
+
     try {
       UserCredential user = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       var doc =
           await _fireStoreDataBase.collection('users').doc(user.user.uid).get();
+
+      if (doc.data()['friends'] != null) {
+        friends = List.from(doc.data()['friends']);
+      };
+
+      if (doc.data()['friendRequestsSent'] != null) {
+        friendsRequestsSent = List.from(doc.data()['friends']);
+      };
+
+      if (doc.data()['friendsRequestsRecieved'] != null) {
+        friendsRequestsRecieved = List.from(doc.data()['friends']);
+      };
 
       controller.add(UserModel(
           user.user.uid,
@@ -67,7 +91,11 @@ class AuthService {
             GroupModel(members: [Friend(name: 'Frankie'), Friend(name: 'Megan')], icon: (Icons.eject), name: ('squad 3')),
             GroupModel(members: [Friend(name: 'Robbie'), Friend(name: 'Richie'), Friend(name: 'john')], icon: (Icons.accessible), name: ('squad 4')),
             GroupModel(members: [Friend(name: 'Yvie'), Friend(name: 'john'), Friend(name: 'john')], icon: (Icons.accessible), name: ('squad 5')),
-          ]),
+          ],
+        friends,
+        friendsRequestsSent,
+        friendsRequestsRecieved,
+        )
       );
       return "";
     } on FirebaseAuthException catch (e) {
@@ -86,7 +114,12 @@ class AuthService {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCred.user.uid)
-          .set({'firstName': firstName, 'lastName': lastName, 'email': email, 'nameSearch': setSearchParam(firstName.toLowerCase() + lastName.toLowerCase())});
+          .set({'firstName': firstName,
+                'lastName': lastName,
+                'email': email,
+                'userId':  userCred.user.uid.toString(),
+                'nameSearch': setSearchParam(firstName, lastName)
+          });
 
       return "";
     } on FirebaseAuthException catch (e) {

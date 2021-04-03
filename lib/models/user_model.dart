@@ -10,8 +10,19 @@ class UserModel {
   String lastName;
   BeaconModel beacon;
   List<GroupModel> groups;
+  List<String> friends;
+  List<String> friendRequestsSent;
+  List<String> friendRequestsRecieved;
 
-  UserModel(this.id, this.email, this.firstName, this.lastName, this.beacon, this.groups);
+  UserModel(this.id,
+      this.email,
+      this.firstName,
+      this.lastName,
+      this.beacon,
+      this.groups,
+      this.friends,
+      this.friendRequestsSent,
+      this.friendRequestsRecieved);
 
   add_group_to_list(GroupModel group) {
     groups.add(group);
@@ -31,9 +42,12 @@ class UserModel {
       doc.id,
       doc.data()['email'],
       doc.data()['firstName'],
-      doc.data()['LastName'],
+      doc.data()['lastName'],
       temp,
-      []
+      [],
+      [],
+      [],
+      [],
     );
   }
 }

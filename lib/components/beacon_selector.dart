@@ -12,14 +12,6 @@ import '../services/auth_service.dart';
 class BeaconSelector extends StatefulWidget {
   BeaconSelector({Key key, this.user}) : super(key: key);
 
-  // final List<GroupModel> groups = [
-  //   GroupModel(['john', 'kasey'], Icon(Icons.accessible)),
-  //   GroupModel(['john', 'kasey', 'megan'], Icon(Icons.height)),
-  //   GroupModel(['baily', 'frankie'], Icon(Icons.eject)),
-  //   GroupModel(['baily', 'george', 'tom'], Icon(Icons.accessible)),
-  //   GroupModel(['Yvie', 'Will', 'macca'], Icon(Icons.accessible)),
-  // ];
-
   UserModel user;
 
   @override
@@ -27,16 +19,13 @@ class BeaconSelector extends StatefulWidget {
 }
 
 class _BeaconSelectorState extends State<BeaconSelector> {
+
   var _showBeaconEditor = false;
-  TextEditingController _textController;
   Set<GroupModel> _groupList = Set<GroupModel>();
+
   final TextEditingController _beaconDescriptionController =
       TextEditingController();
 
-  void initState() {
-    super.initState();
-    _textController = TextEditingController();
-  }
 
   @override
   Widget build(BuildContext context) {

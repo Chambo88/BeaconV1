@@ -1,9 +1,14 @@
 import 'package:beacon/models/user_model.dart';
+import 'package:beacon/pages/edit_group_page.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AddFriendsPage extends StatefulWidget {
+  UserModel user;
+
+  AddFriendsPage({this.user});
+
   @override
   _AddFriendsPageState createState() => _AddFriendsPageState();
 }
@@ -12,25 +17,26 @@ class _AddFriendsPageState extends State<AddFriendsPage> with AutomaticKeepAlive
 {
   TextEditingController searchTextEditingController = TextEditingController();
   Future<QuerySnapshot> futureSearchResults;
-
+  //
+  //
   void filterSearchResults(String query) {
 
     if(query.isNotEmpty) {
-      Future<QuerySnapshot> allUsers = FirebaseFirestore.instance.collection(
-          "users").where("nameSearch", arrayContains: query).get();
+      Query allUsers = FirebaseFirestore.instance.collection("users");
+      //where("userId", isEqualTo: widget.user.id). why cant i add this in here
+      Future<QuerySnapshot> userDoc = allUsers.where("nameSearch", arrayContains: query.toLowerCase()).get();
       setState(() {
-        futureSearchResults = allUsers;
-        // searchTextEditingController.text = query;
+        futureSearchResults = userDoc;
       }
 
       );
     } else {
       setState(() {
         futureSearchResults = null;
-        // searchTextEditingController.text = '';
       });
     }
   }
+
 
 
   TextField searchBar() {
@@ -82,7 +88,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> with AutomaticKeepAlive
         dataSnapshot.data.docs.forEach((document)
         {
           UserModel users = UserModel.fromDocument(document);
-          UserResult userResult = UserResult(user: users);
+          UserResult userResult = UserResult(anotherUser: users, currentUser: widget.user);
           searchUsersResult.add(userResult);
         });
 
@@ -120,8 +126,36 @@ class _AddFriendsPageState extends State<AddFriendsPage> with AutomaticKeepAlive
 }
 
 class UserResult extends StatelessWidget {
-  final UserModel user;
-  UserResult({this.user});
+  final UserModel currentUser;
+  final UserModel anotherUser;
+  UserResult({this.anotherUser, this.currentUser});
+
+
+  Widget checkFriendShipAndPendingStatus() {
+    if (currentUser.friends.contains(anotherUser.id)) {
+      return Text('Already Friends');
+    }
+    else if (currentUser.friendRequestsSent.contains(anotherUser.id)){
+      return Icon(Icons.person_add_alt_1_rounded, color: Colors.grey,);
+    }
+    else{
+      return IconButton(
+        icon: Icon(Icons.person_add_alt_1_rounded),
+        onPressed: () async {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(currentUser.id)
+                .update({"SentFriendRequests": FieldValue.arrayUnion([anotherUser.id])});
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(anotherUser.id)
+                .update({"recievedFriendRequests": FieldValue.arrayUnion([currentUser.id])});
+            },
+
+      );
+    }
+  }
+
 
 
   @override
@@ -132,11 +166,11 @@ class UserResult extends StatelessWidget {
         color: Colors.white54,
         child: Column(
           children: [
-            GestureDetector(
-              onTap: ()=> print("this is where the add friend bit goes"),
-              child: ListTile(
-                title: Text(user.firstName)
-              ),
+            ListTile(
+              title: Text("${anotherUser.firstName} ${anotherUser.lastName}"),
+              trailing: checkFriendShipAndPendingStatus(),
+
+
             )
           ],
         ),
