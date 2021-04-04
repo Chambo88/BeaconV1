@@ -9,6 +9,20 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 
+// class loadingHomePage extends StatefulWidget {
+//   @override
+//   _loadingHomePageState createState() => _loadingHomePageState();
+// }
+//
+// class _loadingHomePageState extends State<loadingHomePage> {
+//   @override
+//   Widget FutureBuilder(
+//       future: Provider.of<UserModel>(context),
+//       builder:
+//       )
+// }
+
+
 class HomePage extends StatefulWidget {
   HomePage({Key key,}) : super(key: key);
 
@@ -22,13 +36,10 @@ class _HomePageState extends State<HomePage> {
   @override
 
 
-
-
   Widget build(BuildContext context) {
     //Why after calling this is it able to constantly be updated? DOes the stream builder recall it? how does this work
     var beaconList = BeaconService().getUserList();
     final AuthService _auth = context.watch<AuthService>();
-    var user = Provider.of<UserModel>(context);
 
 
     return Scaffold(
@@ -36,7 +47,7 @@ class _HomePageState extends State<HomePage> {
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => settingsScreen(user: user)
+                  builder: (context) => settingsScreen()
               ));
             },
             icon:Icon(Icons.settings),

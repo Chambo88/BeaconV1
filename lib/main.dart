@@ -65,6 +65,7 @@ class AuthenticationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _currentUser = context.watch<User>();
+    final _currentUserModel = context.watch<UserModel>();
     if (_currentUser != null) {
       {
         return HomePage();

@@ -58,9 +58,9 @@ class AuthService {
   }
 
   Future<String> signIn({String email, String password}) async {
-    List<String> friends = [];
-    List<String> friendsRequestsSent = [];
-    List<String> friendsRequestsRecieved = [];
+    // List<String> friends = [];
+    // List<String> sentFriendRequests = [];
+    // List<String> recievedFriendRequests = [];
 
 
     try {
@@ -69,17 +69,10 @@ class AuthService {
       var doc =
           await _fireStoreDataBase.collection('users').doc(user.user.uid).get();
 
-      if (doc.data()['friends'] != null) {
-        friends = List.from(doc.data()['friends']);
-      };
-
-      if (doc.data()['friendRequestsSent'] != null) {
-        friendsRequestsSent = List.from(doc.data()['friends']);
-      };
-
-      if (doc.data()['friendsRequestsRecieved'] != null) {
-        friendsRequestsRecieved = List.from(doc.data()['friends']);
-      };
+      // friends = List.from(doc.data()['friends']);
+      // sentFriendRequests = List.from(doc.data()['friendRequestsSent']);
+      // recievedFriendRequests = List.from(doc.data()['friendsRequestsRecieved']);
+      print('got to here');
 
       controller.add(UserModel(
           user.user.uid,
@@ -101,11 +94,13 @@ class AuthService {
             GroupModel(members: [Friend(name: 'Robbie'), Friend(name: 'Richie'), Friend(name: 'john')], icon: (Icons.accessible), name: ('squad 4')),
             GroupModel(members: [Friend(name: 'Yvie'), Friend(name: 'john'), Friend(name: 'john')], icon: (Icons.accessible), name: ('squad 5')),
           ],
-        friends,
-        friendsRequestsSent,
-        friendsRequestsRecieved,
+        [],
+        [],
+        [],
         )
+
       );
+      print('got to here 2');
       return "";
     } on FirebaseAuthException catch (e) {
       return e.message;
@@ -127,7 +122,10 @@ class AuthService {
                 'lastName': lastName,
                 'email': email,
                 'userId':  userCred.user.uid.toString(),
-                'nameSearch': setSearchParam(firstName, lastName)
+                'nameSearch': setSearchParam(firstName, lastName),
+                'sentFriendRequests' : [],
+                'recievedFriendRequests' : [],
+                'friends' : [],
           });
 
       return "";

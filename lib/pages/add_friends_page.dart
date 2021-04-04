@@ -3,11 +3,9 @@ import 'package:beacon/pages/edit_group_page.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AddFriendsPage extends StatefulWidget {
-  UserModel user;
-
-  AddFriendsPage({this.user});
 
   @override
   _AddFriendsPageState createState() => _AddFriendsPageState();
@@ -66,7 +64,7 @@ class _AddFriendsPageState extends State<AddFriendsPage>
     ));
   }
 
-  FutureBuilder displayUsersFoundScreen() {
+  FutureBuilder displayUsersFoundScreen(UserModel user) {
     return FutureBuilder(
       future: futureSearchResults,
       builder: (context, dataSnapshot) {
@@ -78,7 +76,7 @@ class _AddFriendsPageState extends State<AddFriendsPage>
         dataSnapshot.data.docs.forEach((document) {
           UserModel users = UserModel.fromDocument(document);
           UserResult userResult = UserResult(
-              anotherUser: users, currentUser: widget.user, setState: setState);
+              anotherUser: users, currentUser: user, setState: setState);
           searchUsersResult.add(userResult);
         });
 
@@ -95,6 +93,7 @@ class _AddFriendsPageState extends State<AddFriendsPage>
 
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<UserModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Friends'),
@@ -108,7 +107,7 @@ class _AddFriendsPageState extends State<AddFriendsPage>
         Expanded(
             child: futureSearchResults == null
                 ? displayNoSearchResultsScreen()
-                : displayUsersFoundScreen()),
+                : displayUsersFoundScreen(user)),
       ]),
     );
   }
@@ -122,9 +121,10 @@ class UserResult extends StatelessWidget {
   UserResult({this.anotherUser, this.currentUser, this.setState});
 
   Widget checkFriendShipAndPendingStatus() {
+    print("${currentUser.friends} + ${anotherUser.id}");
     if (currentUser.friends.contains(anotherUser.id)) {
       return Text('Already Friends');
-    } else if (currentUser.friendRequestsSent.contains(anotherUser.id)) {
+    } else if (currentUser.sentFriendRequests.contains(anotherUser.id)) {
       return Icon(
         Icons.person_add_alt_1_rounded,
         color: Colors.red,
@@ -137,7 +137,7 @@ class UserResult extends StatelessWidget {
               .collection('users')
               .doc(currentUser.id)
               .update({
-            "SentFriendRequests": FieldValue.arrayUnion([anotherUser.id])
+            "sentFriendRequests": FieldValue.arrayUnion([anotherUser.id])
           });
           await FirebaseFirestore.instance
               .collection('users')

@@ -11,8 +11,8 @@ class UserModel {
   BeaconModel beacon;
   List<GroupModel> groups;
   List<String> friends;
-  List<String> friendRequestsSent;
-  List<String> friendRequestsRecieved;
+  List<String> sentFriendRequests;
+  List<String> recievedFriendRequests;
 
   UserModel(this.id,
       this.email,
@@ -21,22 +21,35 @@ class UserModel {
       this.beacon,
       this.groups,
       this.friends,
-      this.friendRequestsSent,
-      this.friendRequestsRecieved);
+      this.sentFriendRequests,
+      this.recievedFriendRequests);
 
-  add_group_to_list(GroupModel group) {
+  addGroupToList(GroupModel group) {
     groups.add(group);
   }
 
-  remove_group(GroupModel group) {
+  removeGroup(GroupModel group) {
     groups.remove(group);
   }
 
-  get_groups() {
+  getGroups() {
     return groups;
   }
 
+
   factory UserModel.fromDocument(DocumentSnapshot doc) {
+
+    List<GroupModel> _groups;
+
+    //TEMPORARY
+    if(doc.data().containsKey("groups")) {
+      _groups = List.from(doc.data()["groups"]);
+
+    } else {
+      _groups = [];
+    }
+
+
     BeaconModel temp = BeaconModel('1.0' , '1.0', 'asidhd', Type.active, false);
     return UserModel(
       doc.id,
@@ -44,10 +57,13 @@ class UserModel {
       doc.data()['firstName'],
       doc.data()['lastName'],
       temp,
+      _groups,
+      // List.from(doc.data()["friends"]),
+      // List.from(doc.data()["sentFriendRequests"]),
+      // List.from(doc.data()["recievedFriendRequests"])
       [],
       [],
-      [],
-      [],
+      []
     );
   }
 }

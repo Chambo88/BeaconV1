@@ -1,16 +1,12 @@
 import 'package:beacon/models/user_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'add_friends_page.dart';
 import 'group_settings_page.dart';
 
 
 class settingsScreen extends StatelessWidget {
 
-  UserModel user;
-
-  settingsScreen({
-    this.user
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +22,7 @@ class settingsScreen extends StatelessWidget {
             trailing: Icon(Icons.arrow_forward_ios_rounded),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => group_settings(user: user)
+                  builder: (context) => group_settings()
               )
               );
             },
@@ -36,7 +32,7 @@ class settingsScreen extends StatelessWidget {
               trailing: Icon(Icons.arrow_forward_ios_rounded),
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AddFriendsPage(user: user)
+                    builder: (context) => AddFriendsPage()
                 )
                 );
               },
