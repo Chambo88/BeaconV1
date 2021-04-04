@@ -13,31 +13,29 @@ class AddFriendsPage extends StatefulWidget {
   _AddFriendsPageState createState() => _AddFriendsPageState();
 }
 
-class _AddFriendsPageState extends State<AddFriendsPage> with AutomaticKeepAliveClientMixin<AddFriendsPage>
-{
+class _AddFriendsPageState extends State<AddFriendsPage>
+    with AutomaticKeepAliveClientMixin<AddFriendsPage> {
   TextEditingController searchTextEditingController = TextEditingController();
   Future<QuerySnapshot> futureSearchResults;
+
   //
   //
   void filterSearchResults(String query) {
-
-    if(query.isNotEmpty) {
+    if (query.isNotEmpty) {
       Query allUsers = FirebaseFirestore.instance.collection("users");
       //where("userId", isEqualTo: widget.user.id). why cant i add this in here
-      Future<QuerySnapshot> userDoc = allUsers.where("nameSearch", arrayContains: query.toLowerCase()).get();
+      Future<QuerySnapshot> userDoc = allUsers
+          .where("nameSearch", arrayContains: query.toLowerCase())
+          .get();
       setState(() {
         futureSearchResults = userDoc;
-      }
-
-      );
+      });
     } else {
       setState(() {
         futureSearchResults = null;
       });
     }
   }
-
-
 
   TextField searchBar() {
     return TextField(
@@ -51,44 +49,36 @@ class _AddFriendsPageState extends State<AddFriendsPage> with AutomaticKeepAlive
         // ),
         onChanged: (value) {
           filterSearchResults(value);
-        }
-
-      );
+        });
   }
 
   emptyTheTextFormField() {
     searchTextEditingController.clear();
   }
 
-
   Container displayNoSearchResultsScreen() {
     return Container(
-      child: Center(
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            Text('Search friends')
-          ],
-        ),
-      )
-    );
+        child: Center(
+          child: ListView(
+            shrinkWrap: true,
+            children: [Text('Search friends')],
+      ),
+    ));
   }
 
   FutureBuilder displayUsersFoundScreen() {
-   return FutureBuilder(
+    return FutureBuilder(
       future: futureSearchResults,
       builder: (context, dataSnapshot) {
-
-        while(!dataSnapshot.hasData)
-        {
+        while (!dataSnapshot.hasData) {
           return circularProgress();
         }
 
         List<UserResult> searchUsersResult = [];
-        dataSnapshot.data.docs.forEach((document)
-        {
+        dataSnapshot.data.docs.forEach((document) {
           UserModel users = UserModel.fromDocument(document);
-          UserResult userResult = UserResult(anotherUser: users, currentUser: widget.user);
+          UserResult userResult = UserResult(
+              anotherUser: users, currentUser: widget.user, setState: setState);
           searchUsersResult.add(userResult);
         });
 
@@ -109,54 +99,56 @@ class _AddFriendsPageState extends State<AddFriendsPage> with AutomaticKeepAlive
       appBar: AppBar(
         title: Text('Add Friends'),
       ),
-      body: Column(
-        children: [
-          Container(
-            width: MediaQuery.of(context).size.width,
-              height: 200,
-              child: searchBar(),
-          ),
-          Expanded(child: futureSearchResults == null? displayNoSearchResultsScreen(): displayUsersFoundScreen()),
-      ]
-
-      ),
+      body: Column(children: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: 200,
+          child: searchBar(),
+        ),
+        Expanded(
+            child: futureSearchResults == null
+                ? displayNoSearchResultsScreen()
+                : displayUsersFoundScreen()),
+      ]),
     );
   }
-
 }
 
 class UserResult extends StatelessWidget {
   final UserModel currentUser;
   final UserModel anotherUser;
-  UserResult({this.anotherUser, this.currentUser});
+  StateSetter setState;
 
+  UserResult({this.anotherUser, this.currentUser, this.setState});
 
   Widget checkFriendShipAndPendingStatus() {
     if (currentUser.friends.contains(anotherUser.id)) {
       return Text('Already Friends');
-    }
-    else if (currentUser.friendRequestsSent.contains(anotherUser.id)){
-      return Icon(Icons.person_add_alt_1_rounded, color: Colors.grey,);
-    }
-    else{
+    } else if (currentUser.friendRequestsSent.contains(anotherUser.id)) {
+      return Icon(
+        Icons.person_add_alt_1_rounded,
+        color: Colors.red,
+      );
+    } else {
       return IconButton(
         icon: Icon(Icons.person_add_alt_1_rounded),
         onPressed: () async {
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(currentUser.id)
-                .update({"SentFriendRequests": FieldValue.arrayUnion([anotherUser.id])});
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(anotherUser.id)
-                .update({"recievedFriendRequests": FieldValue.arrayUnion([currentUser.id])});
-            },
-
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser.id)
+              .update({
+            "SentFriendRequests": FieldValue.arrayUnion([anotherUser.id])
+          });
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(anotherUser.id)
+              .update({
+            "recievedFriendRequests": FieldValue.arrayUnion([currentUser.id])
+          });
+        },
       );
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -169,8 +161,6 @@ class UserResult extends StatelessWidget {
             ListTile(
               title: Text("${anotherUser.firstName} ${anotherUser.lastName}"),
               trailing: checkFriendShipAndPendingStatus(),
-
-
             )
           ],
         ),

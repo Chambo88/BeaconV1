@@ -29,6 +29,9 @@ class MyApp extends StatelessWidget {
           ),
           StreamProvider(create: (context) => LocationService().locationStream),
           StreamProvider(
+            create: (context) => context.read<AuthService>().authStateChanges,
+          ),
+          StreamProvider(
             create: (context) => context.read<AuthService>().userChanges,
           ),
         ],
@@ -57,11 +60,15 @@ class AuthenticationWrapper extends StatelessWidget {
     Key key,
   }) : super(key: key);
 
+
+
   @override
   Widget build(BuildContext context) {
-    final _currentUser = context.watch<UserModel>();
+    final _currentUser = context.watch<User>();
     if (_currentUser != null) {
-      return HomePage(user: _currentUser);
+      {
+        return HomePage();
+      }
     }
     return SignInPage();
   }

@@ -10,9 +10,8 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 
 class BeaconSelector extends StatefulWidget {
-  BeaconSelector({Key key, this.user}) : super(key: key);
+  BeaconSelector({Key key,}) : super(key: key);
 
-  UserModel user;
 
   @override
   _BeaconSelectorState createState() => _BeaconSelectorState();
@@ -21,6 +20,7 @@ class BeaconSelector extends StatefulWidget {
 class _BeaconSelectorState extends State<BeaconSelector> {
 
   var _showBeaconEditor = false;
+
   Set<GroupModel> _groupList = Set<GroupModel>();
 
   final TextEditingController _beaconDescriptionController =
@@ -30,7 +30,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: _buildBeaconEditor(context),
+      child: _buildBeaconEditor(context,),
     );
   }
 
@@ -44,20 +44,20 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     });
   }
 
-  Color _getBeaconColor() {
-    if (widget.user.beacon.active != true) {
+  Color _getBeaconColor(UserModel user) {
+    if (user.beacon.active != true) {
       return Colors.grey;
     }
-    return widget.user.beacon.type == Type.active
+    return user.beacon.type == Type.active
         ? Colors.lightBlueAccent
-        : widget.user.beacon.type == Type.hosting
+        : user.beacon.type == Type.hosting
             ? Colors.lightGreenAccent
             : Colors.amberAccent;
   }
 
-  Future<void> _lightBeacon(BuildContext context) async {
+  Future<void> _lightBeacon(BuildContext context, UserModel user) async {
     setState(() {
-      widget.user.beacon.active = true;
+      user.beacon.active = true;
     });
 
     var userLocation = context.read<UserLocation>();
@@ -65,11 +65,11 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     // TODO: User service
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(widget.user.id)
+        .doc(user.id)
         .set({
       'beacon': {
-        'active': widget.user.beacon.active,
-        'type': widget.user.beacon.type.toString(),
+        'active': user.beacon.active,
+        'type': user.beacon.type.toString(),
         'lat': userLocation.latitude,
         'long': userLocation.longitude,
         'description': _beaconDescriptionController.text,
@@ -77,34 +77,35 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     }, SetOptions(merge: true));
   }
 
-  Future<void> _extinguishBeacon(BuildContext context) async {
+  Future<void> _extinguishBeacon(BuildContext context, UserModel user) async {
     setState(() {
-      widget.user.beacon.active = false;
+      user.beacon.active = false;
     });
 
     // TODO: user service
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(widget.user.id)
+        .doc(user.id)
         .set({
       'beacon': {
-        'active': widget.user.beacon.active,
+        'active': user.beacon.active,
       }
     }, SetOptions(merge: true));
   }
 
-  Future<void> _updateBeacon(BuildContext context) async {
+  Future<void> _updateBeacon(BuildContext context, UserModel user) async {
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(widget.user.id)
+        .doc(user.id)
         .set({
       'beacon': {
-        'type': widget.user.beacon.type.toString(),
+        'type': user.beacon.type.toString(),
       }
     }, SetOptions(merge: true));
   }
 
   Widget _buildBeaconEditor(BuildContext context) {
+    var user = Provider.of<UserModel>(context);
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: [
       !_showBeaconEditor
           ? new Container()
@@ -119,9 +120,9 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            selectBeacon(),
+                            selectBeacon(user),
                             dividerSettings(),
-                            groups(setState),
+                            groups(setState, user),
                             dividerSettings(),
                             textField(),
                             dividerSettings(),
@@ -135,12 +136,12 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                                     color: Colors.green,
                                   )),
                               onTap: () {
-                                widget.user.beacon.active != true
-                                    ? _lightBeacon(context)
-                                    : _extinguishBeacon(context);
+                                user.beacon.active != true
+                                    ? _lightBeacon(context, user)
+                                    : _extinguishBeacon(context, user);
                               },
                             ),
-                            widget.user.beacon.active == true
+                            user.beacon.active == true
                                 ? Text("Extinguish")
                                 : Text("Light")
                           ],
@@ -157,7 +158,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                   });
                 },
                 elevation: 2.0,
-                fillColor: _getBeaconColor(),
+                fillColor: _getBeaconColor(user),
                 constraints: BoxConstraints.tight(Size(80, 80)),
                 shape: CircleBorder(),
               )))
@@ -173,13 +174,13 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  Container groups(StateSetter setState) {
+  Container groups(StateSetter setState, UserModel user) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 20.0),
       height: 50.0,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        children: widget.user.groups.map((GroupModel group) {
+        children: user.groups.map((GroupModel group) {
           return SingleGroup(
             group: group,
             selected: _groupList.contains(group),
@@ -199,7 +200,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  Row selectBeacon() {
+  Row selectBeacon(UserModel user) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -207,7 +208,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           children: [
             ClipOval(
               child: Material(
-                color: widget.user.beacon.type == Type.active
+                color: user.beacon.type == Type.active
                     ? Colors.lightBlueAccent
                     : Colors.grey, // button color
                 child: InkWell(
@@ -216,11 +217,11 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                       width: 45, height: 45, child: Icon(Icons.whatshot)),
                   onTap: () {
                     setState(() {
-                      widget.user.beacon.type = Type.active;
+                      user.beacon.type = Type.active;
                     });
 
-                    if (widget.user.beacon.active == true) {
-                      _updateBeacon(context);
+                    if (user.beacon.active == true) {
+                      _updateBeacon(context, user);
                     }
                   },
                 ),
@@ -233,7 +234,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           children: [
             ClipOval(
               child: Material(
-                color: widget.user.beacon.type == Type.interested
+                color: user.beacon.type == Type.interested
                     ? Colors.amberAccent
                     : Colors.grey, // button color
                 child: InkWell(
@@ -242,11 +243,11 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                       width: 45, height: 45, child: Icon(Icons.whatshot)),
                   onTap: () {
                     setState(() {
-                      widget.user.beacon.type = Type.interested;
+                      user.beacon.type = Type.interested;
                     });
 
-                    if (widget.user.beacon.active == true) {
-                      _updateBeacon(context);
+                    if (user.beacon.active == true) {
+                      _updateBeacon(context, user);
                     }
                   },
                 ),
@@ -259,7 +260,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           children: [
             ClipOval(
               child: Material(
-                color: widget.user.beacon.type == Type.hosting
+                color: user.beacon.type == Type.hosting
                     ? Colors.lightGreenAccent
                     : Colors.grey, // button color
                 child: InkWell(
@@ -268,11 +269,11 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                       width: 45, height: 45, child: Icon(Icons.whatshot)),
                   onTap: () {
                     setState(() {
-                      widget.user.beacon.type = Type.hosting;
+                      user.beacon.type = Type.hosting;
                     });
 
-                    if (widget.user.beacon.active == true) {
-                      _updateBeacon(context);
+                    if (user.beacon.active == true) {
+                      _updateBeacon(context, user);
                     }
                   },
                 ),

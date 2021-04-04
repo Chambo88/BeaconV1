@@ -10,9 +10,8 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.user}) : super(key: key);
+  HomePage({Key key,}) : super(key: key);
 
-  UserModel user;
   BuildContext previousContext;
 
   @override
@@ -22,14 +21,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
 
-  void signOut() {
-    context.read<AuthService>().signOut();
-  }
+
+
 
   Widget build(BuildContext context) {
     //Why after calling this is it able to constantly be updated? DOes the stream builder recall it? how does this work
     var beaconList = BeaconService().getUserList();
-
+    final AuthService _auth = context.watch<AuthService>();
+    var user = Provider.of<UserModel>(context);
 
 
     return Scaffold(
@@ -37,7 +36,7 @@ class _HomePageState extends State<HomePage> {
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => settingsScreen(user: widget.user)
+                  builder: (context) => settingsScreen(user: user)
               ));
             },
             icon:Icon(Icons.settings),
@@ -45,8 +44,8 @@ class _HomePageState extends State<HomePage> {
           ),
           actions: [
             ElevatedButton(
-              onPressed: () {
-                signOut();
+              onPressed: () async {
+                await _auth.signOut();
               },
               child: Text("Sign out"),
             )
@@ -85,7 +84,7 @@ class _HomePageState extends State<HomePage> {
                           );
                         });
                   })),
-          new BeaconSelector(user: widget.user)
+          new BeaconSelector()
         ]));
   }
 }

@@ -17,18 +17,27 @@ class AuthService {
   AuthService(this._firebaseAuth);
 
   Stream<User> get authStateChanges => _firebaseAuth.authStateChanges();
+
   Stream<UserModel> get userChanges {
     return controller.stream;
   }
 
   User get getUserId => _firebaseAuth.currentUser;
+
   UserModel get getUser => currentUser;
 
   get us => null;
 
-  Future<void> signOut() async {
-    await _firebaseAuth.signOut();
+  Future signOut() async {
+    try {
+      return await _firebaseAuth.signOut();
+    } catch(e) {
+      print(e.toString());
+      return null;
+    }
   }
+
+
 
 
   List<String> setSearchParam(String firstName, String lastName) {
