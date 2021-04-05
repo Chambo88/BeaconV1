@@ -50,20 +50,21 @@ class UserModel {
     }
 
 
-    BeaconModel temp = BeaconModel('1.0' , '1.0', 'asidhd', Type.active, false);
     return UserModel(
       doc.id,
       doc.data()['email'],
       doc.data()['firstName'],
       doc.data()['lastName'],
-      temp,
+        BeaconModel(
+            doc.data()['beacon/lat'].toString(),
+            doc.data()['beacon/long'].toString(),
+            doc.data()['beacon/desc'],
+            typeFromString("Type.active"),
+            doc.data()['beacon/active']),
       _groups,
-      // List.from(doc.data()["friends"]),
-      // List.from(doc.data()["sentFriendRequests"]),
-      // List.from(doc.data()["recievedFriendRequests"])
-      [],
-      [],
-      []
+      List.from(doc.data()["friends"]),
+      List.from(doc.data()["sentFriendRequests"]),
+      List.from(doc.data()["recievedFriendRequests"])
     );
   }
 }
