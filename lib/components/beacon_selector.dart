@@ -45,12 +45,13 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Color _getBeaconColor() {
+    print("is the beacon active ${widget.user.beacon.active}");
     if (widget.user.beacon.active != true) {
       return Colors.grey;
     }
-    return widget.user.beacon.type == Type.active
+    return widget.user.beacon.type == "active"
         ? Colors.lightBlueAccent
-        : widget.user.beacon.type == Type.hosting
+        : widget.user.beacon.type == "hosting"
             ? Colors.lightGreenAccent
             : Colors.amberAccent;
   }
@@ -59,6 +60,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     setState(() {
       widget.user.beacon.active = true;
     });
+
 
     var userLocation = context.read<UserLocation>();
 
@@ -69,7 +71,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
         .set({
       'beacon': {
         'active': widget.user.beacon.active,
-        'type': widget.user.beacon.type.toString(),
+        'type': widget.user.beacon.type,
         'lat': userLocation.latitude,
         'long': userLocation.longitude,
         'description': _beaconDescriptionController.text,
@@ -208,7 +210,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           children: [
             ClipOval(
               child: Material(
-                color: widget.user.beacon.type == Type.active
+                color: widget.user.beacon.type == "active"
                     ? Colors.lightBlueAccent
                     : Colors.grey, // button color
                 child: InkWell(
@@ -217,7 +219,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                       width: 45, height: 45, child: Icon(Icons.whatshot)),
                   onTap: () {
                     setState(() {
-                      widget.user.beacon.type = Type.active;
+                      widget.user.beacon.type = "active";
                     });
 
                     if (widget.user.beacon.active == true) {
@@ -234,7 +236,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           children: [
             ClipOval(
               child: Material(
-                color: widget.user.beacon.type == Type.interested
+                color: widget.user.beacon.type == "interested"
                     ? Colors.amberAccent
                     : Colors.grey, // button color
                 child: InkWell(
@@ -243,7 +245,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                       width: 45, height: 45, child: Icon(Icons.whatshot)),
                   onTap: () {
                     setState(() {
-                      widget.user.beacon.type = Type.interested;
+                      widget.user.beacon.type = "interested";
                     });
 
                     if (widget.user.beacon.active == true) {
@@ -260,7 +262,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           children: [
             ClipOval(
               child: Material(
-                color: widget.user.beacon.type == Type.hosting
+                color: widget.user.beacon.type == "hosting"
                     ? Colors.lightGreenAccent
                     : Colors.grey, // button color
                 child: InkWell(
@@ -269,7 +271,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                       width: 45, height: 45, child: Icon(Icons.whatshot)),
                   onTap: () {
                     setState(() {
-                      widget.user.beacon.type = Type.hosting;
+                      widget.user.beacon.type = "hosting";
                     });
 
                     if (widget.user.beacon.active == true) {

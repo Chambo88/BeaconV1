@@ -72,6 +72,7 @@ class _Load_HomeState extends State<Load_Home> {
   Future<String> _fetchData(User _currentUser, AuthService _authService) async {
       var doc = await _fireStoreDataBase.collection('users').doc(
           _currentUser.uid).get();
+      print('ok');
       _authService.addUserModelToController(doc);
       return "";
   }
@@ -139,9 +140,9 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (BuildContext context, int index) {
                           return new ListTile(
                             tileColor: (snapshot.data[index].type ==
-                                    Type.active)
+                                    "active")
                                 ? Colors.lightBlueAccent
-                                : (snapshot.data[index].type == Type.hosting)
+                                : (snapshot.data[index].type == "hosting")
                                     ? Colors.lightGreenAccent
                                     : Colors.amberAccent,
                             title: new Text(snapshot.data[index].userName),

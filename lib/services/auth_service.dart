@@ -39,8 +39,10 @@ class AuthService {
 
 
   void addUserModelToController(DocumentSnapshot doc) {
-    controller.add(UserModel.fromDocument(doc));
-
+    UserModel user = UserModel.fromDocument(doc);
+    print("is the user active ${user.beacon.active} , /n"
+        "what type is it ${user.beacon.type}");
+    controller.add(user);
     //   (
     //   user.user.uid,
     //   doc.data()['firstName'],
