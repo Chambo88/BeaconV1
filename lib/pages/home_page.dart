@@ -1,5 +1,6 @@
 import 'package:beacon/components/beacon_selector.dart';
 import 'package:beacon/models/beacon_model.dart';
+import 'package:beacon/models/user-location_model.dart';
 import 'package:beacon/models/user_model.dart';
 import 'package:beacon/pages/settings_page.dart';
 import 'package:beacon/services/beacon_service.dart';
@@ -33,6 +34,8 @@ class _Load_HomeState extends State<Load_Home> {
     super.initState();
     final _currentUser = Provider.of<User>(context, listen: false);
     final _authService = Provider.of<AuthService>(context, listen: false);
+    final _locationService = Provider.of<UserLocation>(context, listen: false);
+    final _userModel = Provider.of<UserModel>(context, listen: false);
     myFuture = _fetchData(_currentUser, _authService);
   }
 
@@ -44,7 +47,6 @@ class _Load_HomeState extends State<Load_Home> {
       future: myFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
-
           return HomePage();
         }
         else if (snapshot.hasError) {
@@ -72,7 +74,6 @@ class _Load_HomeState extends State<Load_Home> {
   Future<String> _fetchData(User _currentUser, AuthService _authService) async {
       var doc = await _fireStoreDataBase.collection('users').doc(
           _currentUser.uid).get();
-      print('ok');
       _authService.addUserModelToController(doc);
       return "";
   }

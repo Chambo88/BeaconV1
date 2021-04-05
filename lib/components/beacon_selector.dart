@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 
 class BeaconSelector extends StatefulWidget {
-  // BeaconSelector({Key key,}) : super(key: key);
   BeaconSelector({Key key, this.user}) : super(key: key);
   UserModel user;
   @override
@@ -45,7 +44,6 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Color _getBeaconColor() {
-    print("is the beacon active ${widget.user.beacon.active}");
     if (widget.user.beacon.active != true) {
       return Colors.grey;
     }
