@@ -8,11 +8,82 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
+import 'package:beacon/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:async/async.dart';
+
+
+
+
+//////////////////////////////////////////////////////////
+class Load_Home extends StatefulWidget {
+  @override
+  _Load_HomeState createState() => _Load_HomeState();
+}
+
+class _Load_HomeState extends State<Load_Home> {
+
+  FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
+  Future<String> myFuture;
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    final _currentUser = Provider.of<User>(context, listen: false);
+    final _authService = Provider.of<AuthService>(context, listen: false);
+    myFuture = _fetchData(_currentUser, _authService);
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    return FutureBuilder(
+      future: myFuture,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+
+          return HomePage();
+        }
+        else if (snapshot.hasError) {
+          return Text("${snapshot.error}");
+        }
+        else {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  child: CircularProgressIndicator(),
+                  width: 60,
+                  height: 60,
+                ),
+              ],
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Future<String> _fetchData(User _currentUser, AuthService _authService) async {
+      var doc = await _fireStoreDataBase.collection('users').doc(
+          _currentUser.uid).get();
+      _authService.addUserModelToController(doc);
+      return "";
+  }
+
+}
+
+
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.user}) : super(key: key);
+  HomePage({Key key,}) : super(key: key);
 
-  UserModel user;
+  BuildContext previousContext;
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -20,15 +91,21 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
+
+
   Widget build(BuildContext context) {
+    //Why after calling this is it able to constantly be updated? DOes the stream builder recall it? how does this work
     var beaconList = BeaconService().getUserList();
+    final AuthService _auth = context.watch<AuthService>();
+    final UserModel _user = context.watch<UserModel>();
+
 
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => settingsScreen(user: widget.user)
+                  builder: (context) => settingsScreen()
               ));
             },
             icon:Icon(Icons.settings),
@@ -36,8 +113,8 @@ class _HomePageState extends State<HomePage> {
           ),
           actions: [
             ElevatedButton(
-              onPressed: () {
-                context.read<AuthService>().signOut();
+              onPressed: () async {
+                await _auth.signOut();
               },
               child: Text("Sign out"),
             )
@@ -76,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                           );
                         });
                   })),
-          new BeaconSelector(user: widget.user)
+          new BeaconSelector(user: _user)
         ]));
   }
 }

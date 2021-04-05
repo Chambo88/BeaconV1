@@ -1,7 +1,7 @@
 import 'package:beacon/models/friend_model.dart';
 import 'package:beacon/models/group_model.dart';
 import 'package:flutter/material.dart';
-import 'add_friends_page.dart';
+import 'add_friends_to_groups_page.dart';
 
 class Edit_groups extends StatefulWidget {
   @override

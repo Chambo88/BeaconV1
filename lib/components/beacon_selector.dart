@@ -10,38 +10,27 @@ import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 
 class BeaconSelector extends StatefulWidget {
+  // BeaconSelector({Key key,}) : super(key: key);
   BeaconSelector({Key key, this.user}) : super(key: key);
-
-  // final List<GroupModel> groups = [
-  //   GroupModel(['john', 'kasey'], Icon(Icons.accessible)),
-  //   GroupModel(['john', 'kasey', 'megan'], Icon(Icons.height)),
-  //   GroupModel(['baily', 'frankie'], Icon(Icons.eject)),
-  //   GroupModel(['baily', 'george', 'tom'], Icon(Icons.accessible)),
-  //   GroupModel(['Yvie', 'Will', 'macca'], Icon(Icons.accessible)),
-  // ];
-
   UserModel user;
-
   @override
   _BeaconSelectorState createState() => _BeaconSelectorState();
 }
 
 class _BeaconSelectorState extends State<BeaconSelector> {
+
   var _showBeaconEditor = false;
-  TextEditingController _textController;
+
   Set<GroupModel> _groupList = Set<GroupModel>();
+
   final TextEditingController _beaconDescriptionController =
       TextEditingController();
 
-  void initState() {
-    super.initState();
-    _textController = TextEditingController();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: _buildBeaconEditor(context),
+      child: _buildBeaconEditor(context,),
     );
   }
 
@@ -116,6 +105,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Widget _buildBeaconEditor(BuildContext context) {
+    // var user = Provider.of<UserModel>(context);
     return Column(mainAxisAlignment: MainAxisAlignment.end, children: [
       !_showBeaconEditor
           ? new Container()
@@ -147,8 +137,8 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                                   )),
                               onTap: () {
                                 widget.user.beacon.active != true
-                                    ? _lightBeacon(context)
-                                    : _extinguishBeacon(context);
+                                    ? _lightBeacon(context,)
+                                    : _extinguishBeacon(context,);
                               },
                             ),
                             widget.user.beacon.active == true
@@ -184,7 +174,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  Container groups(StateSetter setState) {
+  Container groups(StateSetter setState,) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 20.0),
       height: 50.0,
@@ -231,7 +221,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                     });
 
                     if (widget.user.beacon.active == true) {
-                      _updateBeacon(context);
+                      _updateBeacon(context,);
                     }
                   },
                 ),
@@ -257,7 +247,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                     });
 
                     if (widget.user.beacon.active == true) {
-                      _updateBeacon(context);
+                      _updateBeacon(context,);
                     }
                   },
                 ),
@@ -283,7 +273,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                     });
 
                     if (widget.user.beacon.active == true) {
-                      _updateBeacon(context);
+                      _updateBeacon(context,);
                     }
                   },
                 ),
