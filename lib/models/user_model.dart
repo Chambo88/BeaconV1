@@ -52,11 +52,6 @@ class UserModel {
 
     if(doc.data().containsKey('beacon')) {
       beacon = BeaconModel.toJson(
-        // doc.data()['beacon/lat'].toString(),
-        // doc.data()['beacon/long'].toString(),
-        // doc.data()['beacon/description'],
-        // doc.data()['type'],
-        // doc.data()['beacon/active']),
           doc.data()['beacon']
       );
     }
