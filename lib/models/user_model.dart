@@ -40,6 +40,7 @@ class UserModel {
   factory UserModel.fromDocument(DocumentSnapshot doc) {
 
     List<GroupModel> _groups;
+    BeaconModel beacon;
 
     //TEMPORARY
     if(doc.data().containsKey("groups")) {
@@ -49,18 +50,26 @@ class UserModel {
       _groups = [];
     }
 
+    if(doc.data().containsKey('beacon')) {
+      beacon = BeaconModel.toJson(
+        // doc.data()['beacon/lat'].toString(),
+        // doc.data()['beacon/long'].toString(),
+        // doc.data()['beacon/description'],
+        // doc.data()['type'],
+        // doc.data()['beacon/active']),
+          doc.data()['beacon']
+      );
+    }
+      else {
+        beacon = BeaconModel('0', '0', '', 'interested', false);
+    }
 
     return UserModel(
       doc.id,
       doc.data()['email'],
       doc.data()['firstName'],
       doc.data()['lastName'],
-        BeaconModel(
-            doc.data()['beacon/lat'].toString(),
-            doc.data()['beacon/long'].toString(),
-            doc.data()['beacon/desc'],
-            typeFromString("Type.active"),
-            doc.data()['beacon/active']),
+      beacon,
       _groups,
       List.from(doc.data()["friends"]),
       List.from(doc.data()["sentFriendRequests"]),
