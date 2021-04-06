@@ -1,16 +1,17 @@
-import 'package:beacon/services/beacon_service.dart';
-import 'package:beacon/services/location_service.dart';
-import 'package:beacon/services/auth_service.dart';
-import 'package:beacon/pages/sign_in_page.dart';
+import 'package:beacon/pages/HomeLoadPage.dart';
+import 'package:beacon/services/BeaconService.dart';
+import 'package:beacon/services/LoactionService.dart';
+import 'package:beacon/services/AuthService.dart';
+import 'package:beacon/pages/SignInPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'models/beacon_model.dart';
-import 'models/user_model.dart';
-import 'pages/home_page.dart';
+import 'models/BeaconModel.dart';
+import 'models/UserModel.dart';
+import 'pages/BuildHomePage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
           StreamProvider(
             create: (context) => context.read<AuthService>().userChanges,
           ),
+
         ],
         child: MaterialApp(
             title: 'Flutter Demo',
@@ -67,7 +69,7 @@ class AuthenticationWrapper extends StatelessWidget {
     final _currentUser = context.watch<User>();
     if (_currentUser != null) {
       {
-        return Load_Home();
+        return HomeLoadPage();
       }
     }
     return SignInPage();
