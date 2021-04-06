@@ -76,7 +76,7 @@ class _AddFriendsPageState extends State<AddFriendsPage>
         dataSnapshot.data.docs.forEach((document) {
           UserModel users = UserModel.fromDocument(document);
           UserResult userResult = UserResult(
-              anotherUser: users, currentUser: user, setState: setState);
+              anotherUser: users, currentUser: user);
           searchUsersResult.add(userResult);
         });
 
@@ -113,38 +113,81 @@ class _AddFriendsPageState extends State<AddFriendsPage>
   }
 }
 
-class UserResult extends StatelessWidget {
+class UserResult extends StatefulWidget {
   final UserModel currentUser;
   final UserModel anotherUser;
-  StateSetter setState;
 
-  UserResult({this.anotherUser, this.currentUser, this.setState});
+  UserResult({this.anotherUser, this.currentUser});
 
+  @override
+  _UserResultState createState() => _UserResultState();
+}
+
+class _UserResultState extends State<UserResult> {
+
+  //Get The Trailing IconBUtton
   Widget checkFriendShipAndPendingStatus() {
-    print("${currentUser.friends} + ${anotherUser.id}");
-    if (currentUser.friends.contains(anotherUser.id)) {
+    //Build this if already friends with them
+    if (widget.currentUser.friends.contains(widget.anotherUser.id)) {
       return Text('Already Friends');
-    } else if (currentUser.sentFriendRequests.contains(anotherUser.id)) {
-      return Icon(
-        Icons.person_add_alt_1_rounded,
-        color: Colors.red,
+    }
+    //Build cancel button this if friends request is pending
+    else if (widget.currentUser.sentFriendRequests.contains(widget.anotherUser.id)) {
+      return TextButton(
+        child: Text('cancel'),
+        onPressed: () async {
+          widget.currentUser.subtractFromSentFriendRequests(widget.anotherUser.id);
+          setState(() {});
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(widget.currentUser.id)
+              .update({
+            "sentFriendRequests": FieldValue.arrayRemove([widget.anotherUser.id])
+          });
+
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(widget.anotherUser.id)
+              .update({'notificationCount': FieldValue.increment(-1)});
+
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(widget.anotherUser.id)
+              .update({
+            "recievedFriendRequests": FieldValue.arrayRemove([widget.currentUser.id])
+          });
+
+
+
+        },
       );
     } else {
       return IconButton(
         icon: Icon(Icons.person_add_alt_1_rounded),
         onPressed: () async {
+          widget.currentUser.addToSentFriendRequests(widget.anotherUser.id);
+          setState(() {});
           await FirebaseFirestore.instance
               .collection('users')
-              .doc(currentUser.id)
+              .doc(widget.currentUser.id)
               .update({
-            "sentFriendRequests": FieldValue.arrayUnion([anotherUser.id])
+            "sentFriendRequests": FieldValue.arrayUnion([widget.anotherUser.id])
           });
+
           await FirebaseFirestore.instance
               .collection('users')
-              .doc(anotherUser.id)
+              .doc(widget.anotherUser.id)
+              .update({'notificationCount': FieldValue.increment(1)});
+
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(widget.anotherUser.id)
               .update({
-            "recievedFriendRequests": FieldValue.arrayUnion([currentUser.id])
+            "recievedFriendRequests": FieldValue.arrayUnion([widget.currentUser.id])
           });
+
+
+
         },
       );
     }
@@ -159,7 +202,7 @@ class UserResult extends StatelessWidget {
         child: Column(
           children: [
             ListTile(
-              title: Text("${anotherUser.firstName} ${anotherUser.lastName}"),
+              title: Text("${widget.anotherUser.firstName} ${widget.anotherUser.lastName}"),
               trailing: checkFriendShipAndPendingStatus(),
             )
           ],

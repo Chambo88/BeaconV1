@@ -40,6 +40,14 @@ class UserModel {
     return groups;
   }
 
+  addToSentFriendRequests(String potentialFriend) {
+    sentFriendRequests.add(potentialFriend);
+  }
+
+  subtractFromSentFriendRequests(String cancelFriendRequest) {
+    sentFriendRequests.remove(cancelFriendRequest);
+  }
+
 
 
 
