@@ -151,25 +151,25 @@ class _HomePageState extends State<HomePage> {
     final UserModel _user = context.watch<UserModel>();
 
       return Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => SettingsPage()
-                  ));
-                },
-                icon: Icon(Icons.settings),
-                color: Colors.white
-            ),
-            actions: [
-              ElevatedButton(
-                onPressed: () async {
-                  await _auth.signOut();
-                },
-                child: Text("Sign out"),
-              ),
-            ],
-          ),
+          // appBar: AppBar(
+          //   leading: IconButton(
+          //       onPressed: () {
+          //         Navigator.of(context).push(MaterialPageRoute(
+          //             builder: (context) => SettingsPage()
+          //         ));
+          //       },
+          //       icon: Icon(Icons.settings),
+          //       color: Colors.white
+          //   ),
+          //   actions: [
+          //     ElevatedButton(
+          //       onPressed: () async {
+          //         await _auth.signOut();
+          //       },
+          //       child: Text("Sign out"),
+          //     ),
+          //   ],
+          // ),
           body: Stack(children: [
 
             Center(
