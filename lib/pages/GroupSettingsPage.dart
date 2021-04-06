@@ -1,9 +1,9 @@
-import 'package:beacon/models/group_model.dart';
-import 'package:beacon/models/user_model.dart';
+import 'package:beacon/models/GroupModel.dart';
+import 'package:beacon/models/UserModel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'edit_group_page.dart';
+import 'EditGroupsPage.dart';
 
 
 class group_settings extends StatefulWidget {

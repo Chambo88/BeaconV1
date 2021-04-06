@@ -1,7 +1,7 @@
 import 'package:beacon/models/friend_model.dart';
-import 'package:beacon/models/group_model.dart';
+import 'package:beacon/models/GroupModel.dart';
 import 'package:flutter/material.dart';
-import 'settings_page.dart';
+import 'SettingsPage.dart';
 import 'package:flutter/foundation.dart';
 
 typedef void SelectedChangedCallback(Friend person);

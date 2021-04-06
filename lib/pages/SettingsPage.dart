@@ -1,11 +1,11 @@
-import 'package:beacon/models/user_model.dart';
+import 'package:beacon/models/UserModel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'add_friends_page.dart';
-import 'group_settings_page.dart';
+import 'AddFriendsPage.dart';
+import 'GroupSettingsPage.dart';
 
 
-class settingsScreen extends StatelessWidget {
+class SettingsPage extends StatelessWidget {
 
 
   @override

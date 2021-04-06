@@ -1,5 +1,5 @@
-import 'package:beacon/models/user_model.dart';
-import 'package:beacon/pages/edit_group_page.dart';
+import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/pages/EditGroupsPage.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
