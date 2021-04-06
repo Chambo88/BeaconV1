@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 
 import 'models/BeaconModel.dart';
 import 'models/UserModel.dart';
-import 'pages/BuildHomePage.dart';
+import 'pages/HomePage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

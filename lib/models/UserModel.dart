@@ -48,6 +48,14 @@ class UserModel {
     sentFriendRequests.remove(cancelFriendRequest);
   }
 
+  subtractFromRecievedFriendRequests(String anotherUser) {
+    recievedFriendRequests.remove(anotherUser);
+  }
+
+  addToFriends(String anotherUser) {
+    friends.add(anotherUser);
+  }
+
 
 
 
@@ -82,6 +90,7 @@ class UserModel {
       else {
         notificationCount = 0;
       }
+
 
     return UserModel(
       doc.id,
