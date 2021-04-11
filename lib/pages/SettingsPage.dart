@@ -17,7 +17,7 @@ class SettingsPage extends StatelessWidget {
             trailing: Icon(Icons.arrow_forward_ios_rounded),
             onTap: () {
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => group_settings()));
+                  MaterialPageRoute(builder: (context) => GroupSettings()));
             },
           ),
           ListTile(

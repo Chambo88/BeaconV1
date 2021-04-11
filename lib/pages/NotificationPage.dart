@@ -11,46 +11,48 @@ class NotificationPage extends StatefulWidget {
 
 class _NotificationPageState extends State<NotificationPage> {
 
-  Future<QuerySnapshot> futureSearchResults;
+  //pretty sure this does nothing, if I dont get back to this delete it.
+  // Future<QuerySnapshot> futureSearchResults;
   FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
-    final userOnline = Provider.of<DocumentSnapshot>(context);
-    UserModel userFromFireStore =  UserModel.fromDocument(userOnline);
-    final user = Provider.of<UserModel>(context, listen: false);
 
+    final userOnline = context.watch<DocumentSnapshot>();
+    UserModel userFromFireStore =  UserModel.fromDocument(userOnline);
 
     return Stack(
         children: [
-            areThereAnyFriendRequestsRecieved(userFromFireStore, user),
+            areThereAnyFriendRequestsRecieved(userFromFireStore),
         ]
     );
   }
 
 
-  Widget areThereAnyFriendRequestsRecieved(UserModel userFromFireStore, UserModel user) {
-    if(user.recievedFriendRequests.isNotEmpty) {
-      return HaveFriendRequests(userFromFireStore, user);
+  Widget areThereAnyFriendRequestsRecieved(UserModel userFromFiresStore) {
+    if(userFromFiresStore.recievedFriendRequests.isNotEmpty) {
+      return HaveFriendRequests(userFromFiresStore);
     }
     else {
       return Container(color: Colors.red);
     }
   }
+  //
+  // List<String> canIdoThis(UserModel userFromFireStore) {
+  //   if (userFromFireStore.recievedFriendRequests.isEmpty) {
+  //     return ['a'];
+  //   }
+  //   else {
+  //     return userFromFireStore.recievedFriendRequests;
+  //   }
+  // }
 
-  List<String> canIdoThis(UserModel userFromFireStore) {
-    if (userFromFireStore.recievedFriendRequests.isEmpty) {
-      return ['a'];
-    }
-    else {
-      return userFromFireStore.recievedFriendRequests;
-    }
-  }
 
+  FutureBuilder<QuerySnapshot> HaveFriendRequests(UserModel userFromFireStore) {
+    final user = Provider.of<UserModel>(context);
 
-  FutureBuilder<QuerySnapshot> HaveFriendRequests(UserModel userFromFireStore, UserModel user) {
     return FutureBuilder(
-      future: _fireStoreDataBase.collection('users').where('userId', whereIn: canIdoThis(userFromFireStore)).get(),
+      future: _fireStoreDataBase.collection('users').where('userId', whereIn: userFromFireStore.recievedFriendRequests).get(),
       builder: (context, dataSnapshot) {
         while (!dataSnapshot.hasData) {
           return circularProgress();
@@ -99,47 +101,33 @@ class _FriendRequestTile extends State<FriendRequestTile> {
             widget.user.addToFriends(widget.anotherUser.id);
             setState(() {});
 
-            //remove from FireStore User
+            //update currentUsers firebase stuff
             await FirebaseFirestore.instance
                 .collection('users')
                 .doc(widget.currentUserFromFirestore.id)
                 .update({
-              "recievedFriendRequests":
-                  FieldValue.arrayRemove([widget.anotherUser.id])
+              "recievedFriendRequests": FieldValue.arrayRemove([widget.anotherUser.id]),
+              'notificationCount': FieldValue.increment(-1),
+              "friends": FieldValue.arrayUnion([widget.anotherUser.id])
             });
 
-            //decrease the Notification Counter
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(widget.currentUserFromFirestore.id)
-                .update({'notificationCount': FieldValue.increment(-1)});
-
-            //remove from the other users firestores sent Notifications list
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(widget.anotherUser.id)
-                .update({
-              "sentFriendRequests":
-                  FieldValue.arrayRemove([widget.currentUserFromFirestore.id])
-            });
-
-            //Add to users friends
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(widget.currentUserFromFirestore.id)
-                .update({
-              "friends":
-              FieldValue.arrayUnion([widget.anotherUser.id])
-            });
 
             //add to other users friends
             await FirebaseFirestore.instance
                 .collection('users')
                 .doc(widget.anotherUser.id)
                 .update({
-              "friends":
-              FieldValue.arrayUnion([widget.currentUserFromFirestore.id])
+              "friends": FieldValue.arrayUnion([widget.currentUserFromFirestore.id]),
+              "sentFriendRequests": FieldValue.arrayRemove([widget.currentUserFromFirestore.id]),
+              'notificationCount': FieldValue.increment(1),
+              'notifications': FieldValue.arrayUnion([{
+                "notificationType" : 'acceptedFriendRequest',
+                "sentFrom" : widget.anotherUser.id
+              }])
             });
+
+
+
           }),
         TextButton(
             child: Text('Decline'),

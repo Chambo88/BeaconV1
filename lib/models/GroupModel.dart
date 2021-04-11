@@ -1,28 +1,35 @@
-import 'package:beacon/models/friend_model.dart';
+
 import 'package:flutter/cupertino.dart';
 
 class GroupModel {
   //this will  need changing when people become classes, strings for temporary
   //also add icons
-  List<Friend> members;
-  IconData icon;
+  List<String> userIds;
+  String icon;
   String name;
 
-  GroupModel({this.members, this.icon, this.name});
+  GroupModel({this.userIds, this.icon, this.name});
 
-  void remove(Friend member) {
-    members.remove(member);
+  get getGroupMap => {'icon': icon, 'members': userIds, 'name' : name,};
+
+  void remove_id(String id) {
+    userIds.remove(id);
   }
 
-  void add_person(Friend person) {
-    members.add(person);
+  void add_id(String id) {
+    userIds.add(id);
   }
 
-  void set_icon(IconData icon_new) {
+  void set_icon(String icon_new) {
     icon = icon_new;
   }
 
   void set_name(String new_name) {
     name = new_name;
   }
+
+  factory GroupModel.fromMap(Map<String, dynamic> map) {
+    return GroupModel(userIds: List.from(map["members"]), icon: map["icon"], name: map["name"]);
+  }
+
 }

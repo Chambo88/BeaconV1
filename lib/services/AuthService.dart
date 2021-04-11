@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:beacon/models/BeaconModel.dart';
-import 'package:beacon/models/friend_model.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -93,6 +92,7 @@ class AuthService {
                 'sentFriendRequests' : [],
                 'recievedFriendRequests' : [],
                 'friends' : [],
+                'groups' : [],
           });
 
       return "";

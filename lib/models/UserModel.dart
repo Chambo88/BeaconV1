@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -28,6 +27,44 @@ class UserModel {
       this.sentFriendRequests,
       this.recievedFriendRequests);
 
+  get getFirstName => firstName;
+  get getLastName => lastName;
+  get getId => id;
+
+  addGroupToListFirebase(GroupModel group) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(id)
+        .update({
+      "groups": FieldValue.arrayUnion([
+        group.getGroupMap
+      ]),
+    });
+  }
+
+  removeGroupFromListFirebase(GroupModel group) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(id)
+        .update({
+      "groups": FieldValue.arrayRemove([
+        group.getGroupMap
+      ]),
+    });
+  }
+
+  //INPROGRESS
+  updateGroups() async {
+    List<Map> _groupsMaps = [];
+    groups.forEach((element) {_groupsMaps.add(element.getGroupMap); });
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(id)
+        .update({
+      "groups": _groupsMaps
+    });
+  }
+
   addGroupToList(GroupModel group) {
     groups.add(group);
   }
@@ -52,28 +89,23 @@ class UserModel {
     recievedFriendRequests.remove(anotherUser);
   }
 
-  addToFriends(String anotherUser) {
+  addToFriends(String anotherUser) async {
     friends.add(anotherUser);
   }
-
-
 
 
   factory UserModel.fromDocument(DocumentSnapshot doc) {
 
     if (doc == null) {
+      print("user is NULL, in UserModelFrom doc");
       return null;
     };
-    List<GroupModel> _groups;
-    BeaconModel beacon;
-    int notificationCount;
 
-    //TEMPORARY
-    if(doc.data().containsKey("groups")) {
-      _groups = List.from(doc.data()["groups"]);
-    } else {
-      _groups = [];
-    }
+    List<GroupModel> _groups = [];
+    BeaconModel beacon;
+    int _notificationCount;
+    List<dynamic> _data;
+
 
     if(doc.data().containsKey('beacon')) {
       beacon = BeaconModel.toJson(
@@ -84,12 +116,20 @@ class UserModel {
         beacon = BeaconModel('0', '0', '', 'interested', false);
     }
 
-      if(doc.data().containsKey('notificationCount')) {
-        notificationCount = doc.data()['notificationCount'];
-      }
-      else {
-        notificationCount = 0;
-      }
+    if(doc.data().containsKey('notificationCount')) {
+      _notificationCount = doc.data()['notificationCount'];
+    }
+    else {
+      _notificationCount = 0;
+    }
+
+    if(doc.data().containsKey('groups')) {
+      _data = List.from(doc.data()["groups"]);
+      _data.forEach((element) {_groups.add(GroupModel.fromMap(element));});
+    }
+    else {
+      _groups = [];
+    };
 
 
     return UserModel(
@@ -97,7 +137,7 @@ class UserModel {
       doc.data()['email'],
       doc.data()['firstName'],
       doc.data()['lastName'],
-      notificationCount,
+      _notificationCount,
       beacon,
       _groups,
       List.from(doc.data()["friends"]),
@@ -107,80 +147,4 @@ class UserModel {
   }
 }
 
-// ---------PROBABLY DONT NEED THIS, WAS AN ATEMPT TO MAKE THE USERSTREAM THAT UPDATES FROM FIREBASE UNDER A DIFFERENT TYPE
-class UserModelStream {
-  String id;
-  String email;
-  String firstName;
-  String lastName;
-  BeaconModel beacon;
-  List<GroupModel> groups;
-  List<String> friends;
-  List<String> sentFriendRequests;
-  List<String> recievedFriendRequests;
 
-
-  UserModelStream(this.id,
-      this.email,
-      this.firstName,
-      this.lastName,
-      this.beacon,
-      this.groups,
-      this.friends,
-      this.sentFriendRequests,
-      this.recievedFriendRequests);
-
-  FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
-
-  // Stream<UserModelStream> getUserStream(String userId) {
-  //   return controller.(UserModelStream.fromDocument(_fireStoreDataBase.collection('users').doc(userId).snapshots()));
-  // }
-
-
-  factory UserModelStream.fromDocument(DocumentSnapshot doc) {
-    List<GroupModel> _groups = [];
-    BeaconModel beacon;
-
-
-    if (doc==null) {
-      return UserModelStream(
-          '',
-          '',
-          ',',
-          ',',
-          beacon = BeaconModel('0', '0', '', 'interested', false),
-          _groups,
-          [],
-          [],
-          []
-      );
-    }
-
-
-    //TEMPORARY
-    if(doc.data().containsKey("groups")) {
-      _groups = List.from(doc.data()["groups"]);
-    };
-
-    if(doc.data().containsKey('beacon')) {
-      beacon = BeaconModel.toJson(
-          doc.data()['beacon']
-      );
-    }
-    else {
-      beacon = BeaconModel('0', '0', '', 'interested', false);
-    }
-
-    return UserModelStream(
-        doc.id,
-        doc.data()['email'],
-        doc.data()['firstName'],
-        doc.data()['lastName'],
-        beacon,
-        _groups,
-        List.from(doc.data()["friends"]),
-        List.from(doc.data()["sentFriendRequests"]),
-        List.from(doc.data()["recievedFriendRequests"])
-    );
-  }
-}

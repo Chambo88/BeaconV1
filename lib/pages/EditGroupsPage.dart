@@ -1,52 +1,46 @@
-import 'package:beacon/models/friend_model.dart';
 import 'package:beacon/models/GroupModel.dart';
+import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/widgets/progress_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'AddFriendsToGroupsPage.dart';
+import 'package:beacon/Assests/Icons.dart';
 
-class Edit_groups extends StatefulWidget {
+
+
+typedef void GroupIconChangeCallBack(String icon, GroupModel group);
+typedef void GroupRemoveCallBack(String person);
+
+
+class EditGroups extends StatefulWidget {
   @override
-  _Edit_groupsState createState() => _Edit_groupsState();
+  _EditGroupsState createState() => _EditGroupsState();
 
   GroupModel group;
-  bool is_new_group;
-  Edit_groups({
+  bool isNewGroup;
+  List<UserModel> groupMembers;
+  EditGroups({
     this.group,
-    this.is_new_group
+    this.isNewGroup,
+    this.groupMembers,
   });
 
 }
 
-class _Edit_groupsState extends State<Edit_groups> {
+class _EditGroupsState extends State<EditGroups> {
   @override
 
-  //RETRIEVE THE ICON LIST THAT WE ADD TO RESOURCES
-  List<IconData> _icon_list = [
-    Icons.remove_circle,
-    Icons.eighteen_mp,
-    (Icons.person_add),
-    (Icons.article),
-    (Icons.baby_changing_station),
-    (Icons.height),
-    Icons.remove_circle,
-    Icons.eighteen_mp,
-    (Icons.person_add),
-    (Icons.article),
-    (Icons.baby_changing_station),
-    (Icons.height),
-    Icons.remove_circle,
-    Icons.eighteen_mp,
-    (Icons.person_add),
-    (Icons.article),
-    (Icons.baby_changing_station),
-    (Icons.height),
-  ];
-
+  GetIcons iconStuff = GetIcons();
+  Map<String, IconData> _icon_list;
+  FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
   TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
+    _icon_list = iconStuff.getIconMap();
   }
 
   @override
@@ -55,13 +49,14 @@ class _Edit_groupsState extends State<Edit_groups> {
     super.dispose();
   }
 
-  void _removeFromGroup(Friend person) {
+  void _removeFromGroup(String userId) {
     setState(() {
-      widget.group.remove(person);
+      widget.group.remove_id(userId);
     });
   }
 
-  void _changeGroupIcon(IconData icon, GroupModel group)
+
+  void _changeGroupIcon(String icon, GroupModel group)
   {
     setState(() {
       group.set_icon(icon);
@@ -75,10 +70,44 @@ class _Edit_groupsState extends State<Edit_groups> {
   }
 
   String _getTitle() {
-    return widget.is_new_group? 'New Group':'Edit Group' ;
+    return widget.isNewGroup? 'New Group':'Edit Group' ;
+  }
+
+  //checks if the group list is empty or not
+  doesUserHaveFriends(UserModel user) {
+    if (widget.group.userIds.isEmpty) {
+      return Text('no friends in this group yet');
+    }
+    else {
+      return HaveFriends(user);
+    }
+  }
+
+  //Gets the data from friends users then builds the friendlist search add thingy
+  FutureBuilder<QuerySnapshot> HaveFriends (UserModel user) {
+    return FutureBuilder(
+      future: _fireStoreDataBase.collection('users').where('userId', whereIn: widget.group.userIds).get(),
+      builder: (context, dataSnapshot) {
+        while (!dataSnapshot.hasData) {
+          return circularProgress();
+        }
+        List<UserModel> _groupMembers = [];
+        dataSnapshot.data.docs.forEach((document) {
+          UserModel users = UserModel.fromDocument(document);
+          _groupMembers.add(users);
+        });
+
+        return UserList(
+          groupMembers: _groupMembers,
+          group: widget.group,
+          removeFromFriendsCallBack: _removeFromGroup,
+        );
+      },
+    );
   }
 
   Widget build(BuildContext context) {
+    final user = Provider.of<UserModel>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -96,16 +125,16 @@ class _Edit_groupsState extends State<Edit_groups> {
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 20),
-            child: GestureDetector(
-                onTap: () async {
-                  await Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => Add_friends(group: widget.group))
-                  );
-                  setState(() {});
-                },
-                child: Icon(Icons.person_add)
-            ),
+            child: TextButton(
+              style: TextButton.styleFrom(
+                  primary: Colors.white,
+                  textStyle: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)
+              ),
+              child: Text('save'),
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+            )
           )
         ],
       ),
@@ -130,9 +159,9 @@ class _Edit_groupsState extends State<Edit_groups> {
           SizedBox(
               height: 200,
               width: 200,
-              child: buildListView()
+              child: doesUserHaveFriends(user)
           ),
-          confirmButtonIfNewGroup()
+          getFriendsButton()
         ],
       ),
     );
@@ -140,70 +169,98 @@ class _Edit_groupsState extends State<Edit_groups> {
 
 
 
-  ListView buildListView() {
-    return ListView(
-      shrinkWrap: true,
-      children: widget.group.members.map((Friend person) {
-        return Single_person(
-          person: person,
-          removeFromGroup: _removeFromGroup,
-        );
-      }).toList(),
-    );
-  }
 
   ListView buildIconSelection() {
     return ListView(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
-        children: _icon_list.map((IconData icon) {
-          return Icon_button(
-            icon: icon,
+        children: _icon_list.entries.map((entry) {
+          return CustomIconButton(
+            icon: entry.key,
             group: widget.group,
             group_icon_change: _changeGroupIcon,
+            iconStuff: iconStuff,
           );
         }).toList()
     );
   }
 
-  Widget confirmButtonIfNewGroup() {
-    if (widget.is_new_group){
-      return TextButton(
-          child: Container(
-            color: Colors.green,
-            width: 100,
-            height:100,
-            child: Text('confirm'),
-          ),
-          onPressed: () {
-            Navigator.pop(context, true);
-          }
-      );
-    }
-    else {
-      return Container();
-    }
+  Widget getFriendsButton() {
+    return TextButton(
+        child: Container(
+          color: Colors.green,
+          width: 100,
+          height:100,
+          child: Text('Add Friends'),
+        ),
+        onPressed: () async {
+          await Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (context) => Add_friends(group: widget.group))
+          );
+          setState(() {});
+        },
+
+    );
   }
 }
 
-typedef void GroupIconChangeCallBack(IconData icon, GroupModel group);
+class UserList extends StatefulWidget {
+
+  GroupModel group;
+  List<UserModel> groupMembers;
+  GroupRemoveCallBack removeFromFriendsCallBack;
+
+  UserList({this.group, this.groupMembers, this.removeFromFriendsCallBack});
+
+  @override
+  _UserListState createState() => _UserListState();
+}
+
+class _UserListState extends State<UserList> {
+  @override
+
+  ListView userList() {
+    return ListView(
+      shrinkWrap: true,
+      children: widget.groupMembers.map((UserModel person) {
+        return Single_person(
+          person: person,
+          removeFromGroup: widget.removeFromFriendsCallBack,
+        );
+      }).toList(),
+    );
+  }
+
+  Widget build(BuildContext context) {
+    return userList();
+  }
+}
+
 
 //-----------------THE ICON BUTTONS-----------------------
-class Icon_button extends StatelessWidget {
+class CustomIconButton extends StatefulWidget {
 
-  const Icon_button({
+  const CustomIconButton({
     Key key,
     this.icon,
     this.group,
     this.group_icon_change,
+    this.iconStuff
   }) : super(key: key);
 
-  final IconData icon;
+  final String icon;
   final GroupModel group;
   final GroupIconChangeCallBack group_icon_change;
+  final GetIcons iconStuff;
 
+  @override
+  _CustomIconButtonState createState() => _CustomIconButtonState();
+}
+
+class _CustomIconButtonState extends State<CustomIconButton> {
   Color _get_color(IconData icon) {
-    if (group.icon == icon) {
+    if (widget.group.icon == icon) {
       return Colors.green;
     }
     else {
@@ -215,35 +272,40 @@ class Icon_button extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          group_icon_change(icon, group);
+          widget.group_icon_change(widget.icon, widget.group);
+          setState(() {});
         },
         child: Icon(
-            this.icon,
-            color: _get_color(icon)
+            widget.iconStuff.getIconFromString(widget.icon),
+            color: _get_color(widget.iconStuff.getIconFromString(widget.icon))
         )
     );
   }
 }
 
 
-typedef void GroupRemoveCallBack(Friend person);
+//----------------tiles for the userlist--------------------------
+
+
 
 class Single_person extends StatelessWidget {
-  Single_person({this.person, this.removeFromGroup})
-      : super(key: ObjectKey(person));
 
-  final Friend person;
+  Single_person({
+    this.person,
+    this.removeFromGroup,
+  }) : super(key: ObjectKey(person));
+
+  final UserModel person;
   final GroupRemoveCallBack removeFromGroup;
 
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(person.name),
+      title: Text('${person.firstName} ${person.lastName}'),
       trailing: GestureDetector(
           onTap: () {
-            removeFromGroup(person);
-            print('clicked');
+            removeFromGroup(person.id);
           },
           child: Icon(
             Icons.remove_circle,

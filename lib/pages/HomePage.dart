@@ -147,7 +147,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     //Why after calling this is it able to constantly be updated? DOes the stream builder recall it? how does this work
     var beaconList = BeaconService().getUserList();
-    final AuthService _auth = context.watch<AuthService>();
     final UserModel _user = context.watch<UserModel>();
 
       return Scaffold(

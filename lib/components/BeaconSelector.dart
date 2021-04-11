@@ -1,3 +1,4 @@
+import 'package:beacon/Assests/Icons.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
@@ -19,6 +20,7 @@ class BeaconSelector extends StatefulWidget {
 class _BeaconSelectorState extends State<BeaconSelector> {
 
   var _showBeaconEditor = false;
+  GetIcons iconStuff = GetIcons();
 
   Set<GroupModel> _groupList = Set<GroupModel>();
 
@@ -122,7 +124,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                           children: [
                             selectBeacon(),
                             dividerSettings(),
-                            groups(setState),
+                            groups(setState, iconStuff),
                             dividerSettings(),
                             textField(),
                             dividerSettings(),
@@ -174,7 +176,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  Container groups(StateSetter setState,) {
+  Container groups(StateSetter setState, GetIcons iconStuff) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 20.0),
       height: 50.0,
@@ -186,6 +188,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             selected: _groupList.contains(group),
             onGroupChanged: _handleSelectionChanged,
             setState: setState,
+            iconStuff: iconStuff,
           );
         }).toList(),
       ),
@@ -292,13 +295,14 @@ typedef void GroupListChangeCallBack(
     GroupModel group, bool selected, StateSetter setState);
 
 class SingleGroup extends StatelessWidget {
-  SingleGroup({this.group, this.selected, this.onGroupChanged, this.setState})
+  SingleGroup({this.group, this.selected, this.onGroupChanged, this.setState, this.iconStuff})
       : super(key: ObjectKey(group));
 
   final GroupModel group;
   final bool selected;
   final StateSetter setState;
   final GroupListChangeCallBack onGroupChanged;
+  final GetIcons iconStuff;
 
   Color _getColor() {
     return selected ? Colors.blue : Colors.grey;
@@ -313,7 +317,7 @@ class SingleGroup extends StatelessWidget {
             color: _getColor(), // button color
             child: InkWell(
               splashColor: Colors.greenAccent, // inkwell color
-              child: SizedBox(width: 45, height: 45, child: Icon(group.icon)),
+              child: SizedBox(width: 45, height: 45, child: Icon(iconStuff.getIconFromString(group.icon))),
               onTap: () {
                 onGroupChanged(group, selected, setState);
               },
