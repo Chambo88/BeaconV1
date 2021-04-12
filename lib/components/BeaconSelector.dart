@@ -21,7 +21,6 @@ class _BeaconSelectorState extends State<BeaconSelector> {
 
   var _showBeaconEditor = false;
   GetIcons iconStuff = GetIcons();
-
   Set<GroupModel> _groupList = Set<GroupModel>();
 
   final TextEditingController _beaconDescriptionController =

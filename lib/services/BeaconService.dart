@@ -10,4 +10,6 @@ class BeaconService {
             .map((document) => BeaconModel.toJson(document.data()))
             .toList());
   }
+
+
 }

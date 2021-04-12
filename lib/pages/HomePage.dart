@@ -2,6 +2,7 @@ import 'package:beacon/components/BeaconSelector.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/pages/MapPage.dart';
 import 'package:beacon/pages/SettingsPage.dart';
 import 'package:beacon/services/BeaconService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -28,6 +29,7 @@ class _BuildHomePageState extends State<BuildHomePage> {
     HomePage(),
     NotificationPage(),
     SettingsPage(),
+    MapPage(),
   ];
 
   @override
@@ -113,6 +115,7 @@ class _BuildHomePageState extends State<BuildHomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.local_fire_department_rounded)),
           notificationsIcon(userFromFireStore),
           BottomNavigationBarItem(icon: Icon(Icons.settings)),
+          BottomNavigationBarItem(icon: Icon(Icons.map))
         ],
       ),
     );
