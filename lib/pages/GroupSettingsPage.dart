@@ -39,7 +39,7 @@ class _GroupSettingsState extends State<GroupSettings> {
 
                     onTap: () async {
                       GroupModel returned_group = new GroupModel(
-                          name: 'Name',
+                          name: '',
                           userIds: [],
                           icon: 'timeRounded',
                       );

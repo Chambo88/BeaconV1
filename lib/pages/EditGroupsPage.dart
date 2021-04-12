@@ -63,10 +63,46 @@ class _EditGroupsState extends State<EditGroups> {
     });
   }
 
-  void _changeGroupName(String name, GroupModel group) {
-    setState(() {
-      group.set_name(name);
-    });
+  void _changeGroupName(String name, GroupModel group, UserModel user) {
+    bool groupNameTaken = false;
+      user.groups.forEach((element) {
+        if(element.name == name) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) =>
+                _buildPopupDialog(context, name),
+          );
+          groupNameTaken = true;
+        };
+      });
+      setState(() {
+        if (!groupNameTaken) {
+          group.set_name(name);
+        } else {
+          _controller.clear();
+        }
+      });
+  }
+
+  Widget _buildPopupDialog(BuildContext context, String text) {
+    return new AlertDialog(
+      title: const Text('POP!'),
+      content: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text("A group is already called ${text}. Chose a differemt name "),
+        ],
+      ),
+      actions: <Widget>[
+        new ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text("Ok"),
+        ),
+      ],
+    );
   }
 
   String _getTitle() {
@@ -132,8 +168,17 @@ class _EditGroupsState extends State<EditGroups> {
               ),
               child: Text('save'),
               onPressed: () {
-                Navigator.pop(context, true);
-              },
+                if(widget.group.name == '') {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildPopupDialog(context, 'Name cant be empty'),
+                  );
+                }
+                else {
+                  Navigator.pop(context, true);
+                  }
+                }
             )
           )
         ],
@@ -147,7 +192,7 @@ class _EditGroupsState extends State<EditGroups> {
                 labelText: widget.group.name
             ),
             onSubmitted: (String value) {
-              _changeGroupName(value, widget.group);
+              _changeGroupName(value, widget.group, user);
             },
 
           ),

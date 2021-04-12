@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'BeaconModel.dart';
 import 'GroupModel.dart';
+import 'NotificationModel.dart';
 
 class UserModel {
   String id;
@@ -15,6 +16,7 @@ class UserModel {
   List<String> friends;
   List<String> sentFriendRequests;
   List<String> recievedFriendRequests;
+  List<NotificationModel> notifications;
 
   UserModel(this.id,
       this.email,
@@ -25,11 +27,26 @@ class UserModel {
       this.groups,
       this.friends,
       this.sentFriendRequests,
-      this.recievedFriendRequests);
+      this.recievedFriendRequests,
+      this.notifications);
 
   get getFirstName => firstName;
   get getLastName => lastName;
   get getId => id;
+
+  setNotificationCount(int x) {
+    notificationCount = x;
+  }
+
+  updateNotificationCountFB(int x) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(id)
+        .update({
+      "notificationCount": x
+    });
+  }
+
 
   addGroupToListFirebase(GroupModel group) async {
     await FirebaseFirestore.instance
@@ -105,6 +122,7 @@ class UserModel {
     BeaconModel beacon;
     int _notificationCount;
     List<dynamic> _data;
+    List<NotificationModel> _notifications = [];
 
 
     if(doc.data().containsKey('beacon')) {
@@ -131,6 +149,14 @@ class UserModel {
       _groups = [];
     };
 
+    if(doc.data().containsKey('notifications')) {
+      _data = List.from(doc.data()["notifications"]);
+      _data.forEach((element) {_notifications.add(NotificationModel.fromMap(element));});
+    }
+    else {
+      _notifications = [];
+    };
+
 
     return UserModel(
       doc.id,
@@ -143,6 +169,7 @@ class UserModel {
       List.from(doc.data()["friends"]),
       List.from(doc.data()["sentFriendRequests"]),
       List.from(doc.data()["recievedFriendRequests"]),
+      _notifications,
     );
   }
 }
