@@ -1,14 +1,14 @@
+import 'dart:ui';
+
 import 'package:beacon/Assests/Icons.dart';
-import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
-import '../services/AuthService.dart';
 
 class BeaconSelector extends StatefulWidget {
   BeaconSelector({Key key, this.user}) : super(key: key);
@@ -18,19 +18,20 @@ class BeaconSelector extends StatefulWidget {
 }
 
 class _BeaconSelectorState extends State<BeaconSelector> {
-
   var _showBeaconEditor = false;
+  var _displayToAll = false;
   GetIcons iconStuff = GetIcons();
   Set<GroupModel> _groupList = Set<GroupModel>();
 
   final TextEditingController _beaconDescriptionController =
       TextEditingController();
 
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: _buildBeaconEditor(context,),
+      child: _buildBeaconEditor(
+        context,
+      ),
     );
   }
 
@@ -59,7 +60,6 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     setState(() {
       widget.user.beacon.active = true;
     });
-
 
     var userLocation = context.read<UserLocationModel>();
 
@@ -105,65 +105,228 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     }, SetOptions(merge: true));
   }
 
+  Widget _subHeader(String text) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10),
+      child: Text(text,
+          style: const TextStyle(
+            color: Color(0xFF7E7E90),
+          ),
+          textAlign: TextAlign.start),
+    );
+  }
+
+  Container _friendSelectorSheet() {
+    String _filter = '';
+
+    return Container(
+      height: 500,
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            leading: CloseButton(
+              color: Colors.white,
+            ),
+            title: Text(
+              'Friends',
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child:  TextFormField(
+              maxLength: 20,
+              style: TextStyle(
+                color: Colors.white
+              ),
+              onChanged: (v) {
+                setState(() {
+                  _filter = v;
+                });
+                },
+              decoration: InputDecoration(
+                icon: Icon(Icons.search),
+                labelText: 'Name',
+                counterStyle: TextStyle(
+                  color: Colors.white
+                ),
+                labelStyle: TextStyle(
+                  color: Color(0xFFC7C1C1),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF6200EE)),
+                ),
+
+              ),
+            ),
+          ),
+          Column(
+            children: widget.user.friends.map((String friend) {
+              return ListTile(
+                key: Key(friend),
+                title: Text(
+                  friend,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                  ),
+                ),
+                trailing: Checkbox(
+                  key: Key(friend),
+                  onChanged: (v){},
+                  value: true,
+                ),
+              );
+            }).where((element) {
+              return element.key.toString().contains(_filter);
+            }).toList()
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBeaconEditor(BuildContext context) {
     // var user = Provider.of<UserModel>(context);
-    return Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-      !_showBeaconEditor
-          ? new Container()
-          : Stack(children: [
-              new Container(
-                  color: Colors.white,
-                  child: Container(
-                    width: 250,
-                    height: 380,
-                    child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            selectBeacon(),
-                            dividerSettings(),
-                            groups(setState, iconStuff),
-                            dividerSettings(),
-                            textField(),
-                            dividerSettings(),
-                            InkWell(
-                              child: SizedBox(
-                                  width: 60,
-                                  height: 60,
-                                  child: Icon(
-                                    Icons.whatshot,
-                                    size: 60,
-                                    color: Colors.green,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        !_showBeaconEditor
+            ? new Container()
+            : Flexible(
+                child: Container(
+                  margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    border: Border.all(
+                      color: const Color(0xFF000000),
+                    ),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 16, bottom: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                height: 70,
+                                child: Center(
+                                    widthFactor: 100,
+                                    child: Text(
+                                      'Who can see my\nBeacon?',
+                                      textAlign: TextAlign.center,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 22,
+                                      ),
+                                    )),
+                              ),
+                              Container(
+                                  height: 50,
+                                  width: double.infinity,
+                                  color: const Color(0xFF181818),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 16, right: 16),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Display to all?',
+                                          textAlign: TextAlign.center,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        Switch(
+                                          value: _displayToAll,
+                                          activeColor: Color(0xFF6200EE),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _displayToAll = value;
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   )),
-                              onTap: () {
-                                widget.user.beacon.active != true
-                                    ? _lightBeacon(context,)
-                                    : _extinguishBeacon(context,);
-                              },
-                            ),
-                            widget.user.beacon.active == true
-                                ? Text("Extinguish")
-                                : Text("Light")
-                          ],
-                        )),
-                  )),
-            ]),
-      Center(
+                              if (!_displayToAll) _subHeader('Groups'),
+                              if (!_displayToAll) groups(setState, iconStuff),
+                              if (!_displayToAll) _subHeader('Friends'),
+                              if (!_displayToAll)
+                                TextButton(
+                                    child: Text('Friends'),
+                                    onPressed: () {
+                                      showBottomSheet(
+                                        context: context,
+                                        builder: (context) {
+                                          final theme = Theme.of(context);
+                                          return _friendSelectorSheet();
+                                        },
+                                      );
+                                    }),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 350,
+                        padding: const EdgeInsets.all(16),
+                        child: OutlinedButton(
+                          onPressed: () {},
+                          child: Container(
+                            child: Text('Next'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+        Center(
           child: Padding(
-              padding: EdgeInsets.all(30),
-              child: RawMaterialButton(
-                onPressed: () {
-                  setState(() {
-                    _showBeaconEditor = !_showBeaconEditor;
-                  });
-                },
-                elevation: 2.0,
-                fillColor: _getBeaconColor(),
-                constraints: BoxConstraints.tight(Size(80, 80)),
-                shape: CircleBorder(),
-              )))
-    ]);
+            padding: EdgeInsets.all(30),
+            child: RawMaterialButton(
+              onPressed: () {
+                setState(() {
+                  _showBeaconEditor = !_showBeaconEditor;
+                });
+              },
+              elevation: 2.0,
+              fillColor: _getBeaconColor(),
+              constraints: BoxConstraints.tight(Size(80, 80)),
+              shape: CircleBorder(),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   TextField textField() {
@@ -177,8 +340,9 @@ class _BeaconSelectorState extends State<BeaconSelector> {
 
   Container groups(StateSetter setState, GetIcons iconStuff) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 20.0),
-      height: 50.0,
+      height: 85.0,
+      padding: EdgeInsets.symmetric(vertical: 5.0),
+      color: const Color(0xFF181818),
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: widget.user.groups.map((GroupModel group) {
@@ -223,7 +387,9 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                     });
 
                     if (widget.user.beacon.active == true) {
-                      _updateBeacon(context,);
+                      _updateBeacon(
+                        context,
+                      );
                     }
                   },
                 ),
@@ -249,7 +415,9 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                     });
 
                     if (widget.user.beacon.active == true) {
-                      _updateBeacon(context,);
+                      _updateBeacon(
+                        context,
+                      );
                     }
                   },
                 ),
@@ -275,7 +443,9 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                     });
 
                     if (widget.user.beacon.active == true) {
-                      _updateBeacon(context,);
+                      _updateBeacon(
+                        context,
+                      );
                     }
                   },
                 ),
@@ -294,8 +464,13 @@ typedef void GroupListChangeCallBack(
     GroupModel group, bool selected, StateSetter setState);
 
 class SingleGroup extends StatelessWidget {
-  SingleGroup({this.group, this.selected, this.onGroupChanged, this.setState, this.iconStuff})
-      : super(key: ObjectKey(group));
+  SingleGroup({
+    this.group,
+    this.selected,
+    this.onGroupChanged,
+    this.setState,
+    this.iconStuff,
+  }) : super(key: ObjectKey(group));
 
   final GroupModel group;
   final bool selected;
@@ -303,25 +478,44 @@ class SingleGroup extends StatelessWidget {
   final GroupListChangeCallBack onGroupChanged;
   final GetIcons iconStuff;
 
-  Color _getColor() {
-    return selected ? Colors.blue : Colors.grey;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-        child: ClipOval(
-          child: Material(
-            color: _getColor(), // button color
-            child: InkWell(
-              splashColor: Colors.greenAccent, // inkwell color
-              child: SizedBox(width: 45, height: 45, child: Icon(iconStuff.getIconFromString(group.icon))),
-              onTap: () {
-                onGroupChanged(group, selected, setState);
-              },
+      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+      child: Column(
+        children: [
+          ClipOval(
+            child: Material(
+              color: Color(0xFF4FE30B),
+              shape: CircleBorder(
+                side: BorderSide(
+                    color: selected ? Colors.purple : Color(0xFF4FE30B),
+                    width: 2),
+              ), // button color
+              child: InkWell(
+                splashColor: Colors.greenAccent, //
+                child: SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: Icon(
+                    iconStuff.getIconFromString(group.icon),
+                  ),
+                ),
+                onTap: () {
+                  onGroupChanged(group, selected, setState);
+                },
+              ),
             ),
           ),
-        ));
+          Text(
+            group.name,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
