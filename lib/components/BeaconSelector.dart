@@ -20,6 +20,7 @@ class BeaconSelector extends StatefulWidget {
 class _BeaconSelectorState extends State<BeaconSelector> {
   var _showBeaconEditor = false;
   var _displayToAll = false;
+  String _beaconTypeSelected = "";
   GetIcons iconStuff = GetIcons();
   Set<GroupModel> _groupList = Set<GroupModel>();
 
@@ -28,9 +29,31 @@ class _BeaconSelectorState extends State<BeaconSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: _buildBeaconEditor(
-        context,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (_showBeaconEditor) _beaconEditor(context),
+        _beaconButton()
+      ],
+    );
+  }
+
+  Widget _beaconButton() {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(30),
+        child: RawMaterialButton(
+          onPressed: () {
+            setState(() {
+              _beaconTypeSelected = '';
+              _showBeaconEditor = !_showBeaconEditor;
+            });
+          },
+          elevation: 2.0,
+          fillColor: _getBeaconColor(),
+          constraints: BoxConstraints.tight(Size(80, 80)),
+          shape: CircleBorder(),
+        ),
       ),
     );
   }
@@ -146,186 +169,230 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
-            child:  TextFormField(
+            child: TextFormField(
               maxLength: 20,
-              style: TextStyle(
-                color: Colors.white
-              ),
+              style: TextStyle(color: Colors.white),
               onChanged: (v) {
                 setState(() {
                   _filter = v;
                 });
-                },
+              },
               decoration: InputDecoration(
                 icon: Icon(Icons.search),
                 labelText: 'Name',
-                counterStyle: TextStyle(
-                  color: Colors.white
-                ),
+                counterStyle: TextStyle(color: Colors.white),
                 labelStyle: TextStyle(
                   color: Color(0xFFC7C1C1),
                 ),
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFF6200EE)),
                 ),
-
               ),
             ),
           ),
           Column(
-            children: widget.user.friends.map((String friend) {
-              return ListTile(
+              children: widget.user.friends.map((String friend) {
+            return ListTile(
+              key: Key(friend),
+              title: Text(
+                friend,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                ),
+              ),
+              trailing: Checkbox(
                 key: Key(friend),
-                title: Text(
-                  friend,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                  ),
-                ),
-                trailing: Checkbox(
-                  key: Key(friend),
-                  onChanged: (v){},
-                  value: true,
-                ),
-              );
-            }).where((element) {
-              return element.key.toString().contains(_filter);
-            }).toList()
-          ),
+                onChanged: (v) {},
+                value: true,
+              ),
+            );
+          }).where((element) {
+            return element.key.toString().contains(_filter);
+          }).toList()),
         ],
       ),
     );
   }
 
-  Widget _buildBeaconEditor(BuildContext context) {
-    // var user = Provider.of<UserModel>(context);
+  Widget _beaconText(String text,
+      {double fontSize = 16, TextAlign textAlign = TextAlign.center}) {
+    return Text(
+      text,
+      textAlign: textAlign,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: fontSize,
+      ),
+    );
+  }
+
+  Widget _header(String text, {TextAlign textAlign = TextAlign.center}) {
+    return Container(
+        padding: EdgeInsets.only(top: 20, bottom: 30),
+        child: _beaconText(text, fontSize: 22, textAlign: textAlign));
+  }
+
+  Widget _switch(BuildContext context, bool initValue) {}
+
+  Widget _liveBeacon(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        !_showBeaconEditor
-            ? new Container()
-            : Flexible(
-                child: Container(
-                  margin: EdgeInsets.only(left: 20, right: 20, top: 30),
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    border: Border.all(
-                      color: const Color(0xFF000000),
-                    ),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(20),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 16, bottom: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                height: 70,
-                                child: Center(
-                                    widthFactor: 100,
-                                    child: Text(
-                                      'Who can see my\nBeacon?',
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 22,
-                                      ),
-                                    )),
-                              ),
-                              Container(
-                                  height: 50,
-                                  width: double.infinity,
-                                  color: const Color(0xFF181818),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 16, right: 16),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          'Display to all?',
-                                          textAlign: TextAlign.center,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                        Switch(
-                                          value: _displayToAll,
-                                          activeColor: Color(0xFF6200EE),
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _displayToAll = value;
-                                            });
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  )),
-                              if (!_displayToAll) _subHeader('Groups'),
-                              if (!_displayToAll) groups(setState, iconStuff),
-                              if (!_displayToAll) _subHeader('Friends'),
-                              if (!_displayToAll)
-                                TextButton(
-                                    child: Text('Friends'),
-                                    onPressed: () {
-                                      showBottomSheet(
-                                        context: context,
-                                        builder: (context) {
-                                          final theme = Theme.of(context);
-                                          return _friendSelectorSheet();
-                                        },
-                                      );
-                                    }),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: 350,
-                        padding: const EdgeInsets.all(16),
-                        child: OutlinedButton(
-                          onPressed: () {},
-                          child: Container(
-                            child: Text('Next'),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-        Center(
+        Container(
           child: Padding(
-            padding: EdgeInsets.all(30),
-            child: RawMaterialButton(
-              onPressed: () {
-                setState(() {
-                  _showBeaconEditor = !_showBeaconEditor;
-                });
-              },
-              elevation: 2.0,
-              fillColor: _getBeaconColor(),
-              constraints: BoxConstraints.tight(Size(80, 80)),
-              shape: CircleBorder(),
+            padding: EdgeInsets.only(top: 16, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _header('Who can see my\nBeacon'),
+                Container(
+                    height: 50,
+                    width: double.infinity,
+                    color: const Color(0xFF181818),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _beaconText('Display to all?', fontSize: 18),
+                          Switch(
+                            value: _displayToAll,
+                            activeTrackColor: Color(0xFF6200EE),
+                            onChanged: (value) {
+                              setState(() {
+                                _displayToAll = value;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    )),
+                if (!_displayToAll) _subHeader('Groups'),
+                if (!_displayToAll) groups(setState, iconStuff),
+                if (!_displayToAll) _subHeader('Friends'),
+                if (!_displayToAll)
+                  TextButton(
+                    child: Text('Friends'),
+                    onPressed: () {
+                      showBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          final theme = Theme.of(context);
+                          return _friendSelectorSheet();
+                        },
+                      );
+                    },
+                  ),
+              ],
+            ),
+          ),
+        ),
+        Container(
+          width: 350,
+          padding: const EdgeInsets.all(16),
+          child: OutlinedButton(
+            onPressed: () {},
+            child: Container(
+              child: Text('Next'),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _beaconType(BuildContext context, Function clicked) {
+    return InkWell(
+        onTap: clicked,
+        child: Container(
+          height: 80,
+          color: const Color(0xFF181818),
+          child: Container(
+            margin: EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  width: 50.0,
+                  height: 50.0,
+                  decoration: new BoxDecoration(
+                    color: const Color(0xFF00C365),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _beaconText('Live'),
+                    Text(
+                      'Let your friends know where you are\nand what you’re up to',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: const Color(0xFF747272),
+                        fontSize: 12,
+                      ),
+                    )
+                  ],
+                ),
+                Icon(Icons.arrow_forward_ios, color: Colors.grey)
+              ],
+            ),
+          ),
+        ));
+  }
+
+  Widget _beaconTypeSelector(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _header('Beacon Type'),
+        Column(
+          children: [
+            if (_beaconTypeSelected == '')
+              _beaconType(context, () {
+                print('test');
+                setState(() {
+                  _beaconTypeSelected = 'Live';
+                });
+              })
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _beaconEditor(BuildContext context) {
+    return Flexible(
+      child: Container(
+        margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+        decoration: BoxDecoration(
+          color: Colors.black,
+          border: Border.all(
+            color: const Color(0xFF000000),
+          ),
+          borderRadius: BorderRadius.all(
+            Radius.circular(20),
+          ),
+        ),
+        child: Column(
+          children: [
+            if (_beaconTypeSelected == "")
+              _beaconTypeSelector(context),
+            if (_beaconTypeSelected == 'Live')
+              _liveBeacon(context)
+          ],
+        ),
+      ),
     );
   }
 
