@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:beacon/Assests/Icons.dart';
+import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
@@ -20,9 +21,12 @@ class BeaconSelector extends StatefulWidget {
 class _BeaconSelectorState extends State<BeaconSelector> {
   var _showBeaconEditor = false;
   var _displayToAll = false;
-  String _beaconTypeSelected = "";
+  BeaconType _beaconTypeSelected;
   GetIcons iconStuff = GetIcons();
   Set<GroupModel> _groupList = Set<GroupModel>();
+
+  List<String> _friendsFiltered = [];
+  List<String> _friendList = [];
 
   final TextEditingController _beaconDescriptionController =
       TextEditingController();
@@ -45,7 +49,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
         child: RawMaterialButton(
           onPressed: () {
             setState(() {
-              _beaconTypeSelected = '';
+              _beaconTypeSelected = null;
               _showBeaconEditor = !_showBeaconEditor;
             });
           },
@@ -140,16 +144,21 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  Container _friendSelectorSheet() {
-    String _filter = '';
+  List<String> getFilteredFriends(String filter) {
+    return widget.user.friends.where((friend) {
+      return friend.toLowerCase().contains(filter.toLowerCase());
+    }).toList();
+  }
 
+  Widget _friendSelectorSheet() {
     return Container(
-      height: 500,
-      decoration: BoxDecoration(
+      height: MediaQuery.of(context).size.height * 0.75,
+      margin: EdgeInsets.only(top: 70),
+      decoration: new BoxDecoration(
         color: Colors.black,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
+        borderRadius: new BorderRadius.only(
+          topLeft: const Radius.circular(25.0),
+          topRight: const Radius.circular(25.0),
         ),
       ),
       child: Column(
@@ -172,9 +181,9 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             child: TextFormField(
               maxLength: 20,
               style: TextStyle(color: Colors.white),
-              onChanged: (v) {
+              onChanged: (filter) {
                 setState(() {
-                  _filter = v;
+                  _friendsFiltered = getFilteredFriends(filter);
                 });
               },
               decoration: InputDecoration(
@@ -191,27 +200,36 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             ),
           ),
           Column(
-              children: widget.user.friends.map((String friend) {
-            return ListTile(
-              key: Key(friend),
-              title: Text(
-                friend,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                ),
-              ),
-              trailing: Checkbox(
+            children: _friendsFiltered.map((friend) {
+              return ListTile(
                 key: Key(friend),
-                onChanged: (v) {},
-                value: true,
-              ),
-            );
-          }).where((element) {
-            return element.key.toString().contains(_filter);
-          }).toList()),
+                title: Text(
+                  friend,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                  ),
+                ),
+                trailing: Checkbox(
+                  key: Key(friend),
+                  checkColor: Colors.blue,
+                  activeColor: Colors.red,
+                  value: _friendList.contains(friend),
+                  onChanged: (v) {
+                    setState(() {
+                      if (v) {
+                        _friendList.add(friend);
+                      } else {
+                        _friendList.remove(friend);
+                      }
+                    });
+                  },
+                ),
+              );
+            }).toList(),
+          )
         ],
       ),
     );
@@ -238,22 +256,61 @@ class _BeaconSelectorState extends State<BeaconSelector> {
 
   Widget _switch(BuildContext context, bool initValue) {}
 
-  Widget _liveBeacon(BuildContext context) {
+  Widget _eventBeacon(BuildContext context) {
+    return Container(
+      child: _whoCanSeeMyBeacon(context),
+    );
+  }
+
+  Widget _casualBeacon(BuildContext context) {
+    return Container(
+      child: _whoCanSeeMyBeacon(context),
+    );
+  }
+
+  Widget _whoCanSeeMyBeacon(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Container(
+          width: double.infinity,
           child: Padding(
-            padding: EdgeInsets.only(top: 16, bottom: 16),
+            padding: EdgeInsets.only(top: 0, bottom: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _header('Who can see my\nBeacon'),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _beaconTypeSelected = null;
+                          });
+                        },
+                      ),
+                      _header('Who can see my\nBeacon?'),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Colors.grey),
+                        onPressed: () {
+                          setState(() {
+                            _showBeaconEditor = false;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
                 Container(
                     height: 50,
-                    width: double.infinity,
                     color: const Color(0xFF181818),
                     child: Padding(
                       padding: const EdgeInsets.only(left: 16, right: 16),
@@ -277,17 +334,34 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                 if (!_displayToAll) groups(setState, iconStuff),
                 if (!_displayToAll) _subHeader('Friends'),
                 if (!_displayToAll)
-                  TextButton(
-                    child: Text('Friends'),
-                    onPressed: () {
-                      showBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          final theme = Theme.of(context);
-                          return _friendSelectorSheet();
-                        },
-                      );
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            isScrollControlled: true,
+                            builder: (context) {
+                              return _friendSelectorSheet();
+                            }
+                        );
+                      });
                     },
+                    child: Container(
+                      height: 50,
+                      color: const Color(0xFF181818),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            _beaconText('Friends'),
+                            Icon(Icons.arrow_forward_ios, color: Colors.grey)
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -307,68 +381,271 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  Widget _beaconType(BuildContext context, Function clicked) {
-    return InkWell(
-        onTap: clicked,
-        child: Container(
-          height: 80,
-          color: const Color(0xFF181818),
-          child: Container(
-            margin: EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              mainAxisSize: MainAxisSize.max,
+  Widget _descriptionPage(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Container(
+          width: double.infinity,
+          child: Padding(
+            padding: EdgeInsets.only(top: 0, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  width: 50.0,
-                  height: 50.0,
-                  decoration: new BoxDecoration(
-                    color: const Color(0xFF00C365),
-                    shape: BoxShape.circle,
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _beaconTypeSelected = null;
+                          });
+                        },
+                      ),
+                      _header('Beacon\nDescription'),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Colors.grey),
+                        onPressed: () {
+                          setState(() {
+                            _showBeaconEditor = false;
+                          });
+                        },
+                      ),
+                    ],
                   ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _beaconText('Live'),
-                    Text(
-                      'Let your friends know where you are\nand what you’re up to',
-                      overflow: TextOverflow.ellipsis,
+                TextField(
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    backgroundColor: const Color(0xFF181818),
+
+                  ),
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                )
+              ],
+            ),
+          ),
+        ),
+        Container(
+          width: 350,
+          padding: const EdgeInsets.all(16),
+          child: OutlinedButton(
+            onPressed: () {},
+            child: Container(
+              child: Text('Next'),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  Widget _liveBeacon(BuildContext context) {
+    return Container(
+      child: _whoCanSeeMyBeacon(context)
+    );
+  }
+
+  Widget _mainEditorPage(BuildContext context, String title, Function back, Widget child) {
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Container(
+          width: double.infinity,
+          child: Padding(
+            padding: EdgeInsets.only(top: 0, bottom: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _beaconTypeSelected = null;
+                          });
+                        },
+                      ),
+                      _header(title),
+                      IconButton(
+                        icon: const Icon(Icons.close, color: Colors.grey),
+                        onPressed: () {
+                          setState(() {
+                            _showBeaconEditor = false;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                    height: 50,
+                    color: const Color(0xFF181818),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _beaconText('Display to all?', fontSize: 18),
+                          Switch(
+                            value: _displayToAll,
+                            activeTrackColor: Color(0xFF6200EE),
+                            onChanged: (value) {
+                              setState(() {
+                                _displayToAll = value;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    )),
+                if (!_displayToAll) _subHeader('Groups'),
+                if (!_displayToAll) groups(setState, iconStuff),
+                if (!_displayToAll) _subHeader('Friends'),
+                if (!_displayToAll)
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            isScrollControlled: true,
+                            builder: (context) {
+                              return _friendSelectorSheet();
+                            }
+                        );
+                      });
+                    },
+                    child: Container(
+                      height: 50,
+                      color: const Color(0xFF181818),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            _beaconText('Friends'),
+                            Icon(Icons.arrow_forward_ios, color: Colors.grey)
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        Container(
+          width: 350,
+          padding: const EdgeInsets.all(16),
+          child: OutlinedButton(
+            onPressed: () {},
+            child: Container(
+              child: Text('Next'),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _beaconType(BuildContext context, BeaconType type) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _beaconTypeSelected = type;
+        });
+      },
+      child: Container(
+        height: 80,
+        margin: EdgeInsets.only(top: 3),
+        color: const Color(0xFF181818),
+        child: Container(
+          margin: EdgeInsets.all(10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Container(
+                width: 50.0,
+                height: 50.0,
+                decoration: new BoxDecoration(
+                  color: type.color,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _beaconText(type.title),
+                  Container(
+                    width: 200,
+                    child: Text(
+                      type.description,
                       style: TextStyle(
                         color: const Color(0xFF747272),
                         fontSize: 12,
                       ),
-                    )
-                  ],
-                ),
-                Icon(Icons.arrow_forward_ios, color: Colors.grey)
-              ],
-            ),
+                    ),
+                  )
+                ],
+              ),
+              Icon(Icons.arrow_forward_ios, color: Colors.grey)
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget _beaconTypeSelector(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _header('Beacon Type'),
         Column(
           children: [
-            if (_beaconTypeSelected == '')
-              _beaconType(context, () {
-                print('test');
-                setState(() {
-                  _beaconTypeSelected = 'Live';
-                });
-              })
+            _beaconType(context, BeaconType.live),
+            _beaconType(context, BeaconType.casual),
+            _beaconType(context, BeaconType.event),
           ],
         ),
       ],
     );
+  }
+
+  Widget _getBeaconEditorChild(BuildContext context) {
+    switch (_beaconTypeSelected) {
+      case BeaconType.live:
+        return _liveBeacon(context);
+      case BeaconType.casual:
+        return _casualBeacon(context);
+      case BeaconType.event:
+        return _eventBeacon(context);
+      default:
+        return _beaconTypeSelector(context);
+    }
   }
 
   Widget _beaconEditor(BuildContext context) {
@@ -384,14 +661,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             Radius.circular(20),
           ),
         ),
-        child: Column(
-          children: [
-            if (_beaconTypeSelected == "")
-              _beaconTypeSelector(context),
-            if (_beaconTypeSelected == 'Live')
-              _liveBeacon(context)
-          ],
-        ),
+        child: Container(child: _getBeaconEditorChild(context)),
       ),
     );
   }
