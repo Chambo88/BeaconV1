@@ -269,293 +269,133 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Widget _whoCanSeeMyBeacon(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-          width: double.infinity,
-          child: Padding(
-            padding: EdgeInsets.only(top: 0, bottom: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _beaconTypeSelected = null;
-                          });
-                        },
-                      ),
-                      _header('Who can see my\nBeacon?'),
-                      IconButton(
-                        icon: const Icon(Icons.close, color: Colors.grey),
-                        onPressed: () {
-                          setState(() {
-                            _showBeaconEditor = false;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                    height: 50,
-                    color: const Color(0xFF181818),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 16, right: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _beaconText('Display to all?', fontSize: 18),
-                          Switch(
-                            value: _displayToAll,
-                            activeTrackColor: Color(0xFF6200EE),
-                            onChanged: (value) {
-                              setState(() {
-                                _displayToAll = value;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    )),
-                if (!_displayToAll) _subHeader('Groups'),
-                if (!_displayToAll) groups(setState, iconStuff),
-                if (!_displayToAll) _subHeader('Friends'),
-                if (!_displayToAll)
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        showModalBottomSheet(
-                            context: context,
-                            backgroundColor: Colors.transparent,
-                            isScrollControlled: true,
-                            builder: (context) {
-                              return _friendSelectorSheet();
-                            }
-                        );
-                      });
-                    },
-                    child: Container(
-                      height: 50,
-                      color: const Color(0xFF181818),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            _beaconText('Friends'),
-                            Icon(Icons.arrow_forward_ios, color: Colors.grey)
-                          ],
-                        ),
-                      ),
+    return _mainEditorPage(
+      context: context,
+      title: 'Who can see my\nBeacon?',
+      onBackClick: _clearBeaconType,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+              height: 50,
+              color: const Color(0xFF181818),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _beaconText('Display to all?', fontSize: 18),
+                    Switch(
+                      value: _displayToAll,
+                      activeTrackColor: Color(0xFF6200EE),
+                      onChanged: (value) {
+                        setState(() {
+                          _displayToAll = value;
+                        });
+                      },
                     ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-        Container(
-          width: 350,
-          padding: const EdgeInsets.all(16),
-          child: OutlinedButton(
-            onPressed: () {},
-            child: Container(
-              child: Text('Next'),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _descriptionPage(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-          width: double.infinity,
-          child: Padding(
-            padding: EdgeInsets.only(top: 0, bottom: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  ],
+                ),
+              )),
+          if (!_displayToAll) _subHeader('Groups'),
+          if (!_displayToAll) groups(setState, iconStuff),
+          if (!_displayToAll) _subHeader('Friends'),
+          if (!_displayToAll)
+            InkWell(
+              onTap: () {
+                setState(() {
+                  showModalBottomSheet(
+                      context: context,
+                      backgroundColor: Colors.transparent,
+                      isScrollControlled: true,
+                      builder: (context) {
+                        return _friendSelectorSheet();
+                      });
+                });
+              },
+              child: Container(
+                height: 50,
+                color: const Color(0xFF181818),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16),
                   child: Row(
-                    mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
                     children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _beaconTypeSelected = null;
-                          });
-                        },
-                      ),
-                      _header('Beacon\nDescription'),
-                      IconButton(
-                        icon: const Icon(Icons.close, color: Colors.grey),
-                        onPressed: () {
-                          setState(() {
-                            _showBeaconEditor = false;
-                          });
-                        },
-                      ),
+                      _beaconText('Friends'),
+                      Icon(Icons.arrow_forward_ios, color: Colors.grey)
                     ],
                   ),
                 ),
-                TextField(
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    backgroundColor: const Color(0xFF181818),
-
-                  ),
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                )
-              ],
+              ),
             ),
-          ),
-        ),
-        Container(
-          width: 350,
-          padding: const EdgeInsets.all(16),
-          child: OutlinedButton(
-            onPressed: () {},
-            child: Container(
-              child: Text('Next'),
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
+  // TODO need to build description page
+  Widget _descriptionPage(BuildContext context) {
+    return _mainEditorPage(
+      context: context,
+      title: 'Beacon\ndescription',
+      onBackClick: _clearBeaconType,
+      child: _beaconText("Description Place Holder")
+    );
+  }
 
   Widget _liveBeacon(BuildContext context) {
-    return Container(
-      child: _whoCanSeeMyBeacon(context)
+    return Container(child: _whoCanSeeMyBeacon(context));
+  }
+
+  void _clearBeaconType() {
+    setState(() {
+      _beaconTypeSelected = null;
+    });
+  }
+
+  Widget _beaconSelectorHeader({String title, Function onBackClick}) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          onBackClick != null ?
+            IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.grey,
+              ),
+              onPressed: onBackClick,
+            ) : Container(),
+          _header(title),
+          IconButton(
+            icon: const Icon(Icons.close, color: Colors.grey),
+            onPressed: () {
+              setState(() {
+                _showBeaconEditor = false;
+              });
+            },
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _mainEditorPage(BuildContext context, String title, Function back, Widget child) {
+  // Wraps the child with a back, close & next button and a header
+  // TODO need to create dynamic next button
+  Widget _mainEditorPage(
+      {BuildContext context,
+      String title,
+      Function onBackClick,
+      Widget child}) {
     return Column(
       mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Container(
-          width: double.infinity,
-          child: Padding(
-            padding: EdgeInsets.only(top: 0, bottom: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _beaconTypeSelected = null;
-                          });
-                        },
-                      ),
-                      _header(title),
-                      IconButton(
-                        icon: const Icon(Icons.close, color: Colors.grey),
-                        onPressed: () {
-                          setState(() {
-                            _showBeaconEditor = false;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                    height: 50,
-                    color: const Color(0xFF181818),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 16, right: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _beaconText('Display to all?', fontSize: 18),
-                          Switch(
-                            value: _displayToAll,
-                            activeTrackColor: Color(0xFF6200EE),
-                            onChanged: (value) {
-                              setState(() {
-                                _displayToAll = value;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    )),
-                if (!_displayToAll) _subHeader('Groups'),
-                if (!_displayToAll) groups(setState, iconStuff),
-                if (!_displayToAll) _subHeader('Friends'),
-                if (!_displayToAll)
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        showModalBottomSheet(
-                            context: context,
-                            backgroundColor: Colors.transparent,
-                            isScrollControlled: true,
-                            builder: (context) {
-                              return _friendSelectorSheet();
-                            }
-                        );
-                      });
-                    },
-                    child: Container(
-                      height: 50,
-                      color: const Color(0xFF181818),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 16, right: 16),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            _beaconText('Friends'),
-                            Icon(Icons.arrow_forward_ios, color: Colors.grey)
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
+        _beaconSelectorHeader(title: title, onBackClick: onBackClick),
+        Expanded(child: child),
         Container(
           width: 350,
           padding: const EdgeInsets.all(16),
