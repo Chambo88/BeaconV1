@@ -1,6 +1,9 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:beacon/Assests/Icons.dart';
+import 'package:beacon/components/FlatArrowButton.dart';
+import 'package:beacon/components/FriendSelectorSheet.dart';
 import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
@@ -14,6 +17,7 @@ import 'package:provider/provider.dart';
 class BeaconSelector extends StatefulWidget {
   BeaconSelector({Key key, this.user}) : super(key: key);
   UserModel user;
+
   @override
   _BeaconSelectorState createState() => _BeaconSelectorState();
 }
@@ -23,10 +27,9 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   var _displayToAll = false;
   BeaconType _beaconTypeSelected;
   GetIcons iconStuff = GetIcons();
-  Set<GroupModel> _groupList = Set<GroupModel>();
 
-  List<String> _friendsFiltered = [];
-  List<String> _friendList = [];
+  var _groupList = Set<GroupModel>();
+  var _friendsList = Set<String>();
 
   final TextEditingController _beaconDescriptionController =
       TextEditingController();
@@ -42,16 +45,32 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
+  void _updateFriendsList(Set<String> friendsList) {
+    setState(() {
+      _friendsList = friendsList;
+    });
+  }
+
+  void _reset() {
+    setState(() {
+      _beaconTypeSelected = null;
+      _groupList = new Set();
+      _displayToAll = false;
+    });
+  }
+
+  void _toggleBeaconEditor() {
+    _showBeaconEditor = !_showBeaconEditor;
+  }
+
   Widget _beaconButton() {
     return Center(
       child: Padding(
         padding: EdgeInsets.all(30),
         child: RawMaterialButton(
           onPressed: () {
-            setState(() {
-              _beaconTypeSelected = null;
-              _showBeaconEditor = !_showBeaconEditor;
-            });
+            _reset();
+            _toggleBeaconEditor();
           },
           elevation: 2.0,
           fillColor: _getBeaconColor(),
@@ -73,7 +92,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Color _getBeaconColor() {
-    if (widget.user.beacon.active != true) {
+    if (!widget.user.beacon.active) {
       return Colors.grey;
     }
     return widget.user.beacon.type == "active"
@@ -144,97 +163,6 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  List<String> getFilteredFriends(String filter) {
-    return widget.user.friends.where((friend) {
-      return friend.toLowerCase().contains(filter.toLowerCase());
-    }).toList();
-  }
-
-  Widget _friendSelectorSheet() {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.75,
-      margin: EdgeInsets.only(top: 70),
-      decoration: new BoxDecoration(
-        color: Colors.black,
-        borderRadius: new BorderRadius.only(
-          topLeft: const Radius.circular(25.0),
-          topRight: const Radius.circular(25.0),
-        ),
-      ),
-      child: Column(
-        children: [
-          ListTile(
-            leading: CloseButton(
-              color: Colors.white,
-            ),
-            title: Text(
-              'Friends',
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16),
-            child: TextFormField(
-              maxLength: 20,
-              style: TextStyle(color: Colors.white),
-              onChanged: (filter) {
-                setState(() {
-                  _friendsFiltered = getFilteredFriends(filter);
-                });
-              },
-              decoration: InputDecoration(
-                icon: Icon(Icons.search),
-                labelText: 'Name',
-                counterStyle: TextStyle(color: Colors.white),
-                labelStyle: TextStyle(
-                  color: Color(0xFFC7C1C1),
-                ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF6200EE)),
-                ),
-              ),
-            ),
-          ),
-          Column(
-            children: _friendsFiltered.map((friend) {
-              return ListTile(
-                key: Key(friend),
-                title: Text(
-                  friend,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                  ),
-                ),
-                trailing: Checkbox(
-                  key: Key(friend),
-                  checkColor: Colors.blue,
-                  activeColor: Colors.red,
-                  value: _friendList.contains(friend),
-                  onChanged: (v) {
-                    setState(() {
-                      if (v) {
-                        _friendList.add(friend);
-                      } else {
-                        _friendList.remove(friend);
-                      }
-                    });
-                  },
-                ),
-              );
-            }).toList(),
-          )
-        ],
-      ),
-    );
-  }
-
   Widget _beaconText(String text,
       {double fontSize = 16, TextAlign textAlign = TextAlign.center}) {
     return Text(
@@ -250,7 +178,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
 
   Widget _header(String text, {TextAlign textAlign = TextAlign.center}) {
     return Container(
-        padding: EdgeInsets.only(top: 20, bottom: 30),
+        padding: EdgeInsets.only(top: 20, bottom: 20),
         child: _beaconText(text, fontSize: 22, textAlign: textAlign));
   }
 
@@ -268,11 +196,33 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
+  Widget _friendsButton(BuildContext context) {
+    return FlatArrowButton(
+      title: 'Friends',
+      onTap: () {
+        setState(() {
+          showModalBottomSheet(
+            context: context,
+            backgroundColor: Colors.transparent,
+            isScrollControlled: true,
+            builder: (context) {
+              return FriendSelectorSheet(
+                user: widget.user,
+                updateFriendsList: _updateFriendsList,
+                friendsSelected: _friendsList,
+              );
+            },
+          );
+        });
+      },
+    );
+  }
+
   Widget _whoCanSeeMyBeacon(BuildContext context) {
     return _mainEditorPage(
       context: context,
       title: 'Who can see my\nBeacon?',
-      onBackClick: _clearBeaconType,
+      onBackClick: _reset,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -300,35 +250,14 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           if (!_displayToAll) _subHeader('Groups'),
           if (!_displayToAll) groups(setState, iconStuff),
           if (!_displayToAll) _subHeader('Friends'),
+          if (!_displayToAll) _friendsButton(context),
           if (!_displayToAll)
-            InkWell(
-              onTap: () {
-                setState(() {
-                  showModalBottomSheet(
-                      context: context,
-                      backgroundColor: Colors.transparent,
-                      isScrollControlled: true,
-                      builder: (context) {
-                        return _friendSelectorSheet();
-                      });
-                });
-              },
-              child: Container(
-                height: 50,
-                color: const Color(0xFF181818),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      _beaconText('Friends'),
-                      Icon(Icons.arrow_forward_ios, color: Colors.grey)
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            Column(
+              children: _friendsList.map((String friend) {
+                print(friend);
+                return _beaconText(friend);
+              }).toList(),
+            )
         ],
       ),
     );
@@ -337,21 +266,14 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   // TODO need to build description page
   Widget _descriptionPage(BuildContext context) {
     return _mainEditorPage(
-      context: context,
-      title: 'Beacon\ndescription',
-      onBackClick: _clearBeaconType,
-      child: _beaconText("Description Place Holder")
-    );
+        context: context,
+        title: 'Beacon\ndescription',
+        onBackClick: _reset,
+        child: _beaconText("Description Place Holder"));
   }
 
   Widget _liveBeacon(BuildContext context) {
-    return Container(child: _whoCanSeeMyBeacon(context));
-  }
-
-  void _clearBeaconType() {
-    setState(() {
-      _beaconTypeSelected = null;
-    });
+    return Container(child: _descriptionPage(context));
   }
 
   Widget _beaconSelectorHeader({String title, Function onBackClick}) {
@@ -361,14 +283,15 @@ class _BeaconSelectorState extends State<BeaconSelector> {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          onBackClick != null ?
-            IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                color: Colors.grey,
-              ),
-              onPressed: onBackClick,
-            ) : Container(),
+          onBackClick != null
+              ? IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.grey,
+                  ),
+                  onPressed: onBackClick,
+                )
+              : Container(),
           _header(title),
           IconButton(
             icon: const Icon(Icons.close, color: Colors.grey),
@@ -383,7 +306,8 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  // Wraps the child with a back, close & next button and a header
+  // Wraps the child in a ScrollView with a back, close & next button
+  // and a header
   // TODO need to create dynamic next button
   Widget _mainEditorPage(
       {BuildContext context,
@@ -395,10 +319,10 @@ class _BeaconSelectorState extends State<BeaconSelector> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         _beaconSelectorHeader(title: title, onBackClick: onBackClick),
-        Expanded(child: child),
+        Expanded(child: SingleChildScrollView(child: child)),
         Container(
           width: 350,
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(6),
           child: OutlinedButton(
             onPressed: () {},
             child: Container(
@@ -464,12 +388,16 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     return Column(
       children: [
         _header('Beacon Type'),
-        Column(
-          children: [
-            _beaconType(context, BeaconType.live),
-            _beaconType(context, BeaconType.casual),
-            _beaconType(context, BeaconType.event),
-          ],
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _beaconType(context, BeaconType.live),
+                _beaconType(context, BeaconType.casual),
+                _beaconType(context, BeaconType.event)
+              ],
+            ),
+          ),
         ),
       ],
     );
