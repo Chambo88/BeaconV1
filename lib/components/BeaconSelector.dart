@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -45,16 +46,11 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  void _updateFriendsList(Set<String> friendsList) {
-    setState(() {
-      _friendsList = friendsList;
-    });
-  }
-
   void _reset() {
     setState(() {
       _beaconTypeSelected = null;
       _groupList = new Set();
+      _friendsList = new Set();
       _displayToAll = false;
     });
   }
@@ -81,13 +77,20 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  void _handleSelectionChanged(
+  void _updateFriendsList(Set<String> friendsList) {
+    setState(() {
+      _friendsList = friendsList;
+    });
+  }
+
+  void _handleGroupSelectionChanged(
       GroupModel group, bool selected, StateSetter setState) {
     setState(() {
-      if (!selected)
+      if (!selected) {
         _groupList.add(group);
-      else
+      } else {
         _groupList.remove(group);
+      }
     });
   }
 
@@ -186,13 +189,13 @@ class _BeaconSelectorState extends State<BeaconSelector> {
 
   Widget _eventBeacon(BuildContext context) {
     return Container(
-      child: _whoCanSeeMyBeacon(context),
+      child: _whoCanSeeMyBeaconPage(context),
     );
   }
 
   Widget _casualBeacon(BuildContext context) {
     return Container(
-      child: _whoCanSeeMyBeacon(context),
+      child: _whoCanSeeMyBeaconPage(context),
     );
   }
 
@@ -218,7 +221,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  Widget _whoCanSeeMyBeacon(BuildContext context) {
+  Widget _whoCanSeeMyBeaconPage(BuildContext context) {
     return _mainEditorPage(
       context: context,
       title: 'Who can see my\nBeacon?',
@@ -253,14 +256,29 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           if (!_displayToAll) _friendsButton(context),
           if (!_displayToAll)
             Column(
-              children: _friendsList.map((String friend) {
-                print(friend);
-                return _beaconText(friend);
-              }).toList(),
+              children: selectedFriendTiles(),
             )
         ],
       ),
     );
+  }
+
+  Set<String> getAllFriendsSelectedAndGroups() {
+    Set<String> allFriends = _groupList
+        .map((GroupModel g) => g.userIds)
+        .expand((friend) => friend)
+        .toSet();
+    allFriends.addAll(_friendsList);
+    return allFriends;
+  }
+
+  List<Widget> selectedFriendTiles() {
+    return getAllFriendsSelectedAndGroups().map((friend) {
+      return ListTile(
+        title: _beaconText(friend, textAlign: TextAlign.left, fontSize: 12),
+        leading: Icon(Icons.account_circle_rounded, color: Colors.grey),
+      );
+    }).toList();
   }
 
   // TODO need to build description page
@@ -273,7 +291,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Widget _liveBeacon(BuildContext context) {
-    return Container(child: _descriptionPage(context));
+    return Container(child: _whoCanSeeMyBeaconPage(context));
   }
 
   Widget _beaconSelectorHeader({String title, Function onBackClick}) {
@@ -454,7 +472,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           return SingleGroup(
             group: group,
             selected: _groupList.contains(group),
-            onGroupChanged: _handleSelectionChanged,
+            onGroupChanged: _handleGroupSelectionChanged,
             setState: setState,
             iconStuff: iconStuff,
           );

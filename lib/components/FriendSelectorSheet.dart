@@ -89,40 +89,54 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
                 ),
               ),
             ),
-            Column(
-              children: _filteredFriends.map((friend) {
-                return ListTile(
-                  key: Key(friend),
-                  title: Text(
-                    friend,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                    ),
-                  ),
-
-                  trailing: Checkbox(
+            Expanded(
+              child: Column(
+                children: _filteredFriends.map((friend) {
+                  return ListTile(
                     key: Key(friend),
-                    fillColor: MaterialStateProperty.resolveWith(getCheckboxColor),
-                    checkColor: Colors.black,
-                    value: widget.friendsSelected.contains(friend),
-                    onChanged: (v) {
-                      setState(
-                        () {
-                          if (v) {
-                            widget.friendsSelected.add(friend);
-                          } else {
-                            widget.friendsSelected.remove(friend);
-                          }
-                        },
-                      );
-                      widget.updateFriendsList(widget.friendsSelected);
-                    },
-                  ),
-                );
-              }).toList(),
+                    title: Text(
+                      friend,
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                      ),
+                    ),
+
+                    trailing: Checkbox(
+                      key: Key(friend),
+                      fillColor: MaterialStateProperty.resolveWith(getCheckboxColor),
+                      checkColor: Colors.black,
+                      value: widget.friendsSelected.contains(friend),
+                      onChanged: (v) {
+                        setState(
+                          () {
+                            if (v) {
+                              widget.friendsSelected.add(friend);
+                            } else {
+                              widget.friendsSelected.remove(friend);
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            Container(
+              width: 350,
+              padding: const EdgeInsets.all(6),
+              child: OutlinedButton(
+                onPressed: () {
+                  widget.updateFriendsList(widget.friendsSelected);
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  child: Text('Continue'),
+                ),
+              ),
             ),
           ],
         ),
