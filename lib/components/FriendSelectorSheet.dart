@@ -1,3 +1,4 @@
+import 'package:beacon/components/BeaconGradientButton.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -60,10 +61,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
               title: Text(
                 'Friends',
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                ),
+                style: Theme.of(context).textTheme.headline4
               ),
             ),
             Padding(
@@ -79,14 +77,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
                 decoration: InputDecoration(
                   icon: Icon(Icons.search),
                   labelText: 'Name',
-                  counterStyle: TextStyle(color: Colors.white),
-                  labelStyle: TextStyle(
-                    color: Color(0xFFC7C1C1),
-                  ),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF6200EE)),
-                  ),
-                ),
+                ).applyDefaults(Theme.of(context).inputDecorationTheme),
               ),
             ),
             Expanded(
@@ -126,18 +117,15 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
               ),
             ),
             Container(
-              width: 350,
-              padding: const EdgeInsets.all(6),
-              child: OutlinedButton(
-                onPressed: () {
-                  widget.updateFriendsList(widget.friendsSelected);
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  child: Text('Continue'),
-                ),
+              padding: const EdgeInsets.all(16),
+              child: BeaconGradientButton(
+                title: 'Continue',
+                  onPressed: () {
+                    widget.updateFriendsList(widget.friendsSelected);
+                    Navigator.pop(context);
+                  }
               ),
-            ),
+            )
           ],
         ),
       );

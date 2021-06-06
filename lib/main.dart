@@ -35,21 +35,118 @@ class MyApp extends StatelessWidget {
           StreamProvider(
             create: (context) => context.read<AuthService>().userChanges,
           ),
-
         ],
         child: MaterialApp(
             title: 'Flutter Demo',
             theme: ThemeData(
-              // This is the theme of your application.
-              //
-              // Try running your application with "flutter run". You'll see the
-              // application has a blue toolbar. Then, without quitting the app, try
-              // changing the primarySwatch below to Colors.green and then invoke
-              // "hot reload" (press "r" in the console where you ran "flutter run",
-              // or simply save your changes to "hot reload" in a Flutter IDE).
-              // Notice that the counter didn't reset back to zero; the application
-              // is not restarted.
-              primarySwatch: Colors.blue,
+              // basic colors
+              backgroundColor: Colors.black,
+              primaryColorLight: Color(0xFF2A2929),
+              primaryColor: Color(0xFF181818),
+              primaryColorDark: Color(0xFF000000),
+              accentColor: Color(0xFFFF00CC),
+
+              bottomSheetTheme: BottomSheetThemeData(
+                backgroundColor: Colors.black,
+              ),
+
+              switchTheme: SwitchThemeData(
+                  trackColor: MaterialStateProperty.resolveWith((states) {
+                    if (states.contains(MaterialState.selected)) {
+                      return Color(0xFFB500E2);
+                    }
+                    return Color(0xFF323232);
+                  }),
+                  thumbColor: MaterialStateProperty.all(Colors.white)),
+
+              // buttons
+              buttonTheme: ButtonThemeData(
+                disabledColor: Color(0xFF2A2929),
+              ),
+              outlinedButtonTheme: OutlinedButtonThemeData(
+                style: OutlinedButton.styleFrom(
+                  primary: Colors.purple,
+                  backgroundColor: Colors.red,
+                ),
+              ),
+              textButtonTheme: TextButtonThemeData(
+                  style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.resolveWith((states) {
+                  return (states.contains(MaterialState.disabled))
+                      ? Color(0xFF716F6F)
+                      : Color(0xFFFFFFFF);
+                }),
+                backgroundColor: MaterialStateProperty.resolveWith((states) {
+                  return (states.contains(MaterialState.disabled))
+                      ? Color(0xFF4B4B4B)
+                      : Color(0xFFB928FF);
+                }),
+
+                textStyle: MaterialStateProperty.resolveWith((states) {
+                  return (states.contains(MaterialState.disabled))
+                      ? TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                        )
+                      : TextStyle(
+                          color: Colors.grey,
+                          fontSize: 16,
+                        );
+                }),
+              )),
+
+              inputDecorationTheme: InputDecorationTheme(
+                counterStyle: TextStyle(color: Colors.white),
+                labelStyle: TextStyle(
+                  color: Color(0xFFC7C1C1),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF6200EE)),
+                ),
+              ),
+              iconTheme: IconThemeData(
+                color: Colors.grey,
+              ),
+
+              // text
+              textTheme: TextTheme(
+                headline1: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24.0,
+                ),
+                headline2: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22.0,
+                ),
+                headline3: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.0,
+                ),
+                headline4: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.0,
+                ),
+                headline5: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16.0,
+                ),
+                headline6: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.0,
+                ),
+                bodyText1: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.0,
+                ),
+                bodyText2: TextStyle(
+                  color: Color(0xFF7E7E90),
+                  fontSize: 14.0,
+                ),
+                caption: TextStyle(
+                  color: Color(0xFF7E7E90),
+                  fontSize: 12.0,
+                ),
+              ),
             ),
             home: AuthenticationWrapper()
             // MyHomePage(title: 'Beacon MVP'),
@@ -61,8 +158,6 @@ class AuthenticationWrapper extends StatelessWidget {
   const AuthenticationWrapper({
     Key key,
   }) : super(key: key);
-
-
 
   @override
   Widget build(BuildContext context) {

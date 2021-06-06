@@ -13,7 +13,7 @@ class FlatArrowButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: 50,
-        color: const Color(0xFF181818),
+        color: Theme.of(context).primaryColor,
         child: Padding(
           padding: const EdgeInsets.only(left: 16, right: 16),
           child: Row(

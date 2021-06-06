@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:beacon/Assests/Icons.dart';
+import 'package:beacon/components/BeaconGradientButton.dart';
 import 'package:beacon/components/FlatArrowButton.dart';
 import 'package:beacon/components/FriendSelectorSheet.dart';
 import 'package:beacon/models/BeaconType.dart';
@@ -154,39 +155,6 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     }, SetOptions(merge: true));
   }
 
-  Widget _subHeader(String text) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10),
-      child: Text(text,
-          style: const TextStyle(
-            color: Color(0xFF7E7E90),
-          ),
-          textAlign: TextAlign.start),
-    );
-  }
-
-  Widget _beaconText(String text,
-      {double fontSize = 16, TextAlign textAlign = TextAlign.center}) {
-    return Text(
-      text,
-      textAlign: textAlign,
-      overflow: TextOverflow.ellipsis,
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: fontSize,
-      ),
-    );
-  }
-
-  Widget _header(String text, {TextAlign textAlign = TextAlign.center}) {
-    return Container(
-        padding: EdgeInsets.only(top: 20, bottom: 20),
-        child: _beaconText(text, fontSize: 22, textAlign: textAlign));
-  }
-
-  Widget _switch(BuildContext context, bool initValue) {}
-
   Widget _eventBeacon(BuildContext context) {
     return Container(
       child: _whoCanSeeMyBeaconPage(context),
@@ -231,16 +199,18 @@ class _BeaconSelectorState extends State<BeaconSelector> {
         children: [
           Container(
               height: 50,
-              color: const Color(0xFF181818),
+              color: Theme.of(context).primaryColor,
               child: Padding(
                 padding: const EdgeInsets.only(left: 16, right: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _beaconText('Display to all?', fontSize: 18),
+                    Text(
+                      'Display to all?',
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
                     Switch(
                       value: _displayToAll,
-                      activeTrackColor: Color(0xFF6200EE),
                       onChanged: (value) {
                         setState(() {
                           _displayToAll = value;
@@ -250,17 +220,28 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                   ],
                 ),
               )),
-          if (!_displayToAll) _subHeader('Groups'),
+          if (!_displayToAll) _leftSubHeader(context, 'Groups'),
           if (!_displayToAll) groups(setState, iconStuff),
-          if (!_displayToAll) _subHeader('Friends'),
+          if (!_displayToAll) _leftSubHeader(context, 'Friends'),
           if (!_displayToAll) _friendsButton(context),
           if (!_displayToAll)
             Column(
-              children: selectedFriendTiles(),
+              children: selectedFriendTiles(context),
             )
         ],
       ),
     );
+  }
+
+  Container _leftSubHeader(BuildContext context, String text) {
+    return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10),
+        child: Text(
+          text,
+          style: Theme.of(context).textTheme.bodyText2,
+          textAlign: TextAlign.start,
+        ));
   }
 
   Set<String> getAllFriendsSelectedAndGroups() {
@@ -272,10 +253,13 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     return allFriends;
   }
 
-  List<Widget> selectedFriendTiles() {
+  List<Widget> selectedFriendTiles(BuildContext context) {
     return getAllFriendsSelectedAndGroups().map((friend) {
       return ListTile(
-        title: _beaconText(friend, textAlign: TextAlign.left, fontSize: 12),
+        title: Text(
+          friend,
+          style: Theme.of(context).textTheme.bodyText1,
+        ),
         leading: Icon(Icons.account_circle_rounded, color: Colors.grey),
       );
     }).toList();
@@ -287,16 +271,26 @@ class _BeaconSelectorState extends State<BeaconSelector> {
         context: context,
         title: 'Beacon\ndescription',
         onBackClick: _reset,
-        child: _beaconText("Description Place Holder"));
+        child: Text('Description Place Holder',
+            style: Theme.of(context).textTheme.headline1));
   }
 
   Widget _liveBeacon(BuildContext context) {
     return Container(child: _whoCanSeeMyBeaconPage(context));
   }
 
-  Widget _beaconSelectorHeader({String title, Function onBackClick}) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+  Text _beaconHeader(BuildContext context, String text) {
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.headline2,
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _beaconSelectorHeader(
+      {BuildContext context, String title, Function onBackClick}) {
+    return Container(
+      height: 70,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -310,7 +304,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                   onPressed: onBackClick,
                 )
               : Container(),
-          _header(title),
+          _beaconHeader(context, title),
           IconButton(
             icon: const Icon(Icons.close, color: Colors.grey),
             onPressed: () {
@@ -336,17 +330,16 @@ class _BeaconSelectorState extends State<BeaconSelector> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        _beaconSelectorHeader(title: title, onBackClick: onBackClick),
+        _beaconSelectorHeader(
+          context: context,
+          title: title,
+          onBackClick: onBackClick,
+        ),
         Expanded(child: SingleChildScrollView(child: child)),
         Container(
-          width: 350,
-          padding: const EdgeInsets.all(6),
-          child: OutlinedButton(
-            onPressed: () {},
-            child: Container(
-              child: Text('Next'),
-            ),
-          ),
+          width: double.infinity,
+          padding: const EdgeInsets.all(10),
+          child: BeaconGradientButton(title: 'Next', onPressed: () {})
         ),
       ],
     );
@@ -381,20 +374,23 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _beaconText(type.title),
+                  Text(
+                    type.title,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
                   Container(
                     width: 200,
                     child: Text(
                       type.description,
-                      style: TextStyle(
-                        color: const Color(0xFF747272),
-                        fontSize: 12,
-                      ),
+                      style: Theme.of(context).textTheme.caption,
                     ),
                   )
                 ],
               ),
-              Icon(Icons.arrow_forward_ios, color: Colors.grey)
+              Icon(
+                Icons.arrow_forward_ios,
+                color: Theme.of(context).iconTheme.color,
+              )
             ],
           ),
         ),
@@ -405,7 +401,10 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   Widget _beaconTypeSelector(BuildContext context) {
     return Column(
       children: [
-        _header('Beacon Type'),
+        Container(
+          height: 70,
+          child: Center(child: _beaconHeader(context, 'Beacon Type')),
+        ),
         Expanded(
           child: SingleChildScrollView(
             child: Column(
@@ -439,9 +438,9 @@ class _BeaconSelectorState extends State<BeaconSelector> {
       child: Container(
         margin: EdgeInsets.only(left: 20, right: 20, top: 30),
         decoration: BoxDecoration(
-          color: Colors.black,
+          color: Theme.of(context).backgroundColor,
           border: Border.all(
-            color: const Color(0xFF000000),
+            color: Theme.of(context).backgroundColor,
           ),
           borderRadius: BorderRadius.all(
             Radius.circular(20),
@@ -465,7 +464,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     return Container(
       height: 85.0,
       padding: EdgeInsets.symmetric(vertical: 5.0),
-      color: const Color(0xFF181818),
+      color: Theme.of(context).primaryColor,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: widget.user.groups.map((GroupModel group) {
@@ -478,14 +477,6 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           );
         }).toList(),
       ),
-    );
-  }
-
-  Divider dividerSettings() {
-    return Divider(
-      height: 20,
-      color: Colors.grey[800],
-      thickness: 1,
     );
   }
 
