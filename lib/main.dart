@@ -19,6 +19,18 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
+Color getCheckboxColor(Set<MaterialState> states) {
+  const Set<MaterialState> interactiveStates = <MaterialState>{
+    MaterialState.pressed,
+    MaterialState.hovered,
+    MaterialState.focused,
+  };
+  if (states.any(interactiveStates.contains)) {
+    return Colors.blue;
+  }
+  return Colors.red;
+}
+
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -35,21 +47,74 @@ class MyApp extends StatelessWidget {
           StreamProvider(
             create: (context) => context.read<AuthService>().userChanges,
           ),
-
         ],
         child: MaterialApp(
             title: 'Flutter Demo',
             theme: ThemeData(
-              // This is the theme of your application.
-              //
-              // Try running your application with "flutter run". You'll see the
-              // application has a blue toolbar. Then, without quitting the app, try
-              // changing the primarySwatch below to Colors.green and then invoke
-              // "hot reload" (press "r" in the console where you ran "flutter run",
-              // or simply save your changes to "hot reload" in a Flutter IDE).
-              // Notice that the counter didn't reset back to zero; the application
-              // is not restarted.
-              primarySwatch: Colors.blue,
+              primaryColorLight: Color(0xFF2A2929),
+              primaryColor: Color(0xFF181818),
+              primaryColorDark: Color(0xFF000000),
+              bottomSheetTheme: BottomSheetThemeData(
+                backgroundColor: Colors.black,
+
+              ),
+              accentColor: Color(0xFFFF00CC),
+              backgroundColor: Colors.black,
+              inputDecorationTheme: InputDecorationTheme(
+                counterStyle: TextStyle(color: Colors.white),
+                labelStyle: TextStyle(
+                  color: Color(0xFFC7C1C1),
+                ),
+
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Color(0xFF6200EE)),
+                ),
+              ),
+              iconTheme: IconThemeData(
+                color: Colors.grey,
+              ),
+              textTheme: TextTheme(
+                headline1: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24.0,
+
+                ),
+                headline2: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22.0,
+                ),
+                headline3: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.0,
+                ),
+                headline4: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.0,
+                ),
+                headline5: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16.0,
+                ),
+                headline6: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.0,
+                ),
+
+                bodyText1: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.0,
+                ),
+                bodyText2: TextStyle(
+                  color: Color(0xFF7E7E90),
+                  fontSize: 14.0,
+                ),
+                caption:  TextStyle(
+                  color: Color(0xFF7E7E90),
+                  fontSize: 12.0,
+                ),
+
+              ),
+
             ),
             home: AuthenticationWrapper()
             // MyHomePage(title: 'Beacon MVP'),
@@ -61,8 +126,6 @@ class AuthenticationWrapper extends StatelessWidget {
   const AuthenticationWrapper({
     Key key,
   }) : super(key: key);
-
-
 
   @override
   Widget build(BuildContext context) {
