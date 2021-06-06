@@ -34,7 +34,7 @@ class _SignInPageState extends State<SignInPage> {
         TextField(
           controller: emailController,
           decoration: InputDecoration(
-            labelText: "Email",
+            labelText: "Email"
           ),
         ),
         TextField(
