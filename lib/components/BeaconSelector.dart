@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:beacon/Assests/Icons.dart';
+import 'package:beacon/components/BeaconGradientButton.dart';
 import 'package:beacon/components/FlatArrowButton.dart';
 import 'package:beacon/components/FriendSelectorSheet.dart';
 import 'package:beacon/models/BeaconType.dart';
@@ -210,7 +211,6 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                     ),
                     Switch(
                       value: _displayToAll,
-                      activeTrackColor: Color(0xFF6200EE),
                       onChanged: (value) {
                         setState(() {
                           _displayToAll = value;
@@ -337,14 +337,9 @@ class _BeaconSelectorState extends State<BeaconSelector> {
         ),
         Expanded(child: SingleChildScrollView(child: child)),
         Container(
-          width: 350,
-          padding: const EdgeInsets.all(6),
-          child: OutlinedButton(
-            onPressed: () {},
-            child: Container(
-              child: Text('Next'),
-            ),
-          ),
+          width: double.infinity,
+          padding: const EdgeInsets.all(10),
+          child: BeaconGradientButton(title: 'Next', onPressed: () {})
         ),
       ],
     );

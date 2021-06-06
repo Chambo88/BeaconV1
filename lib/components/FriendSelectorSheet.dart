@@ -1,3 +1,4 @@
+import 'package:beacon/components/BeaconGradientButton.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -116,18 +117,15 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
               ),
             ),
             Container(
-              width: 350,
-              padding: const EdgeInsets.all(6),
-              child: OutlinedButton(
-                onPressed: () {
-                  widget.updateFriendsList(widget.friendsSelected);
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  child: Text('Continue'),
-                ),
+              padding: const EdgeInsets.all(16),
+              child: BeaconGradientButton(
+                title: 'Continue',
+                  onPressed: () {
+                    widget.updateFriendsList(widget.friendsSelected);
+                    Navigator.pop(context);
+                  }
               ),
-            ),
+            )
           ],
         ),
       );
