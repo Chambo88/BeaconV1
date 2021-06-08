@@ -17,31 +17,29 @@ class _SignInPageState extends State<SignInPage> {
   var isSignUp = false;
 
   Widget _signUpFields(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       children: [
         TextField(
           controller: firstNameController,
-          decoration: InputDecoration(
-            labelText: "First Name",
-          ),
+          style: theme.textTheme.bodyText1,
+          decoration: InputDecoration(labelText: "First Name")
         ),
         TextField(
           controller: lastNameController,
-          decoration: InputDecoration(
-            labelText: "Last Name",
-          ),
+          style: theme.textTheme.bodyText1,
+          decoration: InputDecoration(labelText: "Last Name")
         ),
         TextField(
           controller: emailController,
-          decoration: InputDecoration(
-            labelText: "Email"
-          ),
+          style: theme.textTheme.bodyText1,
+          decoration: InputDecoration(labelText: "Email")
         ),
         TextField(
           controller: passwordController,
-          decoration: InputDecoration(
-            labelText: "Password",
-          ),
+          style: theme.textTheme.bodyText1,
+          decoration: InputDecoration(labelText: "Password")
         ),
         ElevatedButton(
           onPressed: () async {
@@ -73,19 +71,19 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Widget _signInFields(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       children: [
         TextField(
+          style: theme.textTheme.bodyText1,
           controller: emailController,
-          decoration: InputDecoration(
-            labelText: "Email",
-          ),
+          decoration: InputDecoration(labelText: "Email")
         ),
         TextField(
+          style: theme.textTheme.bodyText1,
           controller: passwordController,
-          decoration: InputDecoration(
-            labelText: "Password",
-          ),
+          decoration: InputDecoration(labelText: "Password")
         ),
         ElevatedButton(
           onPressed: () async {
@@ -96,8 +94,10 @@ class _SignInPageState extends State<SignInPage> {
             if (text != "") {
               showDialog(
                 context: context,
-                builder: (BuildContext context) =>
-                    _buildPopupDialog(context, text),
+                builder: (BuildContext context) => _buildPopupDialog(
+                  context,
+                  text,
+                ),
               );
             }
           },

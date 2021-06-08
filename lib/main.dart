@@ -45,6 +45,7 @@ class MyApp extends StatelessWidget {
               primaryColor: Color(0xFF181818),
               primaryColorDark: Color(0xFF000000),
               accentColor: Color(0xFFFF00CC),
+              canvasColor: Colors.black,
 
               bottomSheetTheme: BottomSheetThemeData(
                 backgroundColor: Colors.black,
@@ -81,7 +82,6 @@ class MyApp extends StatelessWidget {
                       ? Color(0xFF4B4B4B)
                       : Color(0xFFB928FF);
                 }),
-
                 textStyle: MaterialStateProperty.resolveWith((states) {
                   return (states.contains(MaterialState.disabled))
                       ? TextStyle(
@@ -97,11 +97,30 @@ class MyApp extends StatelessWidget {
 
               inputDecorationTheme: InputDecorationTheme(
                 counterStyle: TextStyle(color: Colors.white),
-                labelStyle: TextStyle(
-                  color: Color(0xFFC7C1C1),
+                labelStyle: TextStyle(color: Color(0xFFC7C1C1), fontSize: 23),
+                disabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color(0xFF6C6C6C),
+                    width: 3,
+                  ),
                 ),
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF6200EE)),
+                  borderSide: BorderSide(
+                    color: Color(0xFFFFFFFF),
+                    width: 3,
+                  ),
+                ),
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color(0xFFFFFFFF),
+                    width: 3,
+                  ),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color(0xFF6200EE),
+                    width: 3,
+                  ),
                 ),
               ),
               iconTheme: IconThemeData(
