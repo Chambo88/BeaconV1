@@ -1,3 +1,4 @@
+import 'package:beacon/components/BeaconGradientButton.dart';
 import 'package:beacon/services/AuthService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,29 +37,38 @@ class _SignInPageState extends State<SignInPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
               child: SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: BeaconGradientButton(
                     onPressed: () {
                       setState(() {
                         _pageState = PageState.SignIn;
                       });
                     },
-                    child: Text("Sign In")),
+                    title: "Log In"),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              padding: const EdgeInsets.symmetric(vertical: 0.0),
+              child: Text(
+                "OR",
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
               child: SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                child: BeaconGradientButton(
                     onPressed: () {
                       setState(() {
                         _pageState = PageState.SignUpEmail;
                       });
                     },
-                    child: Text("Sign Up")),
+                    title: "Sign Up"),
               ),
             )
           ]),
@@ -75,7 +85,7 @@ class _SignInPageState extends State<SignInPage> {
             padding: const EdgeInsets.fromLTRB(30.0, 20, 0, 0),
             child: Text(
               "Email",
-              style: TextStyle(fontSize: 24),
+              style: Theme.of(context).textTheme.headline2,
             ),
           ),
           Padding(
@@ -87,10 +97,8 @@ class _SignInPageState extends State<SignInPage> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(30.0, 20, 0, 0),
-            child: Text(
-              "Password",
-              style: TextStyle(fontSize: 24),
-            ),
+            child:
+                Text("Password", style: Theme.of(context).textTheme.headline2),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -123,24 +131,20 @@ class _SignInPageState extends State<SignInPage> {
             padding: const EdgeInsets.only(top: 30.0),
             child: Center(
               child: SizedBox(
-                width: 220,
-                child: ElevatedButton(
-                    onPressed: () async {
-                      var text = await context.read<AuthService>().signIn(
-                            email: signInEmailController.text.trim(),
-                            password: signInPasswordController.text.trim(),
-                          );
-                      if (text != "") {
-                        setState(() {
-                          error = text;
-                        });
-                      }
-                    },
-                    child: Text(
-                      "Sign In",
-                      style: TextStyle(fontSize: 16),
-                    )),
-              ),
+                  width: 220,
+                  child: BeaconGradientButton(
+                      onPressed: () async {
+                        var text = await context.read<AuthService>().signIn(
+                              email: signInEmailController.text.trim(),
+                              password: signInPasswordController.text.trim(),
+                            );
+                        if (text != "") {
+                          setState(() {
+                            error = text;
+                          });
+                        }
+                      },
+                      title: "Sign In")),
             ),
           )
         ]);
@@ -156,7 +160,7 @@ class _SignInPageState extends State<SignInPage> {
             padding: const EdgeInsets.fromLTRB(30.0, 20, 0, 0),
             child: Text(
               "What's your email?",
-              style: TextStyle(fontSize: 24),
+              style: Theme.of(context).textTheme.headline2,
             ),
           ),
           Padding(
@@ -171,16 +175,14 @@ class _SignInPageState extends State<SignInPage> {
             child: Center(
               child: SizedBox(
                 width: 220,
-                child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _pageState = PageState.SignUpPassword;
-                      });
-                    },
-                    child: Text(
-                      "Continue",
-                      style: TextStyle(fontSize: 16),
-                    )),
+                child: BeaconGradientButton(
+                  onPressed: () {
+                    setState(() {
+                      _pageState = PageState.SignUpPassword;
+                    });
+                  },
+                  title: "Continue",
+                ),
               ),
             ),
           )
@@ -197,7 +199,7 @@ class _SignInPageState extends State<SignInPage> {
             padding: const EdgeInsets.fromLTRB(30.0, 20, 0, 0),
             child: Text(
               "Set a Password",
-              style: TextStyle(fontSize: 24),
+              style: Theme.of(context).textTheme.headline2,
             ),
           ),
           Padding(
@@ -224,16 +226,14 @@ class _SignInPageState extends State<SignInPage> {
             child: Center(
               child: SizedBox(
                 width: 220,
-                child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _pageState = PageState.SignUpName;
-                      });
-                    },
-                    child: Text(
-                      "Continue",
-                      style: TextStyle(fontSize: 16),
-                    )),
+                child: BeaconGradientButton(
+                  onPressed: () {
+                    setState(() {
+                      _pageState = PageState.SignUpName;
+                    });
+                  },
+                  title: "Continue",
+                ),
               ),
             ),
           )
@@ -250,7 +250,7 @@ class _SignInPageState extends State<SignInPage> {
             padding: const EdgeInsets.fromLTRB(30.0, 20, 0, 0),
             child: Text(
               "First Name?",
-              style: TextStyle(fontSize: 24),
+              style: Theme.of(context).textTheme.headline2,
             ),
           ),
           Padding(
@@ -264,7 +264,7 @@ class _SignInPageState extends State<SignInPage> {
             padding: const EdgeInsets.fromLTRB(30.0, 20, 0, 0),
             child: Text(
               "Last Name?",
-              style: TextStyle(fontSize: 24),
+              style: Theme.of(context).textTheme.headline2,
             ),
           ),
           Padding(
@@ -287,23 +287,21 @@ class _SignInPageState extends State<SignInPage> {
             child: Center(
               child: SizedBox(
                 width: 220,
-                child: ElevatedButton(
-                    onPressed: () async {
-                      var text = await context.read<AuthService>().signUp(
-                          firstName: firstNameController.text.trim(),
-                          lastName: lastNameController.text.trim(),
-                          email: signUpEmailController.text.trim(),
-                          password: signUpPasswordController.text.trim());
-                      if (text != "") {
-                        setState(() {
-                          signUpError = text;
-                        });
-                      }
-                    },
-                    child: Text(
-                      "Register",
-                      style: TextStyle(fontSize: 16),
-                    )),
+                child: BeaconGradientButton(
+                  onPressed: () async {
+                    var text = await context.read<AuthService>().signUp(
+                        firstName: firstNameController.text.trim(),
+                        lastName: lastNameController.text.trim(),
+                        email: signUpEmailController.text.trim(),
+                        password: signUpPasswordController.text.trim());
+                    if (text != "") {
+                      setState(() {
+                        signUpError = text;
+                      });
+                    }
+                  },
+                  title: "Register",
+                ),
               ),
             ),
           )

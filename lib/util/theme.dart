@@ -5,44 +5,121 @@ import 'package:flutter/material.dart';
 class CustomTheme {
   static ThemeData get theme {
     return ThemeData(
-      dialogBackgroundColor: Colors.black,
-      iconTheme: IconThemeData(color: Colors.white),
-      primaryIconTheme: IconThemeData(color: Colors.white),
-      accentIconTheme: IconThemeData(color: Colors.white),
-      appBarTheme: AppBarTheme(color: Colors.black),
-      textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.white),
-      primaryColor: Colors.purple,
-      textTheme: TextTheme(
-        bodyText1: TextStyle(),
-        bodyText2: TextStyle(),
-        subtitle1: TextStyle(), // input fields
-      ).apply(
-        bodyColor: Colors.white,
+      // basic colors
+
+      backgroundColor: Colors.black,
+      primaryColorLight: Color(0xFF2A2929),
+      primaryColor: Color(0xFF181818),
+      primaryColorDark: Color(0xFF000000),
+      accentColor: Color(0xFFFF00CC),
+
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: Colors.black,
       ),
+
+      switchTheme: SwitchThemeData(
+          trackColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.selected)) {
+              return Color(0xFFB500E2);
+            }
+            return Color(0xFF323232);
+          }),
+          thumbColor: MaterialStateProperty.all(Colors.white)),
+
+      // buttons
+      buttonTheme: ButtonThemeData(
+        disabledColor: Color(0xFF2A2929),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          primary: Colors.purple,
+          backgroundColor: Colors.red,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(
+        foregroundColor: MaterialStateProperty.resolveWith((states) {
+          return (states.contains(MaterialState.disabled))
+              ? Color(0xFF716F6F)
+              : Color(0xFFFFFFFF);
+        }),
+        backgroundColor: MaterialStateProperty.resolveWith((states) {
+          return (states.contains(MaterialState.disabled))
+              ? Color(0xFF4B4B4B)
+              : Color(0xFFB928FF);
+        }),
+        textStyle: MaterialStateProperty.resolveWith((states) {
+          return (states.contains(MaterialState.disabled))
+              ? TextStyle(
+                  color: Colors.grey,
+                  fontSize: 16,
+                )
+              : TextStyle(
+                  color: Colors.grey,
+                  fontSize: 16,
+                );
+        }),
+      )),
+
       inputDecorationTheme: InputDecorationTheme(
-        alignLabelWithHint: false,
-        labelStyle: TextStyle(color: Colors.white),
-        fillColor: Colors.grey,
+        counterStyle: TextStyle(color: Colors.white),
+        labelStyle: TextStyle(
+          color: Color(0xFFC7C1C1),
+        ),
         enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(
-            color: Colors.white,
-            width: 1.0,
-          ),
+          borderSide: BorderSide(color: Color(0xFF6200EE)),
         ),
         focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(
+          borderSide: BorderSide(color: Color(0xFF6200EE)),
+        ),
+      ),
+      iconTheme: IconThemeData(
+        color: Colors.grey,
+      ),
+
+      // text
+      textTheme: TextTheme(
+          headline1: TextStyle(
             color: Colors.white,
-            width: 1.0,
+            fontSize: 24.0,
           ),
-        ),
-      ),
+          headline2: TextStyle(
+            color: Colors.white,
+            fontSize: 22.0,
+          ),
+          headline3: TextStyle(
+            color: Colors.white,
+            fontSize: 20.0,
+          ),
+          headline4: TextStyle(
+            color: Colors.white,
+            fontSize: 18.0,
+          ),
+          headline5: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+          ),
+          headline6: TextStyle(
+            color: Colors.white,
+            fontSize: 14.0,
+          ),
+          bodyText1: TextStyle(
+            color: Colors.white,
+            fontSize: 14.0,
+          ),
+          bodyText2: TextStyle(
+            color: Color(0xFF7E7E90),
+            fontSize: 14.0,
+          ),
+          caption: TextStyle(
+            color: Color(0xFF7E7E90),
+            fontSize: 12.0,
+          ),
+          subtitle1: TextStyle(color: Colors.white)),
+
+      appBarTheme: AppBarTheme(color: Colors.black),
+      textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.white),
       scaffoldBackgroundColor: Colors.black,
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: Colors.purpleAccent[400],
-        ),
-      ),
     );
   }
 }
