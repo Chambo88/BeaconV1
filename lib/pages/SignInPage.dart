@@ -29,107 +29,6 @@ class _SignInPageState extends State<SignInPage> {
 
   var _pageState = PageState.InitialSelector;
 
-  // Widget _signUpFields(BuildContext context) {
-  //   return Column(
-  //     key: ValueKey("signUp"),
-  //     children: [
-  //       TextField(
-  //         controller: firstNameController,
-  //         decoration: InputDecoration(
-  //           labelText: "First Name",
-  //         ),
-  //       ),
-  //       TextField(
-  //         controller: lastNameController,
-  //         decoration: InputDecoration(
-  //           labelText: "Last Name",
-  //         ),
-  //       ),
-  //       TextField(
-  //         controller: emailController,
-  //         decoration: InputDecoration(
-  //           labelText: "Email",
-  //         ),
-  //       ),
-  //       TextField(
-  //         controller: passwordController,
-  //         decoration: InputDecoration(
-  //           labelText: "Password",
-  //         ),
-  //       ),
-  //       ElevatedButton(
-  //         onPressed: () async {
-  //           var text = await context.read<AuthService>().signUp(
-  //               firstName: firstNameController.text.trim(),
-  //               lastName: lastNameController.text.trim(),
-  //               email: emailController.text.trim(),
-  //               password: passwordController.text.trim());
-  //           if (text != "") {
-  //             showDialog(
-  //               context: context,
-  //               builder: (BuildContext context) =>
-  //                   _buildPopupDialog(context, text),
-  //             );
-  //           }
-  //         },
-  //         child: Text("Create Account"),
-  //       ),
-  //       Center(child: Text("Or")),
-  //       ElevatedButton(
-  //           onPressed: () {
-  //             setState(() {
-  //               _pageState = PageState.InitialSelector;
-  //             });
-  //           },
-  //           child: Text("Sign in"))
-  //     ],
-  //   );
-  // }
-
-  // Widget _signInFields(BuildContext context) {
-  //   return Column(
-  //     key: ValueKey("signIn"),
-  //     children: [
-  //       TextField(
-  //         controller: emailController,
-  //         decoration: InputDecoration(
-  //           labelText: "Email",
-  //         ),
-  //       ),
-  //       TextField(
-  //         controller: passwordController,
-  //         decoration: InputDecoration(
-  //           labelText: "Password",
-  //         ),
-  //       ),
-  //       ElevatedButton(
-  //         onPressed: () async {
-  //           var text = await context.read<AuthService>().signIn(
-  //                 email: emailController.text.trim(),
-  //                 password: passwordController.text.trim(),
-  //               );
-  //           if (text != "") {
-  //             showDialog(
-  //               context: context,
-  //               builder: (BuildContext context) =>
-  //                   _buildPopupDialog(context, text),
-  //             );
-  //           }
-  //         },
-  //         child: Text("Sign in"),
-  //       ),
-  //       Center(child: Text("Or")),
-  //       ElevatedButton(
-  //           onPressed: () {
-  //             setState(() {
-  //               _pageState = PageState.InitialSelector;
-  //             });
-  //           },
-  //           child: Text("Create Account"))
-  //     ],
-  //   );
-  // }
-
   Widget _initalSelector(BuildContext context) {
     return Center(
       child: Column(
@@ -411,26 +310,6 @@ class _SignInPageState extends State<SignInPage> {
         ]);
   }
 
-  Widget _buildPopupDialog(BuildContext context, String text) {
-    return new AlertDialog(
-      content: new Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(text),
-        ],
-      ),
-      actions: <Widget>[
-        new ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text("Ok"),
-        ),
-      ],
-    );
-  }
-
   Widget _getPageState(BuildContext context) {
     switch (_pageState) {
       case PageState.InitialSelector:
@@ -438,6 +317,7 @@ class _SignInPageState extends State<SignInPage> {
             duration: const Duration(milliseconds: 300),
             child: _initalSelector(context));
       case PageState.SignIn:
+        signInEmailFocus.requestFocus();
         return AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
             child: _signIn(context));
