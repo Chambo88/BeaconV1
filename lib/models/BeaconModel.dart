@@ -8,7 +8,7 @@ class BeaconModel {
   bool notificationsEnabled;
   String id;
 
-  BeaconModel(this.lat, this.long, this.desc, this.type, this.active ,
+  BeaconModel(this.lat, this.long, this.desc, this.type, this.active,
       {this.userName, this.notificationsEnabled, this.id});
 
   BeaconModel.toJson(Map<String, dynamic> json) {
@@ -18,6 +18,7 @@ class BeaconModel {
     this.type = json["type"];
     this.userName = json["userName"];
     this.active = json["active"];
+    this.id = json["userId"];
   }
 }
 
