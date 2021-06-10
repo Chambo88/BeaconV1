@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:beacon/components/BeaconInfoBottomSheet.dart';
 import 'package:beacon/library/ColorHelper.dart';
 import 'package:beacon/widgets/buttons/OutlinedGradientButton.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +8,6 @@ class BeaconSideDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
 
     return Drawer(
       child: DefaultTabController(
@@ -16,6 +15,8 @@ class BeaconSideDrawer extends StatelessWidget {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
+            toolbarHeight: 60,
+            automaticallyImplyLeading: false,
             bottom: TabBar(
               labelColor: theme.accentColor,
               unselectedLabelColor: Colors.white,
@@ -35,50 +36,44 @@ class BeaconSideDrawer extends StatelessWidget {
                 child: Column(
                   children: [
                     _divider(context: context, text: "Friends Events"),
-                    _friendEvent(
-                      context: context,
-                      title: 'A Night of beacon breathers',
-                      hostedBy: 'SickCunt420',
-                      description:
-                          'Come get just drunk enough to forget your problems but not quite end up in ICU',
-                      friendsGoing: ['Will', 'Chambo', 'Richie', 'Jelly'],
-                    ),
-                    _friendEvent(
-                      context: context,
-                      title: 'A Night of beacon breathers',
-                      hostedBy: 'SickCunt420',
-                      description:
-                          'Come get just drunk enough to forget your problems but not quite end up in ICU',
-                      friendsGoing: ['Will', 'Chambo', 'Richie', 'Jelly'],
-                    ),
-                    _friendEvent(
-                      context: context,
-                      title: 'A Night of beacon breathers',
-                      hostedBy: 'SickCunt420',
-                      description:
-                          'Come get just drunk enough to forget your problems but not quite end up in ICU',
-                      friendsGoing: ['Will', 'Chambo', 'Richie', 'Jelly'],
-                    ),
-                    _friendEvent(
-                      context: context,
-                      title: 'A Night of beacon breathers',
-                      hostedBy: 'SickCunt420',
-                      description:
-                          'Come get just drunk enough to forget your problems but not quite end up in ICU',
-                      friendsGoing: ['Will', 'Chambo', 'Richie', 'Jelly'],
-                    ),
+                    // TODO put real data
+                    for (var i = 0; i < 4; i++)
+                      BeaconBar(
+                        child: _friendEventBeaconContent(
+                          context: context,
+                          title: 'A Night of beacon breathers',
+                          hostedBy: 'SickCunt420',
+                          description:
+                              'Come get just drunk enough to forget your problems but not quite end up in ICU',
+                          friendsGoing: ['Will', 'Chambo', 'Richie', 'Jelly'],
+                        ),
+                      ),
                     _divider(context: context, text: "Casual"),
-                    _friendCasual(
-                      context: context,
-                      friend: 'Ben Chamberlain',
-                      description: 'Sting like a butterfly, pimp like a bee',
-                    )
+                    for (var i = 0; i < 3; i++)
+                      BeaconBar(
+                        child: _friendCasualBeaconContent(
+                          context: context,
+                          friend: 'Ben Chamberlain',
+                          description:
+                              'Sting like a butterfly, pimp like a bee',
+                        ),
+                      ),
+                    _divider(context: context, text: "Live"),
+                    for (var i = 0; i < 3; i++)
+                      BeaconBar(
+                        child: _friendLiveBeaconContent(
+                          context: context,
+                          friend: 'Ben Chamberlain',
+                          description:
+                              'Sting like a butterfly, pimp like a bee',
+                        ),
+                      )
                   ],
                 ),
               ),
               Column(
                 children: [
-                  Text("Events"),
+                  Text("Events Placeholder.."),
                 ],
               ),
             ],
@@ -88,13 +83,13 @@ class BeaconSideDrawer extends StatelessWidget {
     );
   }
 
-  Widget _friendCasual(
-      {BuildContext context, String friend, String description}) {
+  Widget _friendCasualBeaconContent({
+    BuildContext context,
+    String friend,
+    String description,
+  }) {
     final theme = Theme.of(context);
     return Container(
-      height: 130,
-      width: double.infinity,
-      padding: const EdgeInsets.only(top: 3, bottom: 3),
       child: Row(
         children: [
           Padding(
@@ -105,7 +100,8 @@ class BeaconSideDrawer extends StatelessWidget {
             ),
           ),
           Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 10, bottom: 4),
@@ -118,43 +114,25 @@ class BeaconSideDrawer extends StatelessWidget {
                 width: 220,
                 child: Text(
                   description,
-                  // overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodyText2,
                 ),
               ),
               Container(
-                width: 180,
+                width: 220,
+                padding: const EdgeInsets.only(top: 10, bottom: 4),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Container(
-                      height: 30,
-                      width: 75,
-                      child: OutlinedGradientButton(
-                        strokeWidth: 2,
-                        radius: 6,
-                        gradient: ColorHelper.getBeaconGradient(),
-                        child: Text(
-                          'Going?',
-                          style: theme.textTheme.headline5,
-                        ),
-                        onPressed: () {},
-                      ),
+                    _smallOutLinedButton(
+                      context: context,
+                      title: 'Going?',
+                      onPressed: () {},
                     ),
-                    Container(
-                      height: 30,
-                      width: 75,
-                      child: OutlinedGradientButton(
-                        strokeWidth: 2,
-                        radius: 6,
-                        gradient: ColorHelper.getBeaconGradient(),
-                        child: Text(
-                          'Going?',
-                          style: theme.textTheme.headline5,
-                        ),
-                        onPressed: () {},
-                      ),
-                    )
+                    _smallOutLinedButton(
+                      context: context,
+                      title: 'Summon',
+                      onPressed: () {},
+                    ),
                   ],
                 ),
               )
@@ -165,9 +143,62 @@ class BeaconSideDrawer extends StatelessWidget {
     );
   }
 
-  List<Widget> _getFriendEvent({BuildContext context}) {}
+  Widget _friendLiveBeaconContent({
+    BuildContext context,
+    String friend,
+    String description,
+  }) {
+    final theme = Theme.of(context);
+    return Container(
+      child: Row(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(3.0),
+            child: Icon(
+              Icons.circle,
+              size: 70,
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 4),
+                child: Text(
+                  friend,
+                  style: theme.textTheme.headline4,
+                ),
+              ),
+              Container(
+                width: 220,
+                child: Text(
+                  description,
+                  style: theme.textTheme.bodyText2,
+                ),
+              ),
+              Container(
+                width: 220,
+                padding: const EdgeInsets.only(top: 10, bottom: 4, right: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    _smallOutLinedButton(
+                      context: context,
+                      title: 'Summon',
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
 
-  Widget _friendEvent({
+  Widget _friendEventBeaconContent({
     BuildContext context,
     String title,
     String hostedBy,
@@ -176,9 +207,7 @@ class BeaconSideDrawer extends StatelessWidget {
     DateTimeRange datetime,
   }) {
     final theme = Theme.of(context);
-    return Container(
-      height: 130,
-      padding: const EdgeInsets.only(top: 3, bottom: 3),
+    return Expanded(
       child: Column(
         children: [
           Padding(
@@ -224,7 +253,6 @@ class BeaconSideDrawer extends StatelessWidget {
                       width: 220,
                       child: Text(
                         description,
-                        // overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodyText2,
                       ),
                     )
@@ -238,6 +266,29 @@ class BeaconSideDrawer extends StatelessWidget {
     );
   }
 
+  Widget _smallOutLinedButton({
+    BuildContext context,
+    String title,
+    VoidCallback onPressed,
+  }) {
+    return Container(
+      height: 25,
+      width: 85,
+      child: OutlinedGradientButton(
+        strokeWidth: 1,
+        radius: 6,
+        gradient: ColorHelper.getBeaconGradient(),
+        child: Text(
+          title,
+          style: Theme.of(context).textTheme.headline5,
+        ),
+        onPressed: onPressed,
+      ),
+    );
+  }
+
+  List<Widget> _getFriendEvent({BuildContext context}) {}
+
   Widget _divider({BuildContext context, String text}) {
     return Container(
       height: 30,
@@ -249,4 +300,32 @@ class BeaconSideDrawer extends StatelessWidget {
       ),
     );
   }
+}
+
+
+class BeaconBar extends StatelessWidget {
+  final Widget child;
+
+  BeaconBar({@required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 130,
+      padding: const EdgeInsets.only(top: 3, bottom: 3),
+      child: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+            showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.transparent,
+                isScrollControlled: true,
+                builder: (context) {
+                  return BeaconInfoBottomSheet(child: child);
+                });
+          },
+          child: child),
+    );
+  }
+
 }
