@@ -1,5 +1,6 @@
-import 'package:beacon/components/BeaconGradientButton.dart';
+import 'package:beacon/library/ColorHelper.dart';
 import 'package:beacon/services/AuthService.dart';
+import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -41,13 +42,18 @@ class _SignInPageState extends State<SignInPage> {
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
               child: SizedBox(
                 width: double.infinity,
-                child: BeaconGradientButton(
-                    onPressed: () {
-                      setState(() {
-                        _pageState = PageState.SignIn;
-                      });
-                    },
-                    title: "Log In"),
+                child: GradientButton(
+                  onPressed: () {
+                    setState(() {
+                      _pageState = PageState.SignIn;
+                    });
+                  },
+                  child: Text(
+                    'Log In',
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                  gradient: ColorHelper.getBeaconGradient(),
+                ),
               ),
             ),
             Padding(
@@ -62,13 +68,18 @@ class _SignInPageState extends State<SignInPage> {
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30),
               child: SizedBox(
                 width: double.infinity,
-                child: BeaconGradientButton(
-                    onPressed: () {
-                      setState(() {
-                        _pageState = PageState.SignUpEmail;
-                      });
-                    },
-                    title: "Sign Up"),
+                child: GradientButton(
+                  onPressed: () {
+                    setState(() {
+                      _pageState = PageState.SignUpEmail;
+                    });
+                  },
+                  child: Text(
+                    'Sign Up',
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                  gradient: ColorHelper.getBeaconGradient(),
+                ),
               ),
             )
           ]),
@@ -132,19 +143,24 @@ class _SignInPageState extends State<SignInPage> {
             child: Center(
               child: SizedBox(
                   width: 220,
-                  child: BeaconGradientButton(
-                      onPressed: () async {
-                        var text = await context.read<AuthService>().signIn(
-                              email: signInEmailController.text.trim(),
-                              password: signInPasswordController.text.trim(),
-                            );
-                        if (text != "") {
-                          setState(() {
-                            error = text;
-                          });
-                        }
-                      },
-                      title: "Sign In")),
+                  child: GradientButton(
+                    onPressed: () async {
+                      var text = await context.read<AuthService>().signIn(
+                            email: signInEmailController.text.trim(),
+                            password: signInPasswordController.text.trim(),
+                          );
+                      if (text != "") {
+                        setState(() {
+                          error = text;
+                        });
+                      }
+                    },
+                    child: Text(
+                      'Sign In',
+                      style: Theme.of(context).textTheme.headline4,
+                    ),
+                    gradient: ColorHelper.getBeaconGradient(),
+                  )),
             ),
           )
         ]);
@@ -175,13 +191,17 @@ class _SignInPageState extends State<SignInPage> {
             child: Center(
               child: SizedBox(
                 width: 220,
-                child: BeaconGradientButton(
+                child: GradientButton(
                   onPressed: () {
                     setState(() {
                       _pageState = PageState.SignUpPassword;
                     });
                   },
-                  title: "Continue",
+                    child: Text(
+                      'Continue',
+                      style: Theme.of(context).textTheme.headline4,
+                    ),
+                    gradient: ColorHelper.getBeaconGradient(),
                 ),
               ),
             ),
@@ -226,13 +246,17 @@ class _SignInPageState extends State<SignInPage> {
             child: Center(
               child: SizedBox(
                 width: 220,
-                child: BeaconGradientButton(
+                child: GradientButton(
                   onPressed: () {
                     setState(() {
                       _pageState = PageState.SignUpName;
                     });
                   },
-                  title: "Continue",
+                    child: Text(
+                      'Continue',
+                      style: Theme.of(context).textTheme.headline4,
+                    ),
+                    gradient: ColorHelper.getBeaconGradient(),
                 ),
               ),
             ),
@@ -287,7 +311,7 @@ class _SignInPageState extends State<SignInPage> {
             child: Center(
               child: SizedBox(
                 width: 220,
-                child: BeaconGradientButton(
+                child: GradientButton(
                   onPressed: () async {
                     var text = await context.read<AuthService>().signUp(
                         firstName: firstNameController.text.trim(),
@@ -300,7 +324,11 @@ class _SignInPageState extends State<SignInPage> {
                       });
                     }
                   },
-                  title: "Register",
+                    child: Text(
+                      'Register',
+                      style: Theme.of(context).textTheme.headline4,
+                    ),
+                    gradient: ColorHelper.getBeaconGradient(),
                 ),
               ),
             ),
@@ -389,8 +417,8 @@ class _SignInPageState extends State<SignInPage> {
           title: _pageState == PageState.InitialSelector
               ? null
               : _pageState == PageState.SignIn
-              ? Text("Sign In")
-              : Text("Create Account"),
+                  ? Text("Sign In")
+                  : Text("Create Account"),
         ),
         body: SafeArea(child: _getPageState(context)));
   }

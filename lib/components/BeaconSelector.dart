@@ -391,7 +391,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                     width: 200,
                     child: Text(
                       type.description,
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodyText2,
                     ),
                   )
                 ],
