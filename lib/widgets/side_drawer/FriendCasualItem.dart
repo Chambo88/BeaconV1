@@ -1,5 +1,6 @@
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/widgets/BeaconBottomSheet.dart';
+import 'package:beacon/widgets/beacon_sheets/CasualBeaconSheet.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:flutter/material.dart';
 
@@ -15,20 +16,9 @@ class FriendCasualItem extends StatelessWidget {
     final theme = Theme.of(context);
     return BeaconItem(
       height: 200,
-      onTap: () {
-        Navigator.pop(context);
-        showModalBottomSheet(
-          context: context,
-          backgroundColor: Colors.transparent,
-          isScrollControlled: true,
-          builder: (context) {
-            return Container(
-              height: 300,
-              child: BeaconBottomSheet(child: Container()),
-            );
-          },
-        );
-      },
+      sheet: CasualBeaconSheet(
+        beacon: beacon
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
