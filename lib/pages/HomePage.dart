@@ -3,7 +3,7 @@ import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/MapPage.dart';
-import 'package:beacon/pages/SettingsPage.dart';
+import 'package:beacon/pages/settings/SettingsPage.dart';
 import 'package:beacon/services/BeaconService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';

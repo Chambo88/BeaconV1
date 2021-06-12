@@ -180,7 +180,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             builder: (context) {
               return FriendSelectorSheet(
                 user: widget.user,
-                updateFriendsList: _updateFriendsList,
+                onContinue: _updateFriendsList,
                 friendsSelected: _friendsList,
               );
             },

@@ -1,90 +1,83 @@
 import 'package:beacon/Assests/Icons.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/pages/settings/groups/CreateGroupPage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'EditGroupsPage.dart';
 
-
-
 class GroupSettings extends StatefulWidget {
-
   @override
   _GroupSettingsState createState() => _GroupSettingsState();
 }
 
 class _GroupSettingsState extends State<GroupSettings> {
-
   GetIcons iconStuff = GetIcons();
-  Map<String, IconData> _icon_list;
+  Map<String, IconData> _iconList;
 
-  bool _group_saved = false;
+  bool _groupSaved = false;
 
   @override
   void initState() {
     super.initState();
-    _icon_list = iconStuff.getIconMap();
+    _iconList = iconStuff.getIconMap();
   }
 
   @override
   Widget build(BuildContext context) {
     var user = Provider.of<UserModel>(context);
     return Scaffold(
-        appBar: AppBar(
-            title: Text("Groups"),
-            actions: [
-              Padding(
-                padding: EdgeInsets.only(right: 20),
-                child: GestureDetector(
+      appBar: AppBar(
+        title: Text("Groups"),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 20),
+            child: GestureDetector(
+              onTap: () async {
+                _groupSaved = await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CreateGroupPage(),
+                  ),
+                );
+                if (_groupSaved) {
+                  // user.addGroupToList(returnedGroup);
+                  // setState(() {});
+                  // user.addGroupToListFirebase(returnedGroup);
+                }
+                _groupSaved = false;
+              },
+              child: Icon(
+                Icons.add,
+              ),
+            ),
+          ),
+        ],
+      ),
 
-                    onTap: () async {
-                      GroupModel returned_group = new GroupModel(
-                          name: '',
-                          userIds: [],
-                          icon: 'timeRounded',
-                      );
-                      _group_saved = await Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => EditGroups(group: returned_group, isNewGroup: true,))
-                      );
-                      if (_group_saved) {
-                        user.addGroupToList(returned_group);
-                        setState(() {});
-                        user.addGroupToListFirebase(returned_group);
-                      }
-                      _group_saved = false;
-
-                    },
-                    child: Icon(Icons.person_add)
-                ),
-              )
-            ]
-        ),
-
-        // body: buildListView(),
-        // body: const MyStatefulWidget(),
-        body: Column(
-          children: [
-            Expanded(child: buildReorderableListView(user)),
-          ],
-        )
+      // body: buildListView(),
+      // body: const MyStatefulWidget(),
+      body: Column(
+        children: [
+          Expanded(child: buildReorderableListView(user)),
+        ],
+      ),
     );
   }
 
   //Pop up dialog for removing groups
-  AlertDialog remove_group_dialog(int index, UserModel user) {
+  AlertDialog removeGroupDialog(int index, UserModel user) {
     return AlertDialog(
       title: Text("remove group?"),
       actions: [
-        TextButton(onPressed: () {
-          user.removeGroupFromListFirebase(user.groups[index]);
-          setState(() {
-            user.removeGroup(user.groups[index]);
-            Navigator.of(context).pop();
-          });
-
-
-        }, child: Text("confirm"))
+        TextButton(
+            onPressed: () {
+              user.removeGroupFromListFirebase(user.groups[index]);
+              setState(() {
+                user.removeGroup(user.groups[index]);
+                Navigator.of(context).pop();
+              });
+            },
+            child: Text("confirm"))
       ],
     );
   }
@@ -100,38 +93,37 @@ class _GroupSettingsState extends State<GroupSettings> {
               showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return remove_group_dialog(index, user);
+                    return removeGroupDialog(index, user);
                   });
             },
             onTap: () async {
-
               //copy current groups list object so we dont modify it when we create a temp group
               List<String> userIdsCopy = [...user.groups[index].userIds];
 
-              GroupModel returned_group = new GroupModel(
-                  // name: user.groups[index].name,
-                  name: user.groups[index].name,
-                  userIds: userIdsCopy,
-                  icon: user.groups[index].icon,
+              GroupModel returnedGroup = new GroupModel(
+                // name: user.groups[index].name,
+                name: user.groups[index].name,
+                userIds: userIdsCopy,
+                icon: user.groups[index].icon,
               );
 
               //Did the user save or cancel
-              _group_saved = await Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => EditGroups(group: returned_group, isNewGroup: false))
-              );
+              _groupSaved = await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => EditGroups(
+                        group: returnedGroup,
+                        isNewGroup: false,
+                      )));
 
               //if the person said save then we remove the original grohup from firebase and the user and add the newly created one
-              if (_group_saved) {
+              if (_groupSaved) {
                 user.removeGroupFromListFirebase(user.groups[index]);
                 user.removeGroup(user.groups[index]);
-                user.addGroupToList(returned_group);
-                user.addGroupToListFirebase(returned_group);
+                user.addGroupToList(returnedGroup);
+                user.addGroupToListFirebase(returnedGroup);
                 setState(() {});
               }
 
-              _group_saved = false;
-
+              _groupSaved = false;
             },
             child: Container(
               key: Key('$index'),
@@ -170,6 +162,3 @@ class _GroupSettingsState extends State<GroupSettings> {
     );
   }
 }
-
-
-

@@ -6,12 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class FriendSelectorSheet extends StatefulWidget {
-  FriendSelectorSheet(
-      {Key key, this.user, this.updateFriendsList, this.friendsSelected})
-      : super(key: key);
   UserModel user;
-  Function updateFriendsList;
+  Function onContinue;
   Set<String> friendsSelected = Set();
+
+  FriendSelectorSheet({
+    Key key,
+    this.user,
+    this.onContinue,
+    this.friendsSelected,
+  }) : super(key: key);
+
   @override
   _FriendSelectorSheetState createState() =>
       _FriendSelectorSheetState(this.user.friends);
@@ -118,7 +123,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
               ),
               gradient: ColorHelper.getBeaconGradient(),
               onPressed: () {
-                widget.updateFriendsList(widget.friendsSelected);
+                widget.onContinue(widget.friendsSelected);
                 Navigator.pop(context);
               },
             ),
