@@ -3,13 +3,14 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:beacon/Assests/Icons.dart';
-import 'package:beacon/components/BeaconGradientButton.dart';
-import 'package:beacon/components/FlatArrowButton.dart';
 import 'package:beacon/components/FriendSelectorSheet.dart';
+import 'package:beacon/library/ColorHelper.dart';
 import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/widgets/buttons/FlatArrowButton.dart';
+import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -226,7 +227,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           if (!_displayToAll) _friendsButton(context),
           if (!_displayToAll)
             Column(
-              children: selectedFriendTiles(context),
+              children: _selectedFriendTiles(context),
             )
         ],
       ),
@@ -244,7 +245,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
         ));
   }
 
-  Set<String> getAllFriendsSelectedAndGroups() {
+  Set<String> _getAllFriendsSelectedAndGroups() {
     Set<String> allFriends = _groupList
         .map((GroupModel g) => g.userIds)
         .expand((friend) => friend)
@@ -253,8 +254,8 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     return allFriends;
   }
 
-  List<Widget> selectedFriendTiles(BuildContext context) {
-    return getAllFriendsSelectedAndGroups().map((friend) {
+  List<Widget> _selectedFriendTiles(BuildContext context) {
+    return _getAllFriendsSelectedAndGroups().map((friend) {
       return ListTile(
         title: Text(
           friend,
@@ -326,6 +327,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
       String title,
       Function onBackClick,
       Widget child}) {
+    final theme = Theme.of(context);
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -339,7 +341,14 @@ class _BeaconSelectorState extends State<BeaconSelector> {
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(10),
-          child: BeaconGradientButton(title: 'Next', onPressed: () {})
+          child: GradientButton(
+            child: Text(
+              'Next',
+              style: theme.textTheme.headline4,
+            ),
+            gradient: ColorHelper.getBeaconGradient(),
+            onPressed: () {},
+          ),
         ),
       ],
     );
@@ -382,7 +391,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                     width: 200,
                     child: Text(
                       type.description,
-                      style: Theme.of(context).textTheme.caption,
+                      style: Theme.of(context).textTheme.bodyText2,
                     ),
                   )
                 ],
@@ -480,7 +489,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  Row selectBeacon() {
+  Row _selectBeacon() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [

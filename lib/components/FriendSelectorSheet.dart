@@ -1,15 +1,20 @@
-import 'package:beacon/components/BeaconGradientButton.dart';
+import 'package:beacon/library/ColorHelper.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/widgets/BeaconBottomSheet.dart';
+import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class FriendSelectorSheet extends StatefulWidget {
-  FriendSelectorSheet({Key key, this.user, this.updateFriendsList, this.friendsSelected}) : super(key: key);
+  FriendSelectorSheet(
+      {Key key, this.user, this.updateFriendsList, this.friendsSelected})
+      : super(key: key);
   UserModel user;
   Function updateFriendsList;
   Set<String> friendsSelected = Set();
   @override
-  _FriendSelectorSheetState createState() => _FriendSelectorSheetState(this.user.friends);
+  _FriendSelectorSheetState createState() =>
+      _FriendSelectorSheetState(this.user.friends);
 }
 
 class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
@@ -18,7 +23,6 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
   _FriendSelectorSheetState(List<String> friends) {
     _filteredFriends = friends;
   }
-
 
   Color getCheckboxColor(Set<MaterialState> states) {
     const Set<MaterialState> interactiveStates = <MaterialState>{
@@ -40,94 +44,87 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    final theme = Theme.of(context);
     // Pop up Friend selector
-      return Container(
-        height: MediaQuery.of(context).size.height * 0.75,
-        margin: EdgeInsets.only(top: 70),
-        decoration: new BoxDecoration(
-          color: Colors.black,
-          borderRadius: new BorderRadius.only(
-            topLeft: const Radius.circular(25.0),
-            topRight: const Radius.circular(25.0),
-          ),
-        ),
-        child: Column(
-          children: [
-            ListTile(
-              leading: CloseButton(
-                color: Colors.white,
-              ),
-              title: Text(
-                'Friends',
+    return BeaconBottomSheet(
+      child: Column(
+        children: [
+          ListTile(
+            leading: CloseButton(
+              color: Colors.white,
+            ),
+            title: Text('Friends',
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.headline4
-              ),
+                style: theme.textTheme.headline4),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16),
+            child: TextFormField(
+              maxLength: 20,
+              style: TextStyle(color: Colors.white),
+              onChanged: (filter) {
+                setState(() {
+                  _filteredFriends = getFilteredFriends(filter);
+                });
+              },
+              decoration: InputDecoration(
+                icon: Icon(Icons.search),
+                labelText: 'Name',
+              ).applyDefaults(theme.inputDecorationTheme),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16),
-              child: TextFormField(
-                maxLength: 20,
-                style: TextStyle(color: Colors.white),
-                onChanged: (filter) {
-                  setState(() {
-                    _filteredFriends = getFilteredFriends(filter);
-                  });
-                },
-                decoration: InputDecoration(
-                  icon: Icon(Icons.search),
-                  labelText: 'Name',
-                ).applyDefaults(Theme.of(context).inputDecorationTheme),
-              ),
-            ),
-            Expanded(
-              child: Column(
-                children: _filteredFriends.map((friend) {
-                  return ListTile(
+          ),
+          Expanded(
+            child: Column(
+              children: _filteredFriends.map((friend) {
+                return ListTile(
+                  key: Key(friend),
+                  title: Text(
+                    friend,
+                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                    ),
+                  ),
+                  trailing: Checkbox(
                     key: Key(friend),
-                    title: Text(
-                      friend,
-                      textAlign: TextAlign.left,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                      ),
-                    ),
-
-                    trailing: Checkbox(
-                      key: Key(friend),
-                      fillColor: MaterialStateProperty.resolveWith(getCheckboxColor),
-                      checkColor: Colors.black,
-                      value: widget.friendsSelected.contains(friend),
-                      onChanged: (v) {
-                        setState(
-                          () {
-                            if (v) {
-                              widget.friendsSelected.add(friend);
-                            } else {
-                              widget.friendsSelected.remove(friend);
-                            }
-                          },
-                        );
-                      },
-                    ),
-                  );
-                }).toList(),
-              ),
+                    fillColor:
+                        MaterialStateProperty.resolveWith(getCheckboxColor),
+                    checkColor: Colors.black,
+                    value: widget.friendsSelected.contains(friend),
+                    onChanged: (v) {
+                      setState(
+                        () {
+                          if (v) {
+                            widget.friendsSelected.add(friend);
+                          } else {
+                            widget.friendsSelected.remove(friend);
+                          }
+                        },
+                      );
+                    },
+                  ),
+                );
+              }).toList(),
             ),
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: BeaconGradientButton(
-                title: 'Continue',
-                  onPressed: () {
-                    widget.updateFriendsList(widget.friendsSelected);
-                    Navigator.pop(context);
-                  }
+          ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: GradientButton(
+              child: Text(
+                'Continue',
+                style: theme.textTheme.headline4,
               ),
-            )
-          ],
-        ),
-      );
+              gradient: ColorHelper.getBeaconGradient(),
+              onPressed: () {
+                widget.updateFriendsList(widget.friendsSelected);
+                Navigator.pop(context);
+              },
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

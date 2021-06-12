@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class FlatArrowButton extends StatelessWidget {
-  String title;
-  Function onTap;
+  final String title;
+  final VoidCallback onTap;
 
-  FlatArrowButton({this.title, this.onTap});
+  FlatArrowButton({
+    @required this.title,
+    @required this.onTap
+  });
 
   @override
   Widget build(BuildContext context) {

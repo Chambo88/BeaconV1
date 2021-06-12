@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 
 typedef void SelectedChangedCallback(UserModel person, bool isSelected);
 
-
 class Add_friends extends StatefulWidget {
   @override
   _Add_friendsState createState() => _Add_friendsState();
@@ -19,13 +18,11 @@ class Add_friends extends StatefulWidget {
 }
 
 class _Add_friendsState extends State<Add_friends> {
-
   FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
 
   List<UserModel> _friends = [];
   List<UserModel> _friends_not_added_yet = [];
   List<UserModel> _friends_not_added_yet_duplicate = [];
-
 
   //
   // @override
@@ -33,7 +30,6 @@ class _Add_friendsState extends State<Add_friends> {
   //   super.initState();
   //   final user = Provider.of<UserModel>(context);
   // }
-
 
   //returns a new List<Person> with those that have not been added to the group yet
   List<UserModel> get_unadded_friends(List<UserModel> _friends) {
@@ -43,7 +39,7 @@ class _Add_friendsState extends State<Add_friends> {
     for (int index = 0; index < _friends.length; index++) {
       condition = false;
       for (int index2 = 0; index2 < widget.group.userIds.length; index2++) {
-        if (widget.group.userIds[index2] == _friends[index].getId ) {
+        if (widget.group.userIds[index2] == _friends[index].getId) {
           condition = true;
           break;
         }
@@ -55,14 +51,13 @@ class _Add_friendsState extends State<Add_friends> {
     return return_list;
   }
 
-
-
-
-
   //Gets the data from friends users then builds the friendlist search add thingy
-  FutureBuilder<QuerySnapshot> HaveFriends (UserModel user) {
+  FutureBuilder<QuerySnapshot> HaveFriends(UserModel user) {
     return FutureBuilder(
-      future: _fireStoreDataBase.collection('users').where('userId', whereIn: user.friends).get(),
+      future: _fireStoreDataBase
+          .collection('users')
+          .where('userId', whereIn: user.friends)
+          .get(),
       builder: (context, dataSnapshot) {
         while (!dataSnapshot.hasData) {
           return circularProgress();
@@ -75,10 +70,10 @@ class _Add_friendsState extends State<Add_friends> {
         _friends_not_added_yet = get_unadded_friends(_friends);
         _friends_not_added_yet_duplicate.addAll(_friends_not_added_yet);
         return AddUsersToGroupMain(
-            friends: _friends,
-            group: widget.group,
-            friends_not_added_yet: _friends_not_added_yet,
-            friends_not_added_yet_duplicate: _friends_not_added_yet_duplicate,
+          friends: _friends,
+          group: widget.group,
+          friends_not_added_yet: _friends_not_added_yet,
+          friends_not_added_yet_duplicate: _friends_not_added_yet_duplicate,
         );
       },
     );
@@ -89,9 +84,7 @@ class _Add_friendsState extends State<Add_friends> {
     final user = Provider.of<UserModel>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-            child: Text('Add Friends')
-        ),
+        title: Center(child: Text('Add Friends')),
       ),
       body: doesUserHaveFriends(user),
     );
@@ -101,22 +94,22 @@ class _Add_friendsState extends State<Add_friends> {
   doesUserHaveFriends(UserModel user) {
     if (user.friends.isEmpty) {
       return Container(child: Text('no friends lol'));
-    }
-    else return HaveFriends(user);
+    } else
+      return HaveFriends(user);
   }
-
-
 }
-
 
 ///-------------This is the main search stuff after the users are loaded----------
 class AddUsersToGroupMain extends StatefulWidget {
-
   List<UserModel> friends;
   GroupModel group;
   List<UserModel> friends_not_added_yet;
   List<UserModel> friends_not_added_yet_duplicate;
-  AddUsersToGroupMain({this.group, this.friends_not_added_yet, this.friends_not_added_yet_duplicate, this.friends});
+  AddUsersToGroupMain(
+      {this.group,
+      this.friends_not_added_yet,
+      this.friends_not_added_yet_duplicate,
+      this.friends});
 
   @override
   _AddUsersToGroupMainState createState() => _AddUsersToGroupMainState();
@@ -128,14 +121,14 @@ class _AddUsersToGroupMainState extends State<AddUsersToGroupMain> {
   // List<UserModel> _friends_not_added_yet_duplicate = [];
   List<UserModel> _selected_list = [];
 
-
   void filterSearchResults(String query) {
     List<UserModel> dummySearchList = [];
     dummySearchList.addAll(widget.friends_not_added_yet_duplicate);
-    if(query.isNotEmpty) {
+    if (query.isNotEmpty) {
       List<UserModel> dummyListData = [];
       dummySearchList.forEach((person) {
-        if(person.getFirstName.toLowerCase().contains(query) || person.getLastName.toLowerCase().contains(query)) {
+        if (person.getFirstName.toLowerCase().contains(query) ||
+            person.getLastName.toLowerCase().contains(query)) {
           dummyListData.add(person);
         }
       });
@@ -147,39 +140,48 @@ class _AddUsersToGroupMainState extends State<AddUsersToGroupMain> {
     } else {
       setState(() {
         widget.friends_not_added_yet.clear();
-        widget.friends_not_added_yet.addAll(widget.friends_not_added_yet_duplicate);
+        widget.friends_not_added_yet
+            .addAll(widget.friends_not_added_yet_duplicate);
       });
     }
   }
 
-
   void _add_to_selected(UserModel person, bool isSelected) {
     setState(() {
-        if(!isSelected) {
-          _selected_list.add(person);
-        } else {
-          _selected_list.remove(person);
-        }
+      if (!isSelected) {
+        _selected_list.add(person);
+      } else {
+        _selected_list.remove(person);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       child: Column(
         children: [
-          Padding(padding: const EdgeInsets.all(8.0),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: TextField(
               onChanged: (value) {
                 filterSearchResults(value);
               },
+              style: TextStyle(color: Colors.white),
               controller: editingController,
               decoration: InputDecoration(
-                  labelText: "Search",
-                  hintText: "Search",
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                labelText: "Search",
+                hintText: "Search",
+
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(25.0),
+                  ),
+                ),
+              ).applyDefaults(theme.inputDecorationTheme),
             ),
           ),
           Expanded(
@@ -189,7 +191,8 @@ class _AddUsersToGroupMainState extends State<AddUsersToGroupMain> {
               itemBuilder: (context, index) {
                 return AddTile(
                   friends_not_added_yet: widget.friends_not_added_yet,
-                  selected: _selected_list.contains(widget.friends_not_added_yet[index]),
+                  selected: _selected_list
+                      .contains(widget.friends_not_added_yet[index]),
                   selection_change: _add_to_selected,
                   index: index,
                   group: widget.group,
@@ -199,10 +202,10 @@ class _AddUsersToGroupMainState extends State<AddUsersToGroupMain> {
           ),
         ],
       ),
-    );;
+    );
+    ;
   }
 }
-
 
 class AddTile extends StatefulWidget {
   AddTile({
@@ -212,7 +215,8 @@ class AddTile extends StatefulWidget {
     this.selected,
     this.selection_change,
     this.group,
-  }) : _friends_not_added_yet = friends_not_added_yet, super(key: key);
+  })  : _friends_not_added_yet = friends_not_added_yet,
+        super(key: key);
 
   List<UserModel> _friends_not_added_yet;
   int index;
@@ -232,31 +236,37 @@ class _AddTileState extends State<AddTile> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        title: Text(widget._friends_not_added_yet[widget.index].getFirstName + " " + widget._friends_not_added_yet[widget.index].getLastName),
-        trailing: widget.selected? buildSubtractButton(context): buildAddButton(context)
-    );
+        title: Text(widget._friends_not_added_yet[widget.index].getFirstName +
+            " " +
+            widget._friends_not_added_yet[widget.index].getLastName),
+        trailing: widget.selected
+            ? buildSubtractButton(context)
+            : buildAddButton(context));
   }
 
   GestureDetector buildAddButton(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          widget.selection_change(widget._friends_not_added_yet[widget.index], false);
-          widget.group.add_id(widget._friends_not_added_yet[widget.index].getId);
-          widget.selected = true;
-          setState(() {});
-        },
-        child: Icon(
-          Icons.add,
-          color: _getColor(context),
-        ),
-      );
+      onTap: () {
+        widget.selection_change(
+            widget._friends_not_added_yet[widget.index], false);
+        widget.group.add_id(widget._friends_not_added_yet[widget.index].getId);
+        widget.selected = true;
+        setState(() {});
+      },
+      child: Icon(
+        Icons.add,
+        color: _getColor(context),
+      ),
+    );
   }
 
   GestureDetector buildSubtractButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        widget.selection_change(widget._friends_not_added_yet[widget.index], true);
-        widget.group.remove_id(widget._friends_not_added_yet[widget.index].getId);
+        widget.selection_change(
+            widget._friends_not_added_yet[widget.index], true);
+        widget.group
+            .remove_id(widget._friends_not_added_yet[widget.index].getId);
         widget.selected = false;
         setState(() {});
       },
@@ -267,5 +277,3 @@ class _AddTileState extends State<AddTile> {
     );
   }
 }
-
-
