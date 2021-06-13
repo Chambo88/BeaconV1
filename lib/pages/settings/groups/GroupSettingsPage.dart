@@ -12,7 +12,7 @@ class GroupSettings extends StatefulWidget {
 }
 
 class _GroupSettingsState extends State<GroupSettings> {
-  GetIcons iconStuff = GetIcons();
+  BeaconIcons iconStuff = BeaconIcons();
   Map<String, IconData> _iconList;
 
   bool _groupSaved = false;
@@ -129,7 +129,7 @@ class _GroupSettingsState extends State<GroupSettings> {
               key: Key('$index'),
               child: Row(
                 children: <Widget>[
-                  Icon(iconStuff.getIconFromString(user.groups[index].icon)),
+                  Icon(BeaconIcons.getIconFromString(user.groups[index].icon)),
                   Text(user.groups[index].name),
                   Spacer(),
                   Padding(

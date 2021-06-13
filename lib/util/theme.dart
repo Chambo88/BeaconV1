@@ -41,12 +41,7 @@ class CustomTheme {
         foregroundColor: MaterialStateProperty.resolveWith((states) {
           return (states.contains(MaterialState.disabled))
               ? Color(0xFF716F6F)
-              : Color(0xFFFFFFFF);
-        }),
-        backgroundColor: MaterialStateProperty.resolveWith((states) {
-          return (states.contains(MaterialState.disabled))
-              ? Color(0xFF4B4B4B)
-              : Color(0xFFB928FF);
+              : Color(0xFFB500E2);
         }),
         textStyle: MaterialStateProperty.resolveWith((states) {
           return (states.contains(MaterialState.disabled))

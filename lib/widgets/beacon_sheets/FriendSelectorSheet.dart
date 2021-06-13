@@ -4,30 +4,27 @@ import 'package:beacon/widgets/BeaconBottomSheet.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+
 
 class FriendSelectorSheet extends StatefulWidget {
-  UserModel user;
   Function onContinue;
   Set<String> friendsSelected = Set();
 
   FriendSelectorSheet({
     Key key,
-    this.user,
     this.onContinue,
     this.friendsSelected,
   }) : super(key: key);
 
   @override
-  _FriendSelectorSheetState createState() =>
-      _FriendSelectorSheetState(this.user.friends);
+  _FriendSelectorSheetState createState() => _FriendSelectorSheetState();
 }
 
 class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
+  UserModel _user;
   List<String> _filteredFriends = [];
 
-  _FriendSelectorSheetState(List<String> friends) {
-    _filteredFriends = friends;
-  }
 
   Color getCheckboxColor(Set<MaterialState> states) {
     const Set<MaterialState> interactiveStates = <MaterialState>{
@@ -42,7 +39,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
   }
 
   List<String> getFilteredFriends(String filter) {
-    return widget.user.friends.where((friend) {
+    return _user.friends.where((friend) {
       return friend.toLowerCase().contains(filter.toLowerCase());
     }).toList();
   }
@@ -50,6 +47,11 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    if (_user == null) {
+      _user = Provider.of<UserModel>(context);
+      _filteredFriends = _user.friends;
+    }
+
     // Pop up Friend selector
     return BeaconBottomSheet(
       child: Column(

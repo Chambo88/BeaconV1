@@ -26,8 +26,6 @@ class EditGroups extends StatefulWidget {
 
 class _EditGroupsState extends State<EditGroups> {
   @override
-  GetIcons iconStuff = GetIcons();
-  Map<String, IconData> _iconList;
   FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
   TextEditingController _controller;
 
@@ -35,7 +33,6 @@ class _EditGroupsState extends State<EditGroups> {
   void initState() {
     super.initState();
     _controller = TextEditingController();
-    _iconList = iconStuff.getIconMap();
   }
 
   @override
@@ -201,12 +198,11 @@ class _EditGroupsState extends State<EditGroups> {
     return ListView(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
-        children: _iconList.entries.map((entry) {
+        children: BeaconIcons.iconMap.entries.map((entry) {
           return CustomIconButton(
             icon: entry.key,
             group: widget.group,
             group_icon_change: _changeGroupIcon,
-            iconStuff: iconStuff,
           );
         }).toList());
   }
@@ -261,13 +257,12 @@ class _UserListState extends State<UserList> {
 //-----------------THE ICON BUTTONS-----------------------
 class CustomIconButton extends StatefulWidget {
   const CustomIconButton(
-      {Key key, this.icon, this.group, this.group_icon_change, this.iconStuff})
+      {Key key, this.icon, this.group, this.group_icon_change})
       : super(key: key);
 
   final String icon;
   final GroupModel group;
   final GroupIconChangeCallBack group_icon_change;
-  final GetIcons iconStuff;
 
   @override
   _CustomIconButtonState createState() => _CustomIconButtonState();
@@ -289,9 +284,9 @@ class _CustomIconButtonState extends State<CustomIconButton> {
           widget.group_icon_change(widget.icon, widget.group);
           setState(() {});
         },
-        child: Icon(widget.iconStuff.getIconFromString(widget.icon),
+        child: Icon(BeaconIcons.getIconFromString(widget.icon),
             color:
-                _get_color(widget.iconStuff.getIconFromString(widget.icon))));
+                _get_color(BeaconIcons.getIconFromString(widget.icon))));
   }
 }
 

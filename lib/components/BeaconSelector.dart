@@ -3,7 +3,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:beacon/Assests/Icons.dart';
-import 'package:beacon/components/FriendSelectorSheet.dart';
+import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/library/ColorHelper.dart';
 import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/models/GroupModel.dart';
@@ -29,7 +29,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   var _showBeaconEditor = false;
   var _displayToAll = false;
   BeaconType _beaconTypeSelected;
-  GetIcons iconStuff = GetIcons();
+  BeaconIcons iconStuff = BeaconIcons();
 
   var _groupList = Set<GroupModel>();
   var _friendsList = Set<String>();
@@ -179,7 +179,6 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             isScrollControlled: true,
             builder: (context) {
               return FriendSelectorSheet(
-                user: widget.user,
                 onContinue: _updateFriendsList,
                 friendsSelected: _friendsList,
               );
@@ -469,7 +468,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  Container groups(StateSetter setState, GetIcons iconStuff) {
+  Container groups(StateSetter setState, BeaconIcons iconStuff) {
     return Container(
       height: 85.0,
       padding: EdgeInsets.symmetric(vertical: 5.0),
@@ -482,7 +481,6 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             selected: _groupList.contains(group),
             onGroupChanged: _handleGroupSelectionChanged,
             setState: setState,
-            iconStuff: iconStuff,
           );
         }).toList(),
       ),
@@ -592,14 +590,12 @@ class SingleGroup extends StatelessWidget {
     this.selected,
     this.onGroupChanged,
     this.setState,
-    this.iconStuff,
   }) : super(key: ObjectKey(group));
 
   final GroupModel group;
   final bool selected;
   final StateSetter setState;
   final GroupListChangeCallBack onGroupChanged;
-  final GetIcons iconStuff;
 
   @override
   Widget build(BuildContext context) {
@@ -621,7 +617,7 @@ class SingleGroup extends StatelessWidget {
                   width: 60,
                   height: 60,
                   child: Icon(
-                    iconStuff.getIconFromString(group.icon),
+                    BeaconIcons.getIconFromString(group.icon),
                   ),
                 ),
                 onTap: () {
