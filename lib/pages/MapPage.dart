@@ -2,17 +2,13 @@ import 'dart:async';
 
 import 'package:beacon/components/BeaconSelector.dart';
 import 'package:beacon/components/BeaconSideDrawer.dart';
-import 'package:beacon/models/BeaconModel.dart';
+import 'package:beacon/components/Map.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/LoactionService.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'HomePage.dart';
 
 class MapPage extends StatefulWidget {
   @override
@@ -20,41 +16,11 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-
-  _updateMarkers(List<BeaconModel> beaconList) {
-    BitmapDescriptor beaconIcon;
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(size: Size(12, 12)), 'assets/active_marker.png')
-        .then((onValue) {
-      beaconList.forEach((beacon) {
-        beaconIcon = onValue;
-
-        final Marker marker = Marker(
-            markerId: MarkerId(beacon.id),
-            position:
-                LatLng(double.parse(beacon.lat), double.parse(beacon.long)),
-            icon: beaconIcon);
-
-        setState(() {
-          // adding a new marker to map
-          markers[MarkerId(beacon.id)] = marker;
-        });
-      });
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    var beaconList = BeaconService().getUserList();
-    beaconList.listen(_updateMarkers);
-  }
-
   Widget build(BuildContext context) {
     final UserModel _user = context.watch<UserModel>();
-    var userLocation = context.read<UserLocationModel>();
+    final Future<UserLocationModel> _userLocation =
+        LocationService().getLocation();
+
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     final theme = Theme.of(context);
 
@@ -62,13 +28,16 @@ class _MapPageState extends State<MapPage> {
         key: _scaffoldKey,
         drawer: BeaconSideDrawer(),
         body: Stack(children: [
-          Center(
-              child: GoogleMap(
-            initialCameraPosition: CameraPosition(
-                target: LatLng(userLocation.latitude, userLocation.longitude),
-                zoom: 11.0),
-            markers: Set<Marker>.of(markers.values),
-          )),
+          FutureBuilder<UserLocationModel>(
+              future: _userLocation,
+              builder: (BuildContext context,
+                  AsyncSnapshot<UserLocationModel> snapshot) {
+                if (snapshot.hasData) {
+                  return new MapComponent(userLocation: snapshot.data);
+                } else {
+                  return Center(child: Text("Getting current location..."));
+                }
+              }),
           new BeaconSelector(user: _user),
           Container(
             alignment: Alignment.bottomRight,
