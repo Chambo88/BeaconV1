@@ -5,6 +5,7 @@ import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/BeaconService.dart';
+import 'package:beacon/services/LoactionService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,16 +19,20 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  Map<MarkerId, Marker> markers =
-      <MarkerId, Marker>{}; // CLASS MEMBER, MAP OF MARKS
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 
   _updateMarkers(List<BeaconModel> beaconList) {
     beaconList.forEach((beacon) {
-      // creating a new MARKER
+      BitmapDescriptor beaconIcon;
+      BitmapDescriptor.fromAssetImage(
+              ImageConfiguration(size: Size(48, 48)), 'assets/my_icon.png')
+          .then((onValue) {
+        beaconIcon = onValue;
+      });
       final Marker marker = Marker(
-        markerId: MarkerId(beacon.id),
-        position: LatLng(double.parse(beacon.lat), double.parse(beacon.long)),
-      );
+          markerId: MarkerId(beacon.id),
+          position: LatLng(double.parse(beacon.lat), double.parse(beacon.long)),
+          icon: beaconIcon);
 
       setState(() {
         // adding a new marker to map
