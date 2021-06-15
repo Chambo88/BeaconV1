@@ -33,10 +33,12 @@ class LocationService {
         // If granted listen to the onLocationChanged stream and emit over our controller
         location.onLocationChanged.listen((locationData) {
           if (locationData != null) {
-            _locationController.add(UserLocationModel(
-              latitude: locationData.latitude,
-              longitude: locationData.longitude,
-            ));
+            _locationController.add(
+              UserLocationModel(
+                latitude: locationData.latitude,
+                longitude: locationData.longitude,
+              ),
+            );
           }
         });
       }

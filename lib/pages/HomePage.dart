@@ -16,20 +16,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:async/async.dart';
 import 'package:beacon/pages/NotificationPage.dart';
 
-
 class BuildHomePage extends StatefulWidget {
   @override
   _BuildHomePageState createState() => _BuildHomePageState();
 }
 
 class _BuildHomePageState extends State<BuildHomePage> {
-
   int _pageIndex = 0;
   final pages = [
-    HomePage(),
+    MapPage(),
     NotificationPage(),
     SettingsPage(),
-    MapPage(),
   ];
 
   @override
@@ -38,9 +35,8 @@ class _BuildHomePageState extends State<BuildHomePage> {
     final userOnline = Provider.of<DocumentSnapshot>(context, listen: false);
   }
 
-
   bool isUserNull(UserModel userFromFireStore) {
-    if(userFromFireStore == null) {
+    if (userFromFireStore == null) {
       return true;
     } else {
       return false;
@@ -48,144 +44,121 @@ class _BuildHomePageState extends State<BuildHomePage> {
   }
 
   Widget redCircleStuff(UserModel userFromFireStore) {
-      return Positioned(
-        right: 0,
-        child: new Container(
-          padding: EdgeInsets.all(1),
-          decoration: new BoxDecoration(
-            color: Colors.red,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          constraints: BoxConstraints(
-            minWidth: 12,
-            minHeight: 12,
-          ),
-          child: new Text(
-            userFromFireStore.notificationCount.toString(),
-            style: new TextStyle(
-              color: Colors.white,
-              fontSize: 10,
-            ),
-            textAlign: TextAlign.center,
-          ),
+    return Positioned(
+      right: 0,
+      child: new Container(
+        padding: EdgeInsets.all(1),
+        decoration: new BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(8),
         ),
-      );
+        constraints: BoxConstraints(
+          minWidth: 12,
+          minHeight: 12,
+        ),
+        child: new Text(
+          userFromFireStore.notificationCount.toString(),
+          style: new TextStyle(
+            color: Colors.white,
+            fontSize: 10,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
   }
 
   BottomNavigationBarItem notificationsIcon(UserModel userFromFireStore) {
     if (userFromFireStore.notificationCount != 0) {
       return BottomNavigationBarItem(
-
+        label: 'notification',
         icon: new Stack(
           children: <Widget>[
-            new Icon(Icons.notifications),
+            new Icon(
+              Icons.notifications,
+              color: Colors.white,
+            ),
             redCircleStuff(userFromFireStore),
-
+          ],
+        ),
+        activeIcon: new Stack(
+          children: <Widget>[
+            new Icon(
+              Icons.notifications,
+              color: Colors.purple,
+            ),
+            redCircleStuff(userFromFireStore),
           ],
         ),
       );
-    }
-    else {
+    } else {
       return BottomNavigationBarItem(
+        label: 'notification',
         icon: new Stack(
           children: <Widget>[
-            new Icon(Icons.notifications),
+            new Icon(
+              Icons.notifications,
+              color: Colors.white,
+            ),
+          ],
+        ),
+        activeIcon: new Stack(
+          children: <Widget>[
+            new Icon(
+              Icons.notifications,
+              color: Colors.purple,
+            ),
           ],
         ),
       );
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
     final userOnline = Provider.of<DocumentSnapshot>(context);
-    UserModel userFromFireStore =  UserModel.fromDocument(userOnline);
+    UserModel userFromFireStore = UserModel.fromDocument(userOnline);
     return Scaffold(
       body: pages[_pageIndex],
-      bottomNavigationBar: CupertinoTabBar(
+      bottomNavigationBar: BottomNavigationBar(
         currentIndex: _pageIndex,
-        onTap: (index) {setState(() {
-          _pageIndex = index;
-        });},
+        onTap: (index) {
+          setState(() {
+            _pageIndex = index;
+          });
+        },
         backgroundColor: Colors.black,
-        activeColor: Colors.deepPurpleAccent,
-        inactiveColor: Colors.grey,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.local_fire_department_rounded)),
+          BottomNavigationBarItem(
+            label: 'beacon',
+            icon: Icon(
+              Icons.local_fire_department_rounded,
+              color: Colors.white,
+            ),
+            activeIcon: Icon(
+              Icons.local_fire_department_rounded,
+              color: Colors.purple,
+            ),
+          ),
           notificationsIcon(userFromFireStore),
-          BottomNavigationBarItem(icon: Icon(Icons.settings)),
-          BottomNavigationBarItem(icon: Icon(Icons.map))
+          BottomNavigationBarItem(
+            label: 'settings',
+            icon: Icon(
+              Icons.menu,
+              color: Colors.white,
+            ),
+            activeIcon: Icon(
+              Icons.menu,
+              color: Colors.purple,
+            ),
+          )
         ],
       ),
     );
-  }
-}
-
-
-
-class HomePage extends StatefulWidget {
-  HomePage({Key key,}) : super(key: key);
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-
-
-
-  bool notEqualNull (UserModel user) {
-    if (user == null) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-
-
-
-  Widget build(BuildContext context) {
-    //Why after calling this is it able to constantly be updated? DOes the stream builder recall it? how does this work
-    var beaconList = BeaconService().getUserList();
-    final UserModel _user = context.watch<UserModel>();
-
-      return Scaffold(
-          body: Stack(children: [
-            Center(
-                child: StreamBuilder(
-                    stream: beaconList,
-                    builder: (BuildContext context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Something went wrong');
-                      }
-
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text("Loading");
-                      }
-
-                      return new ListView.builder(
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return new ListTile(
-                              tileColor: (snapshot.data[index].type ==
-                                  "active")
-                                  ? Colors.lightBlueAccent
-                                  : (snapshot.data[index].type == "hosting")
-                                  ? Colors.lightGreenAccent
-                                  : Colors.amberAccent,
-                              title: new Text(snapshot.data[index].userName),
-                              subtitle: new Text(snapshot.data[index].desc +
-                                  "\n" +
-                                  snapshot.data[index].lat +
-                                  " + " +
-                                  snapshot.data[index].long),
-                            );
-                          });
-                    })),
-            new BeaconSelector(user: _user)
-          ]));
   }
 }

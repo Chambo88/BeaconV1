@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:beacon/components/BeaconSelector.dart';
+import 'package:beacon/components/BeaconSideDrawer.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
@@ -54,17 +55,35 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     final UserModel _user = context.watch<UserModel>();
     var userLocation = context.read<UserLocationModel>();
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+    final theme = Theme.of(context);
 
     return Scaffold(
+        key: _scaffoldKey,
+        drawer: BeaconSideDrawer(),
         body: Stack(children: [
-      Center(
-          child: GoogleMap(
-        initialCameraPosition: CameraPosition(
-            target: LatLng(userLocation.latitude, userLocation.longitude),
-            zoom: 11.0),
-        markers: Set<Marker>.of(markers.values),
-      )),
-      new BeaconSelector(user: _user)
-    ]));
+          Center(
+              child: GoogleMap(
+            initialCameraPosition: CameraPosition(
+                target: LatLng(userLocation.latitude, userLocation.longitude),
+                zoom: 11.0),
+            markers: Set<Marker>.of(markers.values),
+          )),
+          new BeaconSelector(user: _user),
+          Container(
+            alignment: Alignment.bottomRight,
+            padding: EdgeInsets.only(bottom: 30, right: 10),
+            child: RawMaterialButton(
+              onPressed: () {
+                _scaffoldKey.currentState.openDrawer();
+              },
+              elevation: 10.0,
+              fillColor: theme.primaryColorLight,
+              constraints: BoxConstraints.tight(Size(50, 50)),
+              shape: CircleBorder(),
+              child: Icon(Icons.segment, color: Colors.white),
+            ),
+          )
+        ]));
   }
 }

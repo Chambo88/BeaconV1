@@ -112,10 +112,11 @@ class CustomTheme {
             fontSize: 14.0,
           ),
           caption: TextStyle(
-            color: Color(0xFF7E7E90),
-            fontSize: 12.0,
+            color: Color(0xFFFF00CC),
+            fontSize: 14.0,
           ),
-          subtitle1: TextStyle(color: Colors.white)),
+          subtitle1: TextStyle(color: Colors.white),
+      ),
 
       appBarTheme: AppBarTheme(color: Colors.black),
       textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.white),

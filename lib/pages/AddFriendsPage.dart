@@ -35,16 +35,19 @@ class _AddFriendsPageState extends State<AddFriendsPage>
     }
   }
 
-  TextField searchBar() {
+  TextField searchBar(BuildContext context) {
+    final theme = Theme.of(context);
+
     return TextField(
         controller: searchTextEditingController,
-        // decoration: InputDecoration(
-        //     prefixIcon: Icon(Icons.person_pin),
-        //     suffix: IconButton(
-        //       icon: Icon(Icons.clear),
-        //       onPressed: emptyTheTextFormField(),
-        //     )
-        // ),
+        style: theme.textTheme.bodyText1,
+        decoration: InputDecoration(
+            prefixIcon: Icon(Icons.person_pin),
+            suffix: IconButton(
+              icon: Icon(Icons.clear),
+              onPressed: emptyTheTextFormField(),
+            ),
+        ).applyDefaults(theme.inputDecorationTheme),
         onChanged: (value) {
           filterSearchResults(value);
         });
@@ -54,12 +57,12 @@ class _AddFriendsPageState extends State<AddFriendsPage>
     searchTextEditingController.clear();
   }
 
-  Container displayNoSearchResultsScreen() {
+  Container displayNoSearchResultsScreen(BuildContext context) {
     return Container(
         child: Center(
           child: ListView(
             shrinkWrap: true,
-            children: [Text('Search friends')],
+            children: [Text('Search friends', style: Theme.of(context).textTheme.headline4,)],
       ),
     ));
   }
@@ -102,11 +105,11 @@ class _AddFriendsPageState extends State<AddFriendsPage>
         Container(
           width: MediaQuery.of(context).size.width,
           height: 200,
-          child: searchBar(),
+          child: searchBar(context),
         ),
         Expanded(
             child: futureSearchResults == null
-                ? displayNoSearchResultsScreen()
+                ? displayNoSearchResultsScreen(context)
                 : displayUsersFoundScreen(user)),
       ]),
     );
@@ -202,7 +205,7 @@ class _UserResultState extends State<UserResult> {
         child: Column(
           children: [
             ListTile(
-              title: Text("${widget.anotherUser.firstName} ${widget.anotherUser.lastName}"),
+              title: Text("${widget.anotherUser.firstName} ${widget.anotherUser.lastName}", style: Theme.of(context).textTheme.headline4,),
               trailing: checkFriendShipAndPendingStatus(),
             )
           ],
