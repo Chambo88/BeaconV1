@@ -22,21 +22,23 @@ class _MapPageState extends State<MapPage> {
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 
   _updateMarkers(List<BeaconModel> beaconList) {
-    beaconList.forEach((beacon) {
-      BitmapDescriptor beaconIcon;
-      BitmapDescriptor.fromAssetImage(
-              ImageConfiguration(size: Size(48, 48)), 'assets/my_icon.png')
-          .then((onValue) {
+    BitmapDescriptor beaconIcon;
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(size: Size(12, 12)), 'assets/active_marker.png')
+        .then((onValue) {
+      beaconList.forEach((beacon) {
         beaconIcon = onValue;
-      });
-      final Marker marker = Marker(
-          markerId: MarkerId(beacon.id),
-          position: LatLng(double.parse(beacon.lat), double.parse(beacon.long)),
-          icon: beaconIcon);
 
-      setState(() {
-        // adding a new marker to map
-        markers[MarkerId(beacon.id)] = marker;
+        final Marker marker = Marker(
+            markerId: MarkerId(beacon.id),
+            position:
+                LatLng(double.parse(beacon.lat), double.parse(beacon.long)),
+            icon: beaconIcon);
+
+        setState(() {
+          // adding a new marker to map
+          markers[MarkerId(beacon.id)] = marker;
+        });
       });
     });
   }
