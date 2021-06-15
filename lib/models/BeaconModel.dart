@@ -18,6 +18,7 @@ class BeaconModel {
     this.type = json["type"];
     this.userName = json["userName"];
     this.active = json["active"];
+    this.id = json["userId"];
   }
 }
 
