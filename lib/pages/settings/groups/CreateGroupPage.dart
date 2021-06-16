@@ -4,6 +4,7 @@ import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/widgets/BeaconBottomSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/widgets/beacon_sheets/IconPickerSheet.dart';
 import 'package:beacon/widgets/buttons/FlatArrowButton.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19,9 +20,8 @@ class CreateGroupPage extends StatefulWidget {
 class _CreateGroupPageState extends State<CreateGroupPage> {
   final _formKey = GlobalKey<FormState>();
   bool _enableButton = false;
-  var _group = GroupModel();
+  GroupModel _group = GroupModel(members: [], icon: null, name: null);
   TextEditingController _groupNameTextController;
-  FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -38,19 +38,20 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   void setEnabledButton() {
     setState(() {
       _enableButton =
-          _formKey.currentState.validate() && _group.userIds.isNotEmpty;
+          _formKey.currentState.validate() && _group.members.isNotEmpty;
     });
   }
 
   void _updateFriendsList(Set<String> friendsList) {
     setState(() {
-      _group.userIds = friendsList.toList();
+      _group.members = friendsList.toList();
     });
     setEnabledButton();
   }
 
   void setIcon(IconData icon) {
     setState(() {
+      _group.icon = icon;
     });
   }
 
@@ -68,8 +69,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
         ),
         title: Text("Create Group"),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Stack(
         children: [
           SingleChildScrollView(
             child: Form(
@@ -81,6 +81,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                     theme: theme,
                     title: "Name",
                     child: TextFormField(
+                      controller: _groupNameTextController,
                       autovalidateMode: AutovalidateMode.always,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -89,7 +90,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                         if (user.groups
                             .map((GroupModel group) => group.name)
                             .contains(value)) {
-                          return 'You already belong to a group with that name.';
+                          return 'You already have a group with that name.';
                         }
                         return null;
                       },
@@ -116,9 +117,11 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                         },
                         child: _group.icon != null
                             ? Row(children: [
-                                Text('Icon:'),
+                                Text(
+                                  'Icon:',
+                                ),
                                 Icon(
-                                  BeaconIcons.getIconFromString(_group.icon),
+                                  _group.icon,
                                 ),
                               ])
                             : null,
@@ -140,7 +143,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                               builder: (context) {
                                 return FriendSelectorSheet(
                                   onContinue: _updateFriendsList,
-                                  friendsSelected: _group.userIds.toSet(),
+                                  friendsSelected: _group.members.toSet(),
                                 );
                               },
                             );
@@ -149,14 +152,14 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                       ],
                     ),
                   ),
-                  if (_group.userIds != null)
+                  if (_group.members != null)
                     Column(
-                      children: _group.userIds.map((friend) {
+                      children: _group.members.map((friend) {
                         return SelectedFriend(
                             friend: friend,
                             onRemove: () {
                               setState(() {
-                                _group.userIds.remove(friend);
+                                _group.members.remove(friend);
                               });
                               setEnabledButton();
                             });
@@ -166,17 +169,34 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: GradientButton(
-              child: Text('Create'),
-              onPressed: _enableButton
-                  ? () {
-                      user.addGroupToList(_group);
-                    }
-                  : null,
-              gradient: ColorHelper.getBeaconGradient(),
-            ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: GradientButton(
+                  child: Text(
+                    'Create',
+                  ),
+                  onPressed: _enableButton
+                      ? () {
+                          _group.name = _groupNameTextController.value.text;
+                          user.addGroupToList(_group);
+                          user.addGroupToListFirebase(_group);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Group created',
+                              ),
+                            ),
+                          );
+                          Navigator.pop(context);
+                        }
+                      : null,
+                  gradient: ColorHelper.getBeaconGradient(),
+                ),
+              ),
+            ],
           )
         ],
       ),
@@ -213,59 +233,14 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   }
 }
 
-typedef void iconSelected(IconData icon);
-
-class IconPickerSheet extends StatelessWidget {
-  final iconSelected onSelected;
-
-  IconPickerSheet({@required this.onSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      height: 400,
-      child: BeaconBottomSheet(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              ListTile(
-                leading: CloseButton(
-                  color: Colors.white,
-                ),
-                title: Text('Icons',
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.headline4),
-              ),
-              Expanded(
-                  child: GridView.count(
-                      crossAxisCount: 4,
-                      childAspectRatio: 1.0,
-                      padding: const EdgeInsets.all(4.0),
-                      mainAxisSpacing: 4.0,
-                      crossAxisSpacing: 4.0,
-                      children: BeaconIcons.iconDataList.map((e) {
-                        return InkWell(
-                            onTap: () {
-                              onSelected(e);
-                              Navigator.pop(context);
-                            },
-                            child: Icon(e));
-                      }).toList())),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class SelectedFriend extends StatelessWidget {
   final String friend;
   final VoidCallback onRemove;
 
-  SelectedFriend({@required this.friend, @required this.onRemove});
+  SelectedFriend({
+    @required this.friend,
+    @required this.onRemove,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -280,7 +255,9 @@ class SelectedFriend extends StatelessWidget {
         style: Theme.of(context).textTheme.bodyText1,
       ),
       trailing: IconButton(
-          icon: const Icon(Icons.close),
+          icon: const Icon(
+            Icons.close,
+          ),
           color: Colors.white,
           onPressed: onRemove),
     );

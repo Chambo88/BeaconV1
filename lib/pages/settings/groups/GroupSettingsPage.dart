@@ -12,15 +12,10 @@ class GroupSettings extends StatefulWidget {
 }
 
 class _GroupSettingsState extends State<GroupSettings> {
-  BeaconIcons iconStuff = BeaconIcons();
-  Map<String, IconData> _iconList;
-
-  bool _groupSaved = false;
 
   @override
   void initState() {
     super.initState();
-    _iconList = iconStuff.getIconMap();
   }
 
   @override
@@ -34,17 +29,12 @@ class _GroupSettingsState extends State<GroupSettings> {
             padding: EdgeInsets.only(right: 20),
             child: GestureDetector(
               onTap: () async {
-                _groupSaved = await Navigator.of(context).push(
+                await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => CreateGroupPage(),
                   ),
                 );
-                if (_groupSaved) {
-                  // user.addGroupToList(returnedGroup);
-                  // setState(() {});
-                  // user.addGroupToListFirebase(returnedGroup);
-                }
-                _groupSaved = false;
+                setState(() {});
               },
               child: Icon(
                 Icons.add,
@@ -98,38 +88,34 @@ class _GroupSettingsState extends State<GroupSettings> {
             },
             onTap: () async {
               //copy current groups list object so we dont modify it when we create a temp group
-              List<String> userIdsCopy = [...user.groups[index].userIds];
-
-              GroupModel returnedGroup = new GroupModel(
-                // name: user.groups[index].name,
-                name: user.groups[index].name,
-                userIds: userIdsCopy,
-                icon: user.groups[index].icon,
+              List<String> userIdsCopy = [...user.groups[index].members];
+              await Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => EditGroupPage(
+                    originalGroup: new GroupModel(
+                      // name: user.groups[index].name,
+                      name: user.groups[index].name,
+                      members: userIdsCopy,
+                      icon: user.groups[index].icon,
+                    ),
+                  ),
+                ),
               );
 
-              //Did the user save or cancel
-              _groupSaved = await Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => EditGroups(
-                        group: returnedGroup,
-                        isNewGroup: false,
-                      )));
-
               //if the person said save then we remove the original grohup from firebase and the user and add the newly created one
-              if (_groupSaved) {
-                user.removeGroupFromListFirebase(user.groups[index]);
-                user.removeGroup(user.groups[index]);
-                user.addGroupToList(returnedGroup);
-                user.addGroupToListFirebase(returnedGroup);
-                setState(() {});
-              }
-
-              _groupSaved = false;
+              // if (_groupSaved) {
+              //   user.removeGroupFromListFirebase(user.groups[index]);
+              //   user.removeGroup(user.groups[index]);
+              //   user.addGroupToList(returnedGroup);
+              //   user.addGroupToListFirebase(returnedGroup);
+              //   setState(() {});
+              // }
             },
             child: Container(
               key: Key('$index'),
               child: Row(
                 children: <Widget>[
-                  Icon(BeaconIcons.getIconFromString(user.groups[index].icon)),
+                  Icon(user.groups[index].icon),
                   Text(user.groups[index].name),
                   Spacer(),
                   Padding(

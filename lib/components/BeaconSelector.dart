@@ -221,7 +221,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                 ),
               )),
           if (!_displayToAll) _leftSubHeader(context, 'Groups'),
-          if (!_displayToAll) groups(setState, iconStuff),
+          if (!_displayToAll) _groupSelector(setState, iconStuff),
           if (!_displayToAll) _leftSubHeader(context, 'Friends'),
           if (!_displayToAll) _friendsButton(context),
           if (!_displayToAll)
@@ -246,7 +246,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
 
   Set<String> _getAllFriendsSelectedAndGroups() {
     Set<String> allFriends = _groupList
-        .map((GroupModel g) => g.userIds)
+        .map((GroupModel g) => g.members)
         .expand((friend) => friend)
         .toSet();
     allFriends.addAll(_friendsList);
@@ -361,7 +361,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
         });
       },
       child: Container(
-        height: 80,
+        height: 90,
         margin: EdgeInsets.only(top: 3),
         color: const Color(0xFF181818),
         child: Container(
@@ -468,22 +468,32 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 
-  Container groups(StateSetter setState, BeaconIcons iconStuff) {
+  Widget _noGroupsMessage() {
+    return Center(
+      child: Text(
+        "You have no groups",
+      ),
+    );
+  }
+
+  Container _groupSelector(StateSetter setState, BeaconIcons iconStuff) {
     return Container(
       height: 85.0,
       padding: EdgeInsets.symmetric(vertical: 5.0),
       color: Theme.of(context).primaryColor,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: widget.user.groups.map((GroupModel group) {
-          return SingleGroup(
-            group: group,
-            selected: _groupList.contains(group),
-            onGroupChanged: _handleGroupSelectionChanged,
-            setState: setState,
-          );
-        }).toList(),
-      ),
+      child: widget.user.groups.isEmpty
+          ? _noGroupsMessage()
+          : ListView(
+              scrollDirection: Axis.horizontal,
+              children: widget.user.groups.map((GroupModel group) {
+                return SingleGroup(
+                  group: group,
+                  selected: _groupList.contains(group),
+                  onGroupChanged: _handleGroupSelectionChanged,
+                  setState: setState,
+                );
+              }).toList(),
+            ),
     );
   }
 
@@ -557,7 +567,12 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                 child: InkWell(
                   splashColor: Colors.greenAccent, // inkwell color
                   child: SizedBox(
-                      width: 45, height: 45, child: Icon(Icons.whatshot)),
+                    width: 45,
+                    height: 45,
+                    child: Icon(
+                      Icons.whatshot,
+                    ),
+                  ),
                   onTap: () {
                     setState(() {
                       widget.user.beacon.type = "hosting";
@@ -608,8 +623,9 @@ class SingleGroup extends StatelessWidget {
               color: Color(0xFF4FE30B),
               shape: CircleBorder(
                 side: BorderSide(
-                    color: selected ? Colors.purple : Color(0xFF4FE30B),
-                    width: 2),
+                  color: selected ? Colors.purple : Color(0xFF4FE30B),
+                  width: 2,
+                ),
               ), // button color
               child: InkWell(
                 splashColor: Colors.greenAccent, //
@@ -617,11 +633,15 @@ class SingleGroup extends StatelessWidget {
                   width: 60,
                   height: 60,
                   child: Icon(
-                    BeaconIcons.getIconFromString(group.icon),
+                    group.icon,
                   ),
                 ),
                 onTap: () {
-                  onGroupChanged(group, selected, setState);
+                  onGroupChanged(
+                    group,
+                    selected,
+                    setState,
+                  );
                 },
               ),
             ),

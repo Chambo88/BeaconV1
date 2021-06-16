@@ -1,35 +1,49 @@
-
+import 'package:beacon/util/IconConverter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 class GroupModel {
   //this will  need changing when people become classes, strings for temporary
   //also add icons
-  List<String> userIds;
-  String icon;
+  List<String> members;
+  IconData icon;
   String name;
 
-  GroupModel({this.userIds, this.icon, this.name});
+  GroupModel({this.name, this.members, this.icon});
 
-  get getGroupMap => {'icon': icon, 'members': userIds, 'name' : name,};
-
-  void remove_id(String id) {
-    userIds.remove(id);
+  void removeId(String id) {
+    members.remove(id);
   }
 
-  void add_id(String id) {
-    userIds.add(id);
+  void addId(String id) {
+    members.add(id);
   }
 
-  void set_icon(String icon_new) {
-    icon = icon_new;
+  @override
+  bool operator ==(other) {
+    return ((other is GroupModel) &&
+        other.name == name &&
+        ListEquality().equals(other.members, members) &&
+        IconConverter.toJSONString(other.icon) ==
+            IconConverter.toJSONString(icon));
   }
 
-  void set_name(String new_name) {
-    name = new_name;
-  }
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'members': members,
+        'icon': icon == null ? '' : IconConverter.toJSONString(icon)
+      };
 
-  factory GroupModel.fromMap(Map<String, dynamic> map) {
-    return GroupModel(userIds: List.from(map["members"]), icon: map["icon"], name: map["name"]);
-  }
+  GroupModel.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        members = List.from(json["members"]),
+        icon = IconConverter.fromJSONString(json['icon']);
 
+  GroupModel.clone(GroupModel object)
+      : name = object.name,
+        members = [...object.members],
+        icon = object.icon;
+
+  @override
+  int get hashCode => super.hashCode;
 }

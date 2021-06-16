@@ -21,12 +21,4 @@ class BeaconIcons {
     Icons.lightbulb,
     Icons.play_circle_fill_rounded,
   ];
-
-  static IconData getIconFromString(String iconName) {
-    return iconMap[iconName];
-  }
-
-  Map<String, IconData> getIconMap() {
-    return iconMap;
-  }
 }

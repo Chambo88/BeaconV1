@@ -47,13 +47,13 @@ class UserModel {
 
   addGroupToListFirebase(GroupModel group) async {
     await FirebaseFirestore.instance.collection('users').doc(id).update({
-      "groups": FieldValue.arrayUnion([group.getGroupMap]),
+      "groups": FieldValue.arrayUnion([group.toJson()]),
     });
   }
 
   removeGroupFromListFirebase(GroupModel group) async {
     await FirebaseFirestore.instance.collection('users').doc(id).update({
-      "groups": FieldValue.arrayRemove([group.getGroupMap]),
+      "groups": FieldValue.arrayRemove([group.toJson()]),
     });
   }
 
@@ -61,7 +61,7 @@ class UserModel {
   updateGroups() async {
     List<Map> _groupsMaps = [];
     groups.forEach((element) {
-      _groupsMaps.add(element.getGroupMap);
+      _groupsMaps.add(element.toJson());
     });
     await FirebaseFirestore.instance.collection('users').doc(id).update(
       {"groups": _groupsMaps},
@@ -123,7 +123,7 @@ class UserModel {
     if (doc.data().containsKey('groups')) {
       _data = List.from(doc.data()["groups"]);
       _data.forEach((element) {
-        _groups.add(GroupModel.fromMap(element));
+        _groups.add(GroupModel.fromJson(element));
       });
     } else {
       _groups = [];

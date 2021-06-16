@@ -23,8 +23,23 @@ class FriendSelectorSheet extends StatefulWidget {
 
 class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
   UserModel _user;
+  TextEditingController _searchController;
+  final FocusNode _focusNode = FocusNode();
   List<String> _filteredFriends = [];
+  Set<String> _friendsSelected;
 
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+    _friendsSelected = widget.friendsSelected;
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   Color getCheckboxColor(Set<MaterialState> states) {
     const Set<MaterialState> interactiveStates = <MaterialState>{
@@ -66,8 +81,10 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 16, right: 16),
-            child: TextFormField(
+            child: TextField(
+              controller: _searchController,
               maxLength: 20,
+              focusNode: _focusNode,
               style: TextStyle(color: Colors.white),
               onChanged: (filter) {
                 setState(() {
@@ -99,14 +116,14 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
                     fillColor:
                         MaterialStateProperty.resolveWith(getCheckboxColor),
                     checkColor: Colors.black,
-                    value: widget.friendsSelected.contains(friend),
+                    value: _friendsSelected.contains(friend),
                     onChanged: (v) {
                       setState(
                         () {
                           if (v) {
-                            widget.friendsSelected.add(friend);
+                            _friendsSelected.add(friend);
                           } else {
-                            widget.friendsSelected.remove(friend);
+                            _friendsSelected.remove(friend);
                           }
                         },
                       );
@@ -125,7 +142,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
               ),
               gradient: ColorHelper.getBeaconGradient(),
               onPressed: () {
-                widget.onContinue(widget.friendsSelected);
+                widget.onContinue(_friendsSelected);
                 Navigator.pop(context);
               },
             ),
