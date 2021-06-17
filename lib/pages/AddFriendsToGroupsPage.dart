@@ -1,5 +1,6 @@
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +82,7 @@ class _Add_friendsState extends State<Add_friends> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserModel>(context, listen: false);
+    final user = context.read<UserService>().currentUser;
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text('Add Friends')),
@@ -174,7 +175,6 @@ class _AddUsersToGroupMainState extends State<AddUsersToGroupMain> {
               decoration: InputDecoration(
                 labelText: "Search",
                 hintText: "Search",
-
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(
