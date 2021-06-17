@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'BecaonItem.dart';
 
 class FriendCasualItem extends StatelessWidget {
-  final BeaconModel beacon;
+  final CasualBeacon beacon;
 
   FriendCasualItem({@required this.beacon});
 
@@ -16,9 +16,7 @@ class FriendCasualItem extends StatelessWidget {
     final theme = Theme.of(context);
     return BeaconItem(
       height: 200,
-      sheet: CasualBeaconSheet(
-        beacon: beacon
-      ),
+      sheet: CasualBeaconSheet(beacon: beacon),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -35,7 +33,7 @@ class FriendCasualItem extends StatelessWidget {
                     Expanded(
                       child: Center(
                         child: Text(
-                          beacon.id,
+                          beacon.getId(),
                           style: theme.textTheme.headline3,
                         ),
                       ),
@@ -48,7 +46,7 @@ class FriendCasualItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        beacon.userName,
+                        beacon.getUserName(),
                         style: theme.textTheme.headline5,
                       ),
                       Text('17:00 - 20:00', // TODO replace with time,

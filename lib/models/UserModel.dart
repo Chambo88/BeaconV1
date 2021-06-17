@@ -9,10 +9,11 @@ class UserModel {
   String email;
   String firstName;
   String lastName;
-  int notificationCount;
   BeaconModel beacon;
   List<GroupModel> groups;
   List<String> friends;
+
+  int notificationCount;
   List<String> sentFriendRequests;
   List<String> recievedFriendRequests;
   List<NotificationModel> notifications;
@@ -108,11 +109,11 @@ class UserModel {
     List<dynamic> _data;
     List<NotificationModel> _notifications = [];
 
-    if (doc.data().containsKey('beacon')) {
-      beacon = BeaconModel.toJson(doc.data()['beacon']);
-    } else {
-      beacon = BeaconModel('0', '0', '', 'interested', false);
-    }
+    // if (doc.data().containsKey('beacon')) {
+    //   beacon = BeaconModel.toJson(doc.data()['beacon']);
+    // } else {
+    //   beacon = BeaconModel('0', '0', '', 'interested', false);
+    // }
 
     if (doc.data().containsKey('notificationCount')) {
       _notificationCount = doc.data()['notificationCount'];

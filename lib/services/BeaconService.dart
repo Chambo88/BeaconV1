@@ -4,11 +4,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class BeaconService {
   FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
 
-  Stream<List<BeaconModel>> getUserList() {
-    return _fireStoreDataBase.collection('beacons').snapshots()?.map(
-        (snapShot) => snapShot.docs
-            .map((document) => BeaconModel.toJson(document.data()))
-            .toList());
-  }
+  Stream<List<LiveBeacon>> allLiveBeacons;
 
+  loadAllBeacons(userId) {
+    allLiveBeacons = _fireStoreDataBase
+        .collection('users')
+        .doc(userId)
+        .collection("availableBeacons")
+        .snapshots()
+        ?.map((snapShot) => snapShot.docs.map((document) {
+              if (document.data()['type'] == 'BeaconType.live') {
+                return LiveBeacon.toJson(document.data());
+              }
+            }).toList());
+  }
 }

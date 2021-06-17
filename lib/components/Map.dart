@@ -1,7 +1,9 @@
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/services/BeaconService.dart';
+import 'package:beacon/services/UserService.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapComponent extends StatefulWidget {
@@ -15,7 +17,7 @@ class MapComponent extends StatefulWidget {
 class _MapState extends State<MapComponent> {
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 
-  _updateMarkers(List<BeaconModel> beaconList) {
+  _updateMarkers(List<LiveBeacon> beaconList) {
     BitmapDescriptor beaconIcon;
     BitmapDescriptor.fromAssetImage(
             ImageConfiguration(size: Size(12, 12)), 'assets/active_marker.png')
@@ -24,14 +26,14 @@ class _MapState extends State<MapComponent> {
         beaconIcon = onValue;
 
         final Marker marker = Marker(
-            markerId: MarkerId(beacon.id),
+            markerId: MarkerId(beacon.getId()),
             position:
                 LatLng(double.parse(beacon.lat), double.parse(beacon.long)),
             icon: beaconIcon);
 
         setState(() {
           // adding a new marker to map
-          markers[MarkerId(beacon.id)] = marker;
+          markers[MarkerId(beacon.getId())] = marker;
         });
       });
     });
@@ -40,13 +42,18 @@ class _MapState extends State<MapComponent> {
   @override
   void initState() {
     super.initState();
-
-    var beaconList = BeaconService().getUserList();
-    beaconList.listen(_updateMarkers);
   }
 
   @override
   Widget build(BuildContext context) {
+    var userId = context.read<UserService>().currentUser.id;
+    context.read<BeaconService>().loadAllBeacons(userId);
+
+    var liveBeacons = context.watch<BeaconService>().allLiveBeacons;
+    liveBeacons.listen((event) {
+      _updateMarkers(event);
+    });
+
     return Center(
         child: widget.userLocation == null
             ? Container()

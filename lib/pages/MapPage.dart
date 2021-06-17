@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:beacon/components/BeaconSelector.dart';
 import 'package:beacon/components/BeaconSideDrawer.dart';
 import 'package:beacon/components/Map.dart';
+import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/LoactionService.dart';
+import 'package:beacon/services/UserService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +19,7 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
-    final UserModel _user = context.watch<UserModel>();
+    final UserModel _user = context.read<UserService>().currentUser;
     final Future<UserLocationModel> _userLocation =
         LocationService().getLocation();
 
@@ -35,7 +37,19 @@ class _MapPageState extends State<MapPage> {
                 if (snapshot.hasData) {
                   return new MapComponent(userLocation: snapshot.data);
                 } else {
-                  return Center(child: Text("Getting current location..."));
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          child: CircularProgressIndicator(),
+                          width: 60,
+                          height: 60,
+                        ),
+                      ],
+                    ),
+                  );
                 }
               }),
           new BeaconSelector(user: _user),
