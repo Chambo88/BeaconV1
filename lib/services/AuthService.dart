@@ -7,43 +7,35 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'UserService.dart';
+
 class AuthService {
   final FirebaseAuth _firebaseAuth;
   FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
-  UserModel currentUser;
-  var controller = StreamController<UserModel>();
+  // UserModel currentUser;
 
   AuthService(this._firebaseAuth);
 
   Stream<User> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  Stream<UserModel> get userChanges {
-    return controller.stream;
-  }
-
-
   User get getUserId => _firebaseAuth.currentUser;
 
-  UserModel get getUser => currentUser;
+  // UserModel get getUser => currentUser;
 
   get us => null;
 
   Future signOut() async {
     try {
       return await _firebaseAuth.signOut();
-    } catch(e) {
+    } catch (e) {
       print(e.toString());
       return null;
     }
   }
 
-
   void addUserModelToController(DocumentSnapshot doc) {
-    UserModel user = UserModel.fromDocument(doc);
-    controller.add(user);
+    // UserModel user = UserModel.fromDocument(doc);
   }
-
-
 
   List<String> setSearchParam(String firstName, String lastName) {
     List<String> caseSearchList = [];
@@ -63,7 +55,6 @@ class AuthService {
   }
 
   Future<String> signIn({String email, String password}) async {
-
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
@@ -84,16 +75,17 @@ class AuthService {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCred.user.uid)
-          .set({'firstName': firstName,
-                'lastName': lastName,
-                'email': email,
-                'userId':  userCred.user.uid.toString(),
-                'nameSearch': setSearchParam(firstName, lastName),
-                'sentFriendRequests' : [],
-                'recievedFriendRequests' : [],
-                'friends' : [],
-                'groups' : [],
-          });
+          .set({
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'userId': userCred.user.uid.toString(),
+        'nameSearch': setSearchParam(firstName, lastName),
+        'sentFriendRequests': [],
+        'recievedFriendRequests': [],
+        'friends': [],
+        'groups': [],
+      });
 
       return "";
     } on FirebaseAuthException catch (e) {

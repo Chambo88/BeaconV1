@@ -1,12 +1,12 @@
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/EditGroupsPage.dart';
+import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AddFriendsPage extends StatefulWidget {
-
   @override
   _AddFriendsPageState createState() => _AddFriendsPageState();
 }
@@ -42,11 +42,11 @@ class _AddFriendsPageState extends State<AddFriendsPage>
         controller: searchTextEditingController,
         style: theme.textTheme.bodyText1,
         decoration: InputDecoration(
-            prefixIcon: Icon(Icons.person_pin),
-            suffix: IconButton(
-              icon: Icon(Icons.clear),
-              onPressed: emptyTheTextFormField(),
-            ),
+          prefixIcon: Icon(Icons.person_pin),
+          suffix: IconButton(
+            icon: Icon(Icons.clear),
+            onPressed: emptyTheTextFormField(),
+          ),
         ).applyDefaults(theme.inputDecorationTheme),
         onChanged: (value) {
           filterSearchResults(value);
@@ -60,9 +60,14 @@ class _AddFriendsPageState extends State<AddFriendsPage>
   Container displayNoSearchResultsScreen(BuildContext context) {
     return Container(
         child: Center(
-          child: ListView(
-            shrinkWrap: true,
-            children: [Text('Search friends', style: Theme.of(context).textTheme.headline4,)],
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          Text(
+            'Search friends',
+            style: Theme.of(context).textTheme.headline4,
+          )
+        ],
       ),
     ));
   }
@@ -78,8 +83,8 @@ class _AddFriendsPageState extends State<AddFriendsPage>
         List<UserResult> searchUsersResult = [];
         dataSnapshot.data.docs.forEach((document) {
           UserModel users = UserModel.fromDocument(document);
-          UserResult userResult = UserResult(
-              anotherUser: users, currentUser: user);
+          UserResult userResult =
+              UserResult(anotherUser: users, currentUser: user);
           searchUsersResult.add(userResult);
         });
 
@@ -96,7 +101,7 @@ class _AddFriendsPageState extends State<AddFriendsPage>
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<UserModel>(context);
+    var user = context.read<UserService>().currentUser;
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Friends'),
@@ -127,7 +132,6 @@ class UserResult extends StatefulWidget {
 }
 
 class _UserResultState extends State<UserResult> {
-
   //Get The Trailing IconBUtton
   Widget checkFriendShipAndPendingStatus() {
     //Build this if already friends with them
@@ -135,17 +139,20 @@ class _UserResultState extends State<UserResult> {
       return Text('Already Friends');
     }
     //Build cancel button this if friends request is pending
-    else if (widget.currentUser.sentFriendRequests.contains(widget.anotherUser.id)) {
+    else if (widget.currentUser.sentFriendRequests
+        .contains(widget.anotherUser.id)) {
       return TextButton(
         child: Text('cancel'),
         onPressed: () async {
-          widget.currentUser.subtractFromSentFriendRequests(widget.anotherUser.id);
+          widget.currentUser
+              .subtractFromSentFriendRequests(widget.anotherUser.id);
           setState(() {});
           await FirebaseFirestore.instance
               .collection('users')
               .doc(widget.currentUser.id)
               .update({
-            "sentFriendRequests": FieldValue.arrayRemove([widget.anotherUser.id])
+            "sentFriendRequests":
+                FieldValue.arrayRemove([widget.anotherUser.id])
           });
 
           await FirebaseFirestore.instance
@@ -157,11 +164,9 @@ class _UserResultState extends State<UserResult> {
               .collection('users')
               .doc(widget.anotherUser.id)
               .update({
-            "recievedFriendRequests": FieldValue.arrayRemove([widget.currentUser.id])
+            "recievedFriendRequests":
+                FieldValue.arrayRemove([widget.currentUser.id])
           });
-
-
-
         },
       );
     } else {
@@ -186,11 +191,9 @@ class _UserResultState extends State<UserResult> {
               .collection('users')
               .doc(widget.anotherUser.id)
               .update({
-            "recievedFriendRequests": FieldValue.arrayUnion([widget.currentUser.id])
+            "recievedFriendRequests":
+                FieldValue.arrayUnion([widget.currentUser.id])
           });
-
-
-
         },
       );
     }
@@ -205,7 +208,10 @@ class _UserResultState extends State<UserResult> {
         child: Column(
           children: [
             ListTile(
-              title: Text("${widget.anotherUser.firstName} ${widget.anotherUser.lastName}", style: Theme.of(context).textTheme.headline4,),
+              title: Text(
+                "${widget.anotherUser.firstName} ${widget.anotherUser.lastName}",
+                style: Theme.of(context).textTheme.headline4,
+              ),
               trailing: checkFriendShipAndPendingStatus(),
             )
           ],

@@ -3,6 +3,7 @@ import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/LoactionService.dart';
 import 'package:beacon/services/AuthService.dart';
 import 'package:beacon/pages/SignInPage.dart';
+import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,12 +34,17 @@ class MyApp extends StatelessWidget {
           Provider<AuthService>(
             create: (_) => AuthService(FirebaseAuth.instance),
           ),
-          StreamProvider(create: (context) => LocationService().locationStream),
-          StreamProvider(
-            create: (context) => context.read<AuthService>().authStateChanges,
+          Provider<UserService>(
+            create: (_) => UserService(),
+          ),
+          Provider<BeaconService>(
+            create: (_) => BeaconService(),
+          ),
+          Provider<LocationService>(
+            create: (_) => LocationService(),
           ),
           StreamProvider(
-            create: (context) => context.read<AuthService>().userChanges,
+            create: (context) => context.read<AuthService>().authStateChanges,
           ),
         ],
         child: MaterialApp(
@@ -60,7 +66,7 @@ class AuthenticationWrapper extends StatelessWidget {
     final _currentUser = context.watch<User>();
     if (_currentUser != null) {
       {
-        return HomeLoadPage();
+        return BuildHomePage();
       }
     }
     return SignInPage();

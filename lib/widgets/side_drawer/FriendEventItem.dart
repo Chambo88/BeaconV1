@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'BecaonItem.dart';
 
 class FriendEventItem extends StatelessWidget {
-  final BeaconModel beacon;
+  final EventBeacon beacon;
 
   FriendEventItem({@required this.beacon});
 
@@ -16,7 +16,7 @@ class FriendEventItem extends StatelessWidget {
     final theme = Theme.of(context);
     return BeaconItem(
       height: 200,
-      sheet: EventBeaconSheet(),
+      sheet: EventBeaconSheet(beacon: beacon),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -33,7 +33,7 @@ class FriendEventItem extends StatelessWidget {
                     Expanded(
                       child: Center(
                         child: Text(
-                          beacon.id,
+                          beacon.getId(),
                           style: theme.textTheme.headline3,
                         ),
                       ),
@@ -46,7 +46,7 @@ class FriendEventItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        beacon.userName,
+                        beacon.getUserName(),
                         style: theme.textTheme.headline5,
                       ),
                       Text('17:00 - 20:00', // TODO replace with time,

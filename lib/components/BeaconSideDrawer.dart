@@ -1,3 +1,4 @@
+import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/widgets/side_drawer/FriendCasualItem.dart';
 import 'package:beacon/widgets/side_drawer/FriendEventItem.dart';
 import 'package:beacon/widgets/side_drawer/FriendLiveItem.dart';
@@ -38,62 +39,62 @@ class BeaconSideDrawer extends StatelessWidget {
                   children: [
                     _divider(context: context, text: "Friends Events"),
                     FriendEventItem(
-                      beacon: BeaconModel(
-                        '1',
-                        '2',
-                        'Come get just drunk enough to forget your problems but not quite end up in ICU Come get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICU',
-                        'Event',
-                        true,
-                        userName: 'Cam',
-                        id: 'A Night of beacon breathers',
-                      ),
+                      beacon: EventBeacon(
+                          '1',
+                          '2',
+                          'Cam',
+                          BeaconType.event.toString(),
+                          true,
+                          'Come get just drunk enough to forget your problems but not quite end up in ICU Come get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICU',
+                          'A Night of beacon breathers'),
                     ),
                     _divider(context: context, text: "Casual"),
                     FriendCasualItem(
-                      beacon: BeaconModel(
-                        '1',
-                        '2',
-                        'Come get just drunk enough to forget your problems but not quite end up in ICU Come get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICU',
-                        'Event',
-                        true,
-                        userName: 'Cam',
-                        id: 'Town Pres',
-                      ),
+                      beacon: CasualBeacon(
+                          '1',
+                          '2',
+                          'Cam',
+                          BeaconType.event.toString(),
+                          true,
+                          'Come get just drunk enough to forget your problems but not quite end up in ICU Come get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICU',
+                          true,
+                          'A Night of beacon breathers'),
                     ),
                     _divider(context: context, text: "Live"),
                     FriendLiveItem(
-                      beacon: BeaconModel(
+                      beacon: LiveBeacon(
                         '1',
                         '2',
-                        'Fdsfdsfdsfsdfsdfsdffsddfdfsdfdfsdfsdfsdfsdfs',
-                        'Live',
+                        'Cam',
+                        BeaconType.event.toString(),
                         true,
-                        userName: 'Cam',
-                        id: 'Town Pres',
+                        "123",
+                        "123",
+                        'Come get just drunk enough to forget your problems but not quite end up in ICU Come get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICU',
                       ),
                     ),
                     FriendLiveItem(
-                      beacon: BeaconModel(
-                        '1',
-                        '2',
-                        'Fdsfdsfdsfsdfsdfsdffsddfdfsdfdfsdfsdfsdfsdfs',
-                        'Live',
-                        true,
-                        userName: 'Cam',
-                        id: 'Town Pres',
-                      ),
-                    ),
+                        beacon: LiveBeacon(
+                      '1',
+                      '2',
+                      'Cam',
+                      BeaconType.event.toString(),
+                      true,
+                      "123",
+                      "123",
+                      'Come get just drunk enough to forget your problems but not quite end up in ICU Come get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICU',
+                    )),
                     FriendLiveItem(
-                      beacon: BeaconModel(
-                        '1',
-                        '2',
-                        'Fdsfdsfdsfsdfsdfsdffsddfdfsdfdfsdfsdfsdfsdfs',
-                        'Live',
-                        true,
-                        userName: 'Cam',
-                        id: 'Town Pres',
-                      ),
-                    )
+                        beacon: LiveBeacon(
+                      '1',
+                      '2',
+                      'Cam',
+                      BeaconType.event.toString(),
+                      true,
+                      "123",
+                      "123",
+                      'Come get just drunk enough to forget your problems but not quite end up in ICU Come get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICU',
+                    ))
                   ],
                 ),
               ),
