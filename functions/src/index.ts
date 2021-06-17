@@ -10,7 +10,29 @@ exports.updateUser = functions.firestore
     .onUpdate((change, context) => {
         // Grab the current value of what was written to Firestore.
         const user = change.after.data();
+        const before = change.before.data();
+        const toRemove = before.beacon.users.filter((item: any) =>
+            user.beacon.users.indexOf(item) < 0);
 
+        user.beacon.users.forEach((element: any) => {
+            db.collection("users").doc(element)
+                .collection("availableBeacons")
+                .doc(context.params.userId).set({
+                    lat: user.beacon.lat,
+                    long: user.beacon.long,
+                    type: user.beacon.type,
+                    userName: user.beacon.userName,
+                    userId: context.params.userId,
+                    description: user.beacon.description,
+                    active: user.beacon.active,
+                });
+        });
+
+        toRemove.forEach((element: any) => {
+            db.collection("users").doc(element)
+                .collection("availableBeacons")
+                .doc(context.params.userId).delete();
+        });
 
         // User doesn't have an active beacon
         if (!user.beacon.active) {
@@ -28,5 +50,6 @@ exports.updateUser = functions.firestore
             userName: user.firstName + " " + user.lastName,
             userId: context.params.userId,
             description: user.beacon.description,
+            users: user.beacon.users,
         });
     });
