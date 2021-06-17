@@ -4,21 +4,21 @@ import 'package:beacon/models/UserLocationModel.dart';
 import 'package:location/location.dart';
 
 class LocationService {
-  UserLocationModel _currentLocation;
+  UserLocationModel currentLocation;
 
   var location = Location();
 
   Future<UserLocationModel> getLocation() async {
     try {
       var userLocation = await location.getLocation();
-      _currentLocation = UserLocationModel(
+      currentLocation = UserLocationModel(
         latitude: userLocation.latitude,
         longitude: userLocation.longitude,
       );
     } on Exception catch (e) {
       print('Could not get location: ${e.toString()}');
     }
-    return _currentLocation;
+    return currentLocation;
   }
 
   StreamController<UserLocationModel> _locationController =

@@ -7,6 +7,7 @@ import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/services/LoactionService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/buttons/FlatArrowButton.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
@@ -293,21 +294,19 @@ class _BeaconSelectorState extends State<BeaconSelector> {
               style: theme.textTheme.headline4,
             ),
             gradient: ColorHelper.getBeaconGradient(),
-            onPressed: () {
+            onPressed: () async {
               // Mock data
+              var loc = await context.read<LocationService>().getLocation();
               context.read<UserService>().updateBeacon(LiveBeacon(
-                      "1234",
-                      "userId",
-                      "userName",
-                      BeaconType.live.toString(),
-                      true,
-                      "1234",
-                      "123",
-                      "ABCBeacon Description",
-                      users: [
-                        "4P1t6GqRIPVRzgX0X9dX35cl1462",
-                        "2ipQa6HgvVSSeSFOzkMPUM7LUgR2"
-                      ]));
+                  "1234",
+                  "userId",
+                  "userName",
+                  BeaconType.live.toString(),
+                  true,
+                  loc.latitude.toString(),
+                  loc.longitude.toString(),
+                  "Beacon Description",
+                  users: _friendsList.toList()));
             },
           ),
         ),

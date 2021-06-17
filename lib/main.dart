@@ -40,6 +40,9 @@ class MyApp extends StatelessWidget {
           Provider<BeaconService>(
             create: (_) => BeaconService(),
           ),
+          Provider<LocationService>(
+            create: (_) => LocationService(),
+          ),
           StreamProvider(
             create: (context) => context.read<AuthService>().authStateChanges,
           ),
