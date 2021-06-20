@@ -9,7 +9,7 @@ import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/widgets/buttons/FlatArrowButton.dart';
+import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -169,7 +169,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Widget _friendsButton(BuildContext context) {
-    return FlatArrowButton(
+    return BeaconFlatButton(
       title: 'Friends',
       onTap: () {
         setState(() {

@@ -5,7 +5,7 @@ import 'package:beacon/widgets/BeaconBottomSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/widgets/beacon_sheets/IconPickerSheet.dart';
-import 'package:beacon/widgets/buttons/FlatArrowButton.dart';
+import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -133,7 +133,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                     title: 'Members',
                     child: Column(
                       children: [
-                        FlatArrowButton(
+                        BeaconFlatButton(
                           title: 'Add Members',
                           onTap: () {
                             showModalBottomSheet(

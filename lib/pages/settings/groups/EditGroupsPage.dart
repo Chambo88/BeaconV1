@@ -5,7 +5,7 @@ import 'package:beacon/widgets/BeaconBottomSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/widgets/beacon_sheets/IconPickerSheet.dart';
-import 'package:beacon/widgets/buttons/FlatArrowButton.dart';
+import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -60,6 +60,7 @@ class _EditGroupPageState extends State<EditGroupPage> {
     setState(() {
       _group.icon = icon;
     });
+    setEnabledButton();
   }
 
   @override
@@ -71,7 +72,47 @@ class _EditGroupPageState extends State<EditGroupPage> {
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {
-            Navigator.pop(context, false);
+            // Only show dialog if changes have occurred
+            if (_enableButton) {
+              showDialog<bool>(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Cancel'),
+                    content: SingleChildScrollView(
+                      child: ListBody(
+                        children: const <Widget>[
+                          Text('Discard changes to group?'),
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('No'),
+                        onPressed: () {
+                          Navigator.of(context).pop(false);
+                        },
+                      ),
+                      TextButton(
+                        child: const Text('Yes'),
+                        onPressed: () {
+                          Navigator.of(context).pop(true);
+                        },
+                      )
+                    ],
+                  );
+                },
+              ).then(
+                (value) {
+                  if (value) {
+                    Navigator.of(context).pop();
+                  }
+                },
+              );
+            } else {
+              Navigator.pop(context, false);
+            }
           },
         ),
         title: Text("Edit Group"),
@@ -80,12 +121,14 @@ class _EditGroupPageState extends State<EditGroupPage> {
             onPressed: _enableButton
                 ? () {
                     _group.name = _groupNameTextController.value.text;
-                    user.addGroupToList(widget.originalGroup);
-                    user.addGroupToListFirebase(widget.originalGroup);
+                    user.removeGroup(widget.originalGroup);
+                    user.removeGroupFromListFirebase(widget.originalGroup);
+                    user.addGroupToList(_group);
+                    user.addGroupToListFirebase(_group);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          'Group created',
+                          'Group updated',
                         ),
                       ),
                     );
@@ -162,7 +205,7 @@ class _EditGroupPageState extends State<EditGroupPage> {
                 title: 'Members',
                 child: Column(
                   children: [
-                    FlatArrowButton(
+                    BeaconFlatButton(
                       title: 'Add Members',
                       onTap: () {
                         showModalBottomSheet(
@@ -194,6 +237,64 @@ class _EditGroupPageState extends State<EditGroupPage> {
                         });
                   }).toList(),
                 ),
+              section(
+                theme: theme,
+                title: 'More Actions',
+                child: BeaconFlatButton(
+                  title: 'Delete Group',
+                  onTap: () {
+                    showDialog<bool>(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Delete Group'),
+                          content: SingleChildScrollView(
+                            child: ListBody(
+                              children: const <Widget>[
+                                Text(
+                                    'Are you sure you would like to delete this group?'),
+                              ],
+                            ),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                            ),
+                            TextButton(
+                              child: const Text('Yes'),
+                              onPressed: () {
+                                Navigator.of(context).pop(true);
+                              },
+                            )
+                          ],
+                        );
+                      },
+                    ).then(
+                      (value) {
+                        if (value) {
+                          user.removeGroup(widget.originalGroup);
+                          user.removeGroupFromListFirebase(
+                              widget.originalGroup);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Group deleted',
+                              ),
+                            ),
+                          );
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    );
+                  },
+                  arrow: false,
+                  icon: Icons.delete,
+                ),
+              ),
             ],
           ),
         ),
