@@ -5,6 +5,7 @@ import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/MapPage.dart';
 import 'package:beacon/pages/settings/SettingsPage.dart';
 import 'package:beacon/services/BeaconService.dart';
+import 'package:beacon/services/UserService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,6 @@ class _BuildHomePageState extends State<BuildHomePage> {
   @override
   void initState() {
     super.initState();
-    final userOnline = Provider.of<DocumentSnapshot>(context, listen: false);
   }
 
   bool isUserNull(UserModel userFromFireStore) {
@@ -119,46 +119,70 @@ class _BuildHomePageState extends State<BuildHomePage> {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
 
-    final userOnline = Provider.of<DocumentSnapshot>(context);
-    UserModel userFromFireStore = UserModel.fromDocument(userOnline);
-    return Scaffold(
-      body: pages[_pageIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _pageIndex,
-        onTap: (index) {
-          setState(() {
-            _pageIndex = index;
-          });
-        },
-        backgroundColor: Colors.black,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: [
-          BottomNavigationBarItem(
-            label: 'beacon',
-            icon: Icon(
-              Icons.local_fire_department_rounded,
-              color: Colors.white,
-            ),
-            activeIcon: Icon(
-              Icons.local_fire_department_rounded,
-              color: Colors.purple,
-            ),
-          ),
-          notificationsIcon(userFromFireStore),
-          BottomNavigationBarItem(
-            label: 'settings',
-            icon: Icon(
-              Icons.menu,
-              color: Colors.white,
-            ),
-            activeIcon: Icon(
-              Icons.menu,
-              color: Colors.purple,
-            ),
-          )
-        ],
-      ),
-    );
+    // final userOnline = Provider.of<DocumentSnapshot>(context);
+    final _currentUser = context.read<AuthService>().getUserId;
+
+    var userFromFireStore =
+        context.read<UserService>().initUser(_currentUser.uid);
+
+    return FutureBuilder(
+        future: userFromFireStore,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Scaffold(
+              body: pages[_pageIndex],
+              bottomNavigationBar: BottomNavigationBar(
+                currentIndex: _pageIndex,
+                onTap: (index) {
+                  setState(() {
+                    _pageIndex = index;
+                  });
+                },
+                backgroundColor: Colors.black,
+                showSelectedLabels: false,
+                showUnselectedLabels: false,
+                items: [
+                  BottomNavigationBarItem(
+                    label: 'beacon',
+                    icon: Icon(
+                      Icons.local_fire_department_rounded,
+                      color: Colors.white,
+                    ),
+                    activeIcon: Icon(
+                      Icons.local_fire_department_rounded,
+                      color: Colors.purple,
+                    ),
+                  ),
+                  notificationsIcon(snapshot.data),
+                  BottomNavigationBarItem(
+                    label: 'settings',
+                    icon: Icon(
+                      Icons.menu,
+                      color: Colors.white,
+                    ),
+                    activeIcon: Icon(
+                      Icons.menu,
+                      color: Colors.purple,
+                    ),
+                  )
+                ],
+              ),
+            );
+          } else {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    child: CircularProgressIndicator(),
+                    width: 60,
+                    height: 60,
+                  ),
+                ],
+              ),
+            );
+          }
+        });
   }
 }

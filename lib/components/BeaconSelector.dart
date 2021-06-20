@@ -1,17 +1,16 @@
-import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:beacon/Assests/Icons.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/library/ColorHelper.dart';
+import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/models/GroupModel.dart';
-import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
+import 'package:beacon/services/LoactionService.dart';
+import 'package:beacon/services/UserService.dart';
+import 'package:beacon/widgets/buttons/FlatArrowButton.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -99,61 +98,9 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   Color _getBeaconColor() {
     if (!widget.user.beacon.active) {
       return Colors.grey;
+    } else {
+      return Color(0xFFFF00CC);
     }
-    return widget.user.beacon.type == "active"
-        ? Colors.lightBlueAccent
-        : widget.user.beacon.type == "hosting"
-            ? Colors.lightGreenAccent
-            : Colors.amberAccent;
-  }
-
-  Future<void> _lightBeacon(BuildContext context) async {
-    setState(() {
-      widget.user.beacon.active = true;
-    });
-
-    var userLocation = context.read<UserLocationModel>();
-
-    // TODO: User service
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.user.id)
-        .set({
-      'beacon': {
-        'active': widget.user.beacon.active,
-        'type': widget.user.beacon.type,
-        'lat': userLocation.latitude,
-        'long': userLocation.longitude,
-        'description': _beaconDescriptionController.text,
-      }
-    }, SetOptions(merge: true));
-  }
-
-  Future<void> _extinguishBeacon(BuildContext context) async {
-    setState(() {
-      widget.user.beacon.active = false;
-    });
-
-    // TODO: user service
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.user.id)
-        .set({
-      'beacon': {
-        'active': widget.user.beacon.active,
-      }
-    }, SetOptions(merge: true));
-  }
-
-  Future<void> _updateBeacon(BuildContext context) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.user.id)
-        .set({
-      'beacon': {
-        'type': widget.user.beacon.type.toString(),
-      }
-    }, SetOptions(merge: true));
   }
 
   Widget _eventBeacon(BuildContext context) {
@@ -346,7 +293,20 @@ class _BeaconSelectorState extends State<BeaconSelector> {
               style: theme.textTheme.headline4,
             ),
             gradient: ColorHelper.getBeaconGradient(),
-            onPressed: () {},
+            onPressed: () async {
+              // Mock data
+              var loc = await context.read<LocationService>().getLocation();
+              context.read<UserService>().updateBeacon(LiveBeacon(
+                  "1234",
+                  "userId",
+                  "userName",
+                  BeaconType.live.toString(),
+                  true,
+                  loc.latitude.toString(),
+                  loc.longitude.toString(),
+                  "Beacon Description",
+                  users: _friendsList.toList()));
+            },
           ),
         ),
       ],
@@ -494,104 +454,6 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                 );
               }).toList(),
             ),
-    );
-  }
-
-  Row _selectBeacon() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Column(
-          children: [
-            ClipOval(
-              child: Material(
-                color: widget.user.beacon.type == "active"
-                    ? Colors.lightBlueAccent
-                    : Colors.grey, // button color
-                child: InkWell(
-                  splashColor: Colors.blueAccent, // inkwell color
-                  child: SizedBox(
-                      width: 45, height: 45, child: Icon(Icons.whatshot)),
-                  onTap: () {
-                    setState(() {
-                      widget.user.beacon.type = "active";
-                    });
-
-                    if (widget.user.beacon.active == true) {
-                      _updateBeacon(
-                        context,
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-            Text('Active')
-          ],
-        ),
-        Column(
-          children: [
-            ClipOval(
-              child: Material(
-                color: widget.user.beacon.type == "interested"
-                    ? Colors.amberAccent
-                    : Colors.grey, // button color
-                child: InkWell(
-                  splashColor: Colors.amber, // inkwell color
-                  child: SizedBox(
-                      width: 45, height: 45, child: Icon(Icons.whatshot)),
-                  onTap: () {
-                    setState(() {
-                      widget.user.beacon.type = "interested";
-                    });
-
-                    if (widget.user.beacon.active == true) {
-                      _updateBeacon(
-                        context,
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-            Text('Interested')
-          ],
-        ),
-        Column(
-          children: [
-            ClipOval(
-              child: Material(
-                color: widget.user.beacon.type == "hosting"
-                    ? Colors.lightGreenAccent
-                    : Colors.grey, // button color
-                child: InkWell(
-                  splashColor: Colors.greenAccent, // inkwell color
-                  child: SizedBox(
-                    width: 45,
-                    height: 45,
-                    child: Icon(
-                      Icons.whatshot,
-                    ),
-                  ),
-                  onTap: () {
-                    setState(() {
-                      widget.user.beacon.type = "hosting";
-                    });
-
-                    if (widget.user.beacon.active == true) {
-                      _updateBeacon(
-                        context,
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-            Text('Hosting')
-          ],
-        ),
-        //
-      ],
     );
   }
 }

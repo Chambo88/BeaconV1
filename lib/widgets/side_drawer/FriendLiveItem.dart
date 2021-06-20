@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'BecaonItem.dart';
 
 class FriendLiveItem extends StatelessWidget {
-  final BeaconModel beacon;
+  final LiveBeacon beacon;
 
   FriendLiveItem({@required this.beacon});
 
@@ -14,41 +14,42 @@ class FriendLiveItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return BeaconItem(
-      height: 80,
-      sheet: LiveBeaconSheet(),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Icon(
-            Icons.circle,
-            size: 50,
-            color: Colors.white,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Container(
-                  child: Text(
-                    beacon.userName,
-                    style: Theme.of(context).textTheme.headline5,
+        height: 80,
+        sheet: LiveBeaconSheet(
+          beacon: beacon,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(
+              Icons.circle,
+              size: 50,
+              color: Colors.white,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(
+                    child: Text(
+                      beacon.getUserName(),
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
                   ),
-                ),
-                Text(
-                  beacon.desc,
-                  style: Theme.of(context).textTheme.bodyText2,
-                )
-              ],
+                  Text(
+                    beacon.desc,
+                    style: Theme.of(context).textTheme.bodyText2,
+                  )
+                ],
+              ),
             ),
-          ),
-          Center(
-            child: SmallOutlinedButton(
-              title: 'Summon',
-              onPressed: () {}, // TODO
-            ),
-          )
-        ],
-      )
-    );
+            Center(
+              child: SmallOutlinedButton(
+                title: 'Summon',
+                onPressed: () {}, // TODO
+              ),
+            )
+          ],
+        ));
   }
 }
