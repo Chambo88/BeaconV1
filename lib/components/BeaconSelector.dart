@@ -9,7 +9,7 @@ import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/LoactionService.dart';
 import 'package:beacon/services/UserService.dart';
-import 'package:beacon/widgets/buttons/FlatArrowButton.dart';
+import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
