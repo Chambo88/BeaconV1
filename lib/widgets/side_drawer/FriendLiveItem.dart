@@ -36,9 +36,11 @@ class FriendLiveItem extends StatelessWidget {
                       style: Theme.of(context).textTheme.headline5,
                     ),
                   ),
-                  Text(
-                    beacon.desc,
-                    style: Theme.of(context).textTheme.bodyText2,
+                  Expanded(
+                    child: Text(
+                      beacon.desc,
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
                   )
                 ],
               ),
