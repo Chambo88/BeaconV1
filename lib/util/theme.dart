@@ -41,12 +41,7 @@ class CustomTheme {
         foregroundColor: MaterialStateProperty.resolveWith((states) {
           return (states.contains(MaterialState.disabled))
               ? Color(0xFF716F6F)
-              : Color(0xFFFFFFFF);
-        }),
-        backgroundColor: MaterialStateProperty.resolveWith((states) {
-          return (states.contains(MaterialState.disabled))
-              ? Color(0xFF4B4B4B)
-              : Color(0xFFB928FF);
+              : Color(0xFFB500E2);
         }),
         textStyle: MaterialStateProperty.resolveWith((states) {
           return (states.contains(MaterialState.disabled))
@@ -79,45 +74,56 @@ class CustomTheme {
 
       // text
       textTheme: TextTheme(
-          headline1: TextStyle(
-            color: Colors.white,
-            fontSize: 24.0,
-          ),
-          headline2: TextStyle(
-            color: Colors.white,
-            fontSize: 22.0,
-          ),
-          headline3: TextStyle(
-            color: Colors.white,
-            fontSize: 20.0,
-          ),
-          headline4: TextStyle(
-            color: Colors.white,
-            fontSize: 18.0,
-          ),
-          headline5: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-          ),
-          headline6: TextStyle(
-            color: Colors.white,
-            fontSize: 14.0,
-          ),
-          bodyText1: TextStyle(
-            color: Colors.white,
-            fontSize: 14.0,
-          ),
-          bodyText2: TextStyle(
-            color: Color(0xFF7E7E90),
-            fontSize: 14.0,
-          ),
-          caption: TextStyle(
-            color: Color(0xFFFF00CC),
-            fontSize: 14.0,
-          ),
-          subtitle1: TextStyle(color: Colors.white),
+        headline1: TextStyle(
+          color: Colors.white,
+          fontSize: 24.0,
+        ),
+        headline2: TextStyle(
+          color: Colors.white,
+          fontSize: 22.0,
+        ),
+        headline3: TextStyle(
+          color: Colors.white,
+          fontSize: 20.0,
+        ),
+        headline4: TextStyle(
+          color: Colors.white,
+          fontSize: 18.0,
+        ),
+        headline5: TextStyle(
+          color: Colors.white,
+          fontSize: 16.0,
+        ),
+        headline6: TextStyle(
+          color: Colors.white,
+          fontSize: 14.0,
+        ),
+        bodyText1: TextStyle(
+          color: Colors.white,
+          fontSize: 14.0,
+        ),
+        bodyText2: TextStyle(
+          color: Color(0xFF7E7E90),
+          fontSize: 14.0,
+        ),
+        caption: TextStyle(
+          color: Color(0xFFFF00CC),
+          fontSize: 14.0,
+        ),
+        subtitle1: TextStyle(color: Colors.white),
       ),
-
+      dialogTheme: DialogTheme(
+        backgroundColor: Colors.white,
+        titleTextStyle: TextStyle(fontSize: 22, color: Colors.black),
+        contentTextStyle: TextStyle(color: Colors.black),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: Color(0xFFB500E2),
+        contentTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+        ),
+      ),
       appBarTheme: AppBarTheme(color: Colors.black),
       textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.white),
       scaffoldBackgroundColor: Colors.black,

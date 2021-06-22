@@ -10,7 +10,6 @@ class CasualBeaconSheet extends BeaconSheet {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Container(
       height: 500,
       child: BeaconBottomSheet(

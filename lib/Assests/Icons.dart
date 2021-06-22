@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 
-class GetIcons {
-  Map<String, IconData> iconMap = {
+class BeaconIcons {
+  static Map<String, IconData> iconMap = {
     'timeRounded': Icons.access_time_rounded,
     'flame': Icons.local_fire_department_rounded,
     'snowFlake': Icons.ac_unit_rounded,
@@ -10,10 +10,9 @@ class GetIcons {
     'moon': Icons.nightlight_round,
     'lightBulb': Icons.lightbulb,
     'play': Icons.play_circle_fill_rounded,
-
   };
 
-  List<IconData> iconDataList = [
+  static List<IconData> iconDataList = [
     Icons.access_time_rounded,
     Icons.local_fire_department_rounded,
     Icons.ac_unit_rounded,
@@ -21,15 +20,5 @@ class GetIcons {
     Icons.nightlight_round,
     Icons.lightbulb,
     Icons.play_circle_fill_rounded,
-
   ];
-
-
-  IconData getIconFromString(String iconName) {
-    return iconMap[iconName];
-  }
-
-  Map<String, IconData> getIconMap() {
-    return iconMap;
-  }
 }
