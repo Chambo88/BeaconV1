@@ -157,6 +157,7 @@ class _FriendRequestTile extends State<FriendRequestTile> {
           child: Text('Accept'),
           onPressed: () async {
             widget.userService.acceptFriendRequest(widget.friend);
+            setState(() {});
           }),
       TextButton(
           child: Text('Decline'),
