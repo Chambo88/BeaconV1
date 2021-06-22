@@ -82,7 +82,7 @@ class AuthService {
         'userId': userCred.user.uid.toString(),
         'nameSearch': setSearchParam(firstName, lastName),
         'sentFriendRequests': [],
-        'recievedFriendRequests': [],
+        'receivedFriendRequests': [],
         'friends': [],
         'groups': [],
       });

@@ -1,6 +1,7 @@
 import 'package:beacon/Assests/Icons.dart';
 import 'package:beacon/library/ColorHelper.dart';
 import 'package:beacon/models/GroupModel.dart';
+import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/BeaconBottomSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/models/UserModel.dart';
@@ -65,7 +66,7 @@ class _EditGroupPageState extends State<EditGroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<UserModel>(context);
+    var userService = Provider.of<UserService>(context);
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
@@ -121,10 +122,8 @@ class _EditGroupPageState extends State<EditGroupPage> {
             onPressed: _enableButton
                 ? () {
                     _group.name = _groupNameTextController.value.text;
-                    user.removeGroup(widget.originalGroup);
-                    user.removeGroupFromListFirebase(widget.originalGroup);
-                    user.addGroupToList(_group);
-                    user.addGroupToListFirebase(_group);
+                    userService.removeGroup(widget.originalGroup);
+                    userService.addGroup(_group);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -158,7 +157,7 @@ class _EditGroupPageState extends State<EditGroupPage> {
                     if (value == null || value.isEmpty) {
                       return 'Group name can not be empty.';
                     }
-                    if (user.groups
+                    if (userService.currentUser.groups
                             .map((GroupModel group) => group.name)
                             .contains(value) &&
                         _group.name != widget.originalGroup.name) {
@@ -276,9 +275,7 @@ class _EditGroupPageState extends State<EditGroupPage> {
                     ).then(
                       (value) {
                         if (value) {
-                          user.removeGroup(widget.originalGroup);
-                          user.removeGroupFromListFirebase(
-                              widget.originalGroup);
+                          userService.removeGroup(widget.originalGroup);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(

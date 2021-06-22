@@ -18,55 +18,51 @@ class _NotificationPageState extends State<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
-    UserModel userFromFireStore = context.read<UserService>().currentUser;
-    userFromFireStore.updateNotificationCountFB(0);
+    var userService = Provider.of<UserService>(context);
+    userService.setNotificationCount(0);
     return Column(children: [
-      areThereAnyFriendRequestsRecieved(userFromFireStore),
-      areThereAnyNotifications(userFromFireStore)
+      getReceivedFriendRequests(userService),
+      getNotification(userService)
     ]);
   }
 
-  Widget areThereAnyFriendRequestsRecieved(UserModel userFromFireStore) {
-    if (userFromFireStore.recievedFriendRequests.isNotEmpty) {
-      return HaveFriendRequests(userFromFireStore);
+  Widget getReceivedFriendRequests(UserService userService) {
+    if (userService.currentUser.receivedFriendRequests.isNotEmpty) {
+      return FutureBuilder(
+        future: _fireStoreDataBase
+            .collection('users')
+            .where('userId',
+                whereIn: userService.currentUser.receivedFriendRequests)
+            .get(),
+        builder: (context, dataSnapshot) {
+          while (!dataSnapshot.hasData) {
+            return circularProgress();
+          }
+          List<FriendRequestTile> searchUsersResult = [];
+          dataSnapshot.data.docs.forEach((doc) {
+            var friend = UserModel.fromDocument(doc);
+            FriendRequestTile userResult = FriendRequestTile(
+              userService: userService,
+              friend: friend,
+            );
+            searchUsersResult.add(userResult);
+          });
+
+          return ListView(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            children: searchUsersResult,
+          );
+        },
+      );
     } else {
       return Container(color: Colors.red, width: 50, height: 50);
     }
   }
 
-  FutureBuilder<QuerySnapshot> HaveFriendRequests(UserModel userFromFireStore) {
-    //maybe make unfalse testing not having listening
-    final user = context.read<UserService>().currentUser;
-
-    return FutureBuilder(
-      future: _fireStoreDataBase
-          .collection('users')
-          .where('userId', whereIn: userFromFireStore.recievedFriendRequests)
-          .get(),
-      builder: (context, dataSnapshot) {
-        while (!dataSnapshot.hasData) {
-          return circularProgress();
-        }
-        List<FriendRequestTile> searchUsersResult = [];
-        dataSnapshot.data.docs.forEach((document) {
-          UserModel users = UserModel.fromDocument(document);
-          FriendRequestTile userResult =
-              FriendRequestTile(anotherUser: users, user: user);
-          searchUsersResult.add(userResult);
-        });
-
-        return ListView(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          children: searchUsersResult,
-        );
-      },
-    );
-  }
-
-  Widget areThereAnyNotifications(UserModel userFromFireStore) {
-    if (userFromFireStore.notifications.isNotEmpty) {
-      return HaveNotifications(userFromFireStore);
+  Widget getNotification(UserService userService) {
+    if (userService.currentUser.notifications.isNotEmpty) {
+      return notifications(userService);
     } else {
       return SizedBox(
         width: 0,
@@ -75,12 +71,12 @@ class _NotificationPageState extends State<NotificationPage> {
     }
   }
 
-  FutureBuilder<QuerySnapshot> HaveNotifications(UserModel userFromFireStore) {
+  FutureBuilder<QuerySnapshot> notifications(UserService userService) {
     final user = context.read<UserService>().currentUser;
 
     List<String> notificationSendersIds = [];
     List<NotificationModel> notificationModels = [];
-    userFromFireStore.notifications.take(20).forEach((element) {
+    userService.currentUser.notifications.take(20).forEach((element) {
       if (element == null) {
         print('THE ELEMENT IS NULL IS HAVENOTIFICAITONS NOTPAGE');
       }
@@ -97,7 +93,7 @@ class _NotificationPageState extends State<NotificationPage> {
           return Text('no notifications');
         }
 
-        List<NotificationTile> notificationTiles = [];
+        // List<NotificationTile> notificationTiles = [];
         List<UserModel> friendsThatSentThemModels = [];
         dataSnapshot.data.docs.forEach((document) {
           UserModel sentFromModel = UserModel.fromDocument(document);
@@ -110,20 +106,21 @@ class _NotificationPageState extends State<NotificationPage> {
           // notificationTiles.add(result);
         });
 
-        user.notifications.forEach((element) {
-          UserModel sentFrom =
-              getTheRightNotificationModel(element, friendsThatSentThemModels);
-          NotificationTile result = NotificationTile(
-              sentFromUserModel: sentFrom,
-              currentUser: user,
-              notifcation: element);
-          notificationTiles.add(result);
-        });
+        // user.notifications.forEach((element) {
+        //   UserModel sentFrom =
+        //       getTheRightNotificationModel(element, friendsThatSentThemModels);
+        // //   NotificationTile result = NotificationTile(
+        // //       sentFromUserModel: sentFrom,
+        // //       currentUser: user,
+        // //       notifcation: element);
+        // //   notificationTiles.add(result);
+        // // });
+        //   );
 
         return ListView(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
-          children: notificationTiles,
+          children: [],
         );
       },
     );
@@ -143,10 +140,10 @@ class _NotificationPageState extends State<NotificationPage> {
 }
 
 class FriendRequestTile extends StatefulWidget {
-  final UserModel anotherUser;
-  final UserModel user;
+  final UserService userService;
+  final UserModel friend;
 
-  FriendRequestTile({this.anotherUser, this.user});
+  FriendRequestTile({this.userService, this.friend});
 
   @override
   _FriendRequestTile createState() => _FriendRequestTile();
@@ -159,69 +156,15 @@ class _FriendRequestTile extends State<FriendRequestTile> {
       TextButton(
           child: Text('Accept'),
           onPressed: () async {
-            //sutract friend request from local User
-            widget.user
-                .subtractFromRecievedFriendRequests(widget.anotherUser.id);
-            widget.user.addToFriends(widget.anotherUser.id);
-            setState(() {});
-
-            //update currentUsers firebase stuff
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(widget.user.id)
-                .update({
-              "recievedFriendRequests":
-                  FieldValue.arrayRemove([widget.anotherUser.id]),
-              'notificationCount': FieldValue.increment(-1),
-              "friends": FieldValue.arrayUnion([widget.anotherUser.id])
-            });
-
-            //add to other users friends
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(widget.anotherUser.id)
-                .update({
-              "friends": FieldValue.arrayUnion([widget.user.id]),
-              "sentFriendRequests": FieldValue.arrayRemove([widget.user.id]),
-              'notificationCount': FieldValue.increment(1),
-              'notifications': FieldValue.arrayUnion([
-                {
-                  "notificationType": 'acceptedFriendRequest',
-                  "sentFrom": widget.anotherUser.id
-                }
-              ])
-            });
+            widget.userService.acceptFriendRequest(widget.friend);
           }),
       TextButton(
           child: Text('Decline'),
           onPressed: () async {
-            //sutract friend request from local User
-            widget.user
-                .subtractFromRecievedFriendRequests(widget.anotherUser.id);
+            print('click');
+            //subtract friend request from local User
+            widget.userService.declineFriendRequest(widget.friend);
             setState(() {});
-
-            //remove from FireStore User
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(widget.user.id)
-                .update({
-              "recievedFriendRequests":
-                  FieldValue.arrayRemove([widget.anotherUser.id])
-            });
-
-            //decrease the Notification Counter
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(widget.user.id)
-                .update({'notificationCount': FieldValue.increment(-1)});
-
-            //remove from the other users firestores sent Notifications list
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(widget.anotherUser.id)
-                .update({
-              "sentFriendRequests": FieldValue.arrayRemove([widget.user.id])
-            });
           })
     ]);
   }
@@ -229,15 +172,17 @@ class _FriendRequestTile extends State<FriendRequestTile> {
   //unsure why the container and column are here, maybe get rid of
   @override
   Widget build(BuildContext context) {
+    // UserModel friend = UserModel.fromDocument(widget.friendRequest);
     return Padding(
       padding: EdgeInsets.all(4.0),
       child: Container(
+        height: 100,
         color: Colors.white54,
         child: Column(
           children: [
             ListTile(
               title: Text(
-                  "${widget.anotherUser.firstName} ${widget.anotherUser.lastName} sent you a friend request"),
+                  " sent you a friend request"),
               trailing: acceptDeclineButton(),
             )
           ],
@@ -248,37 +193,37 @@ class _FriendRequestTile extends State<FriendRequestTile> {
 }
 
 //----------------------NotificationTile-------------------------
-
-class NotificationTile extends StatelessWidget {
-  UserModel currentUser;
-  NotificationModel notifcation;
-  UserModel sentFromUserModel;
-  NotificationTile(
-      {this.currentUser, this.notifcation, this.sentFromUserModel});
-
-  @override
-  Widget build(BuildContext context) {
-    return whatNotificationTypeIsIt();
-  }
-
-  //just add cases for new notification types here
-  ListTile whatNotificationTypeIsIt() {
-    ListTile listTile;
-    switch (notifcation.notificationType) {
-      case 'acceptedFriendRequest':
-        listTile = acceptedFriendRequest();
-        break;
-      default:
-        print(
-            "in NOtificationPage there was no recognised notification type for the nNotificationTile");
-    }
-    return listTile;
-  }
-
-  ListTile acceptedFriendRequest() {
-    return ListTile(
-      title: Text(
-          "${sentFromUserModel.firstName} ${sentFromUserModel.lastName} accepeted yourfriend request"),
-    );
-  }
-}
+//
+// class NotificationTile extends StatelessWidget {
+//   UserModel currentUser;
+//   NotificationModel notifcation;
+//   UserModel sentFromUserModel;
+//   NotificationTile(
+//       {this.currentUser, this.notifcation, this.sentFromUserModel});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return whatNotificationTypeIsIt();
+//   }
+//
+//   // //just add cases for new notification types here
+//   // ListTile whatNotificationTypeIsIt() {
+//   //   ListTile listTile;
+//   //   switch (notifcation.notificationType) {
+//   //     case 'acceptedFriendRequest':
+//   //       listTile = acceptedFriendRequest();
+//   //       break;
+//   //     default:
+//   //       print(
+//   //           "in NOtificationPage there was no recognised notification type for the nNotificationTile");
+//   //   }
+//   //   return listTile;
+//   // }
+//
+//   ListTile acceptedFriendRequest() {
+//     return ListTile(
+//       title: Text(
+//           "${sentFromUserModel.firstName} ${sentFromUserModel.lastName} accepeted yourfriend request"),
+//     );
+//   }
+// }

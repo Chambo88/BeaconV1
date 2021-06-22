@@ -19,6 +19,7 @@ class BeaconFlatButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
+        color: theme.primaryColor,
         height: 50,
         child: Row(
           children: [

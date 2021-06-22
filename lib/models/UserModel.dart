@@ -15,7 +15,7 @@ class UserModel {
 
   int notificationCount;
   List<String> sentFriendRequests;
-  List<String> recievedFriendRequests;
+  List<String> receivedFriendRequests;
   List<NotificationModel> notifications;
 
   UserModel(
@@ -28,74 +28,12 @@ class UserModel {
       this.groups,
       this.friends,
       this.sentFriendRequests,
-      this.recievedFriendRequests,
+      this.receivedFriendRequests,
       this.notifications);
 
   get getFirstName => firstName;
   get getLastName => lastName;
   get getId => id;
-
-  setNotificationCount(int x) {
-    notificationCount = x;
-  }
-
-  updateNotificationCountFB(int x) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(id)
-        .update({"notificationCount": x});
-  }
-
-  addGroupToListFirebase(GroupModel group) async {
-    await FirebaseFirestore.instance.collection('users').doc(id).update({
-      "groups": FieldValue.arrayUnion([group.toJson()]),
-    });
-  }
-
-  removeGroupFromListFirebase(GroupModel group) async {
-    await FirebaseFirestore.instance.collection('users').doc(id).update({
-      "groups": FieldValue.arrayRemove([group.toJson()]),
-    });
-  }
-
-  //INPROGRESS
-  updateGroups() async {
-    List<Map> _groupsMaps = [];
-    groups.forEach((element) {
-      _groupsMaps.add(element.toJson());
-    });
-    await FirebaseFirestore.instance.collection('users').doc(id).update(
-      {"groups": _groupsMaps},
-    );
-  }
-
-  addGroupToList(GroupModel group) {
-    groups.add(group);
-  }
-
-  removeGroup(GroupModel group) {
-    groups.remove(group);
-  }
-
-  getGroups() {
-    return groups;
-  }
-
-  addToSentFriendRequests(String potentialFriend) {
-    sentFriendRequests.add(potentialFriend);
-  }
-
-  subtractFromSentFriendRequests(String cancelFriendRequest) {
-    sentFriendRequests.remove(cancelFriendRequest);
-  }
-
-  subtractFromRecievedFriendRequests(String anotherUser) {
-    recievedFriendRequests.remove(anotherUser);
-  }
-
-  addToFriends(String anotherUser) async {
-    friends.add(anotherUser);
-  }
 
   factory UserModel.fromDocument(DocumentSnapshot doc) {
     if (doc == null) {
@@ -149,7 +87,7 @@ class UserModel {
       _groups,
       List.from(doc.data()["friends"]),
       List.from(doc.data()["sentFriendRequests"]),
-      List.from(doc.data()["recievedFriendRequests"]),
+      List.from(doc.data()["receivedFriendRequests"]),
       _notifications,
     );
   }

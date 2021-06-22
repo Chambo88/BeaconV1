@@ -1,7 +1,7 @@
 import 'package:beacon/Assests/Icons.dart';
 import 'package:beacon/models/GroupModel.dart';
-import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/settings/groups/CreateGroupPage.dart';
+import 'package:beacon/services/UserService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'EditGroupsPage.dart';
@@ -19,7 +19,7 @@ class _GroupSettingsState extends State<GroupSettings> {
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<UserModel>(context);
+    var userService = Provider.of<UserService>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Groups"),
@@ -44,34 +44,36 @@ class _GroupSettingsState extends State<GroupSettings> {
       ),
       body: Column(
         children: [
-          Expanded(child: buildReorderableListView(user)),
+          Expanded(child: buildReorderableListView(userService)),
         ],
       ),
     );
   }
 
-  Widget buildReorderableListView(UserModel user) {
+  Widget buildReorderableListView(UserService userService) {
     return Theme(
-      data: ThemeData(
-          canvasColor: Colors.transparent
-      ),
+      data: ThemeData(canvasColor: Colors.transparent),
       child: ReorderableListView(
         buildDefaultDragHandles: false,
         children: <Widget>[
-          for (int index = 0; index < user.groups.length; index++)
+          for (int index = 0;
+              index < userService.currentUser.groups.length;
+              index++)
             InkWell(
               key: Key('$index'),
               onTap: () async {
                 //copy current groups list object so we dont modify it when we create a temp group
-                List<String> userIdsCopy = [...user.groups[index].members];
+                List<String> userIdsCopy = [
+                  ...userService.currentUser.groups[index].members
+                ];
                 await Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => EditGroupPage(
                       originalGroup: new GroupModel(
                         // name: user.groups[index].name,
-                        name: user.groups[index].name,
+                        name: userService.currentUser.groups[index].name,
                         members: userIdsCopy,
-                        icon: user.groups[index].icon,
+                        icon: userService.currentUser.groups[index].icon,
                       ),
                     ),
                   ),
@@ -82,11 +84,11 @@ class _GroupSettingsState extends State<GroupSettings> {
                 key: Key('$index'),
                 child: ListTile(
                   leading: Icon(
-                    user.groups[index].icon,
+                    userService.currentUser.groups[index].icon,
                     color: Colors.white,
                   ),
                   title: Text(
-                    user.groups[index].name,
+                    userService.currentUser.groups[index].name,
                     style: Theme.of(context).textTheme.headline5,
                   ),
                   trailing: ReorderableDragStartListener(
@@ -105,10 +107,10 @@ class _GroupSettingsState extends State<GroupSettings> {
             if (oldIndex < newIndex) {
               newIndex -= 1;
             }
-            final GroupModel group = user.groups.removeAt(oldIndex);
-            user.groups.insert(newIndex, group);
+            final GroupModel group =
+                userService.currentUser.groups.removeAt(oldIndex);
+            userService.currentUser.groups.insert(newIndex, group);
           });
-          user.updateGroups();
         },
       ),
     );
