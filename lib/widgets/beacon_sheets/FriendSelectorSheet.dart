@@ -1,5 +1,6 @@
 import 'package:beacon/library/ColorHelper.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/BeaconBottomSheet.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class FriendSelectorSheet extends StatefulWidget {
 }
 
 class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
-  UserModel _user;
+  UserService _userService;
   TextEditingController _searchController;
   final FocusNode _focusNode = FocusNode();
   List<String> _filteredFriends = [];
@@ -54,7 +55,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
   }
 
   List<String> getFilteredFriends(String filter) {
-    return _user.friends.where((friend) {
+    return _userService.currentUser.friends.where((friend) {
       return friend.toLowerCase().contains(filter.toLowerCase());
     }).toList();
   }
@@ -62,9 +63,9 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    if (_user == null) {
-      _user = Provider.of<UserModel>(context);
-      _filteredFriends = _user.friends;
+    if (_userService == null) {
+      _userService = Provider.of<UserService>(context);
+      _filteredFriends = _userService.currentUser.friends;
     }
 
     // Pop up Friend selector
