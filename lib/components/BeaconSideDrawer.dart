@@ -1,15 +1,23 @@
 import 'package:beacon/models/BeaconType.dart';
+import 'package:beacon/services/BeaconService.dart';
+import 'package:beacon/services/UserService.dart';
+import 'package:beacon/widgets/beacon_sheets/LiveBeaconSheet.dart';
+import 'package:beacon/widgets/progress_widget.dart';
 import 'package:beacon/widgets/side_drawer/FriendCasualItem.dart';
 import 'package:beacon/widgets/side_drawer/FriendEventItem.dart';
 import 'package:beacon/widgets/side_drawer/FriendLiveItem.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 class BeaconSideDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final userService = Provider.of<UserService>(context);
+    final beaconService = Provider.of<BeaconService>(context);
+    beaconService.loadAllBeacons(userService.currentUser.id);
 
     return Drawer(
       child: DefaultTabController(
@@ -38,63 +46,27 @@ class BeaconSideDrawer extends StatelessWidget {
                 child: Column(
                   children: [
                     _divider(context: context, text: "Friends Events"),
-                    FriendEventItem(
-                      beacon: EventBeacon(
-                          '1',
-                          '2',
-                          'Cam',
-                          BeaconType.event.toString(),
-                          true,
-                          'Come get just drunk enough to forget your problems but not quite end up in ICU Come get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICU',
-                          'A Night of beacon breathers'),
-                    ),
+                    Text("Place holder for Friend Event Beacons...."),
                     _divider(context: context, text: "Casual"),
-                    FriendCasualItem(
-                      beacon: CasualBeacon(
-                          '1',
-                          '2',
-                          'Cam',
-                          BeaconType.event.toString(),
-                          true,
-                          'Come get just drunk enough to forget your problems but not quite end up in ICU Come get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICU',
-                          true,
-                          'A Night of beacon breathers'),
-                    ),
+                    Text("Place holder for Friend Casual Beacons...."),
                     _divider(context: context, text: "Live"),
-                    FriendLiveItem(
-                      beacon: LiveBeacon(
-                        '1',
-                        '2',
-                        'Cam',
-                        BeaconType.event.toString(),
-                        true,
-                        "123",
-                        "123",
-                        'Come get just drunk enough to forget your problems but not quite end up in ICU Come get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICU',
-                      ),
+                    StreamBuilder<List<LiveBeacon>>(
+                      stream: beaconService.allLiveBeacons,
+                      builder: (context, snapshot) {
+                        while (!snapshot.hasData) {
+                          return circularProgress();
+                        }
+                        List<FriendLiveItem> beacons = [];
+                        snapshot.data.forEach((LiveBeacon beacon) {
+                          beacons.add(FriendLiveItem(
+                            beacon: beacon
+                          ));
+                        });
+                        return Column(
+                          children: beacons,
+                        );
+                      }
                     ),
-                    FriendLiveItem(
-                        beacon: LiveBeacon(
-                      '1',
-                      '2',
-                      'Cam',
-                      BeaconType.event.toString(),
-                      true,
-                      "123",
-                      "123",
-                      'Come get just drunk enough to forget your problems but not quite end up in ICU Come get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICU',
-                    )),
-                    FriendLiveItem(
-                        beacon: LiveBeacon(
-                      '1',
-                      '2',
-                      'Cam',
-                      BeaconType.event.toString(),
-                      true,
-                      "123",
-                      "123",
-                      'Come get just drunk enough to forget your problems but not quite end up in ICU Come get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICUCome get just drunk enough to forget your problems but not quite end up in ICU',
-                    ))
                   ],
                 ),
               ),
