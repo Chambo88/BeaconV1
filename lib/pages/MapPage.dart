@@ -20,38 +20,16 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     final UserModel _user = context.read<UserService>().currentUser;
-    final Future<UserLocationModel> _userLocation =
-        LocationService().getLocation();
 
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     final theme = Theme.of(context);
 
     return Scaffold(
-        key: _scaffoldKey,
-        drawer: BeaconSideDrawer(),
-        body: Stack(children: [
-          FutureBuilder<UserLocationModel>(
-              future: _userLocation,
-              builder: (BuildContext context,
-                  AsyncSnapshot<UserLocationModel> snapshot) {
-                if (snapshot.hasData) {
-                  return new MapComponent(userLocation: snapshot.data);
-                } else {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          child: CircularProgressIndicator(),
-                          width: 60,
-                          height: 60,
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              }),
+      key: _scaffoldKey,
+      drawer: BeaconSideDrawer(),
+      body: Stack(
+        children: [
+          MapComponent(),
           new BeaconSelector(user: _user),
           Container(
             alignment: Alignment.bottomRight,
@@ -67,6 +45,8 @@ class _MapPageState extends State<MapPage> {
               child: Icon(Icons.segment, color: Colors.white),
             ),
           )
-        ]));
+        ],
+      ),
+    );
   }
 }
