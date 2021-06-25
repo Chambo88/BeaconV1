@@ -11,7 +11,7 @@ class CustomTheme {
       primaryColorLight: Color(0xFF2A2929),
       primaryColor: Color(0xFF181818),
       primaryColorDark: Color(0xFF000000),
-      accentColor: Color(0xFFFF00CC),
+      accentColor: Color(0xFFB500E2),
 
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Colors.black,

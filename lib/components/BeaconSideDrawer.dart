@@ -30,12 +30,13 @@ class BeaconSideDrawer extends StatelessWidget {
             bottom: TabBar(
               labelColor: theme.accentColor,
               unselectedLabelColor: Colors.white,
+              labelStyle: theme.textTheme.headline3,
               tabs: [
                 Tab(
                   text: 'Friends',
                 ),
                 Tab(
-                  text: 'Events',
+                  text: 'Live Events',
                 ),
               ],
             ),
