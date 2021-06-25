@@ -21,7 +21,7 @@ class BeaconSideDrawer extends StatelessWidget {
 
     return Drawer(
       child: DefaultTabController(
-        initialIndex: 1,
+        initialIndex: 0,
         length: 2,
         child: Scaffold(
           appBar: AppBar(

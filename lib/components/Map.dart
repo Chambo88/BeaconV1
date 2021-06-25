@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/LoactionService.dart';
 import 'package:beacon/services/UserService.dart';
+import 'package:beacon/widgets/beacon_sheets/LiveBeaconSheet.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -18,7 +21,7 @@ class MapComponent extends StatefulWidget {
 class _MapState extends State<MapComponent> {
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
 
-  _updateMarkers(List<LiveBeacon> beaconList) {
+  _updateLiveBeaconMarkers(List<LiveBeacon> beaconList) {
     BitmapDescriptor beaconIcon;
     BitmapDescriptor.fromAssetImage(
             ImageConfiguration(size: Size(12, 12)), 'assets/active_marker.png')
@@ -35,6 +38,18 @@ class _MapState extends State<MapComponent> {
             ),
           ),
           icon: beaconIcon,
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              isScrollControlled: true,
+              builder: (context) {
+                return LiveBeaconSheet(
+                  beacon: beacon,
+                );
+              },
+            );
+          }
         );
 
         setState(() {
@@ -78,17 +93,17 @@ class _MapState extends State<MapComponent> {
           ),
           markers: Set<Marker>.of(_markers.values),
           onMapCreated: (controller) {
-            locationService.cameraLocationStream.listen((event) {
-              controller.animateCamera(
+            locationService.cameraLocationStream.listen((event) async {
+              await controller.animateCamera(
                 CameraUpdate.newCameraPosition(event),
               );
             });
             liveBeacons.listen((event) {
-              _updateMarkers(event);
+              _updateLiveBeaconMarkers(event);
             });
           },
+          compassEnabled: false,
           zoomControlsEnabled: false,
-          // markers: Set<Marker>.of(markers.values),
         );
       },
     );
