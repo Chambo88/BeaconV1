@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:beacon/models/UserLocationModel.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class LocationService {
@@ -21,10 +23,16 @@ class LocationService {
     return currentLocation;
   }
 
-  StreamController<UserLocationModel> _locationController =
-      StreamController<UserLocationModel>();
+  var _userLocationController = StreamController<UserLocationModel>.broadcast();
 
-  Stream<UserLocationModel> get locationStream => _locationController.stream;
+  var _cameraLocationController = StreamController<CameraPosition>.broadcast();
+
+  Stream<UserLocationModel> get userLocationStream => _userLocationController.stream;
+  Stream<CameraPosition> get cameraLocationStream => _cameraLocationController.stream;
+
+  setCameraPosition({@required CameraPosition cameraPosition}) {
+    _cameraLocationController.add(cameraPosition);
+  }
 
   LocationService() {
     // Request permission to use location
@@ -33,12 +41,13 @@ class LocationService {
         // If granted listen to the onLocationChanged stream and emit over our controller
         location.onLocationChanged.listen((locationData) {
           if (locationData != null) {
-            _locationController.add(
+            _userLocationController.add(
               UserLocationModel(
                 latitude: locationData.latitude,
                 longitude: locationData.longitude,
               ),
             );
+
           }
         });
       }

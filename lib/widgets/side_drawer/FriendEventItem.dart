@@ -16,7 +16,19 @@ class FriendEventItem extends StatelessWidget {
     final theme = Theme.of(context);
     return BeaconItem(
       height: 200,
-      sheet: EventBeaconSheet(beacon: beacon),
+      onTap: () {
+      Navigator.pop(context);
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        builder: (context) {
+          return EventBeaconSheet(
+            beacon: beacon,
+          );
+        },
+      );
+    },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

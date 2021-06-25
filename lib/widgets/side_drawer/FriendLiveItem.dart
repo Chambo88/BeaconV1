@@ -1,8 +1,11 @@
 import 'package:beacon/models/BeaconModel.dart';
+import 'package:beacon/services/LoactionService.dart';
 import 'package:beacon/widgets/BeaconBottomSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/LiveBeaconSheet.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import 'BecaonItem.dart';
 
 class FriendLiveItem extends StatelessWidget {
@@ -13,45 +16,67 @@ class FriendLiveItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final locationService = Provider.of<LocationService>(context);
+
     return BeaconItem(
-        height: 80,
-        sheet: LiveBeaconSheet(
-          beacon: beacon,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Icon(
-              Icons.circle,
-              size: 50,
-              color: Colors.white,
+      height: 80,
+      onTap: () {
+        locationService.setCameraPosition(
+          cameraPosition: CameraPosition(
+            zoom: 12,
+            target: LatLng(
+              double.parse(beacon.lat),
+              double.parse(beacon.long),
             ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    child: Text(
-                      beacon.getUserName(),
-                      style: Theme.of(context).textTheme.headline5,
-                    ),
+          ),
+        );
+        Navigator.pop(context);
+        showModalBottomSheet(
+          context: context,
+          backgroundColor: Colors.transparent,
+          isScrollControlled: true,
+          builder: (context) {
+            return LiveBeaconSheet(
+              beacon: beacon,
+            );
+          },
+        );
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Icon(
+            Icons.circle,
+            size: 50,
+            color: Colors.white,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  child: Text(
+                    beacon.getUserName(),
+                    style: Theme.of(context).textTheme.headline5,
                   ),
-                  Expanded(
-                    child: Text(
-                      beacon.desc,
-                      style: Theme.of(context).textTheme.bodyText2,
-                    ),
-                  )
-                ],
-              ),
+                ),
+                Expanded(
+                  child: Text(
+                    beacon.desc,
+                    style: Theme.of(context).textTheme.bodyText2,
+                  ),
+                )
+              ],
             ),
-            Center(
-              child: SmallOutlinedButton(
-                title: 'Summon',
-                onPressed: () {}, // TODO
-              ),
-            )
-          ],
-        ));
+          ),
+          Center(
+            child: SmallOutlinedButton(
+              title: 'Summon',
+              onPressed: () {}, // TODO
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
