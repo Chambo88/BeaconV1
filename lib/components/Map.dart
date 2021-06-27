@@ -30,7 +30,7 @@ class _MapState extends State<MapComponent> {
         beaconIcon = onValue;
 
         final Marker marker = Marker(
-          markerId: MarkerId(beacon.getId()),
+          markerId: MarkerId(beacon.id),
           position: LatLng(
             double.parse(beacon.lat),
             double.parse(
@@ -54,7 +54,7 @@ class _MapState extends State<MapComponent> {
 
         setState(() {
           // adding a new marker to map
-          _markers[MarkerId(beacon.getId())] = marker;
+          _markers[MarkerId(beacon.id)] = marker;
         });
       });
     });
@@ -104,6 +104,9 @@ class _MapState extends State<MapComponent> {
           },
           compassEnabled: false,
           zoomControlsEnabled: false,
+          myLocationEnabled: true,
+          myLocationButtonEnabled: true,
+          padding:  const EdgeInsets.only(top: 20),
         );
       },
     );

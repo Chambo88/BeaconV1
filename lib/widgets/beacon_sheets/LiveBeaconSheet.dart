@@ -22,7 +22,7 @@ class LiveBeaconSheet extends BeaconSheet {
                 leading: Text(''),
                 title: Center(
                   child: Text(
-                    beacon.getUserName(),
+                    beacon.userName,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.headline2,
                   ),

@@ -14,7 +14,7 @@ class BeaconService {
         .snapshots()
         ?.map((snapShot) => snapShot.docs.map((document) {
               if (document.data()['type'] == 'BeaconType.live') {
-                return LiveBeacon.toJson(document.data());
+                return LiveBeacon.fromJson(document.data());
               }
             }).toList());
   }

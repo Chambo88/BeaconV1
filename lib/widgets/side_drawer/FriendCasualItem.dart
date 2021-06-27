@@ -46,7 +46,7 @@ class FriendCasualItem extends StatelessWidget {
                     Expanded(
                       child: Center(
                         child: Text(
-                          beacon.getId(),
+                          beacon.id,
                           style: theme.textTheme.headline3,
                         ),
                       ),
@@ -59,7 +59,7 @@ class FriendCasualItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        beacon.getUserName(),
+                        beacon.userName,
                         style: theme.textTheme.headline5,
                       ),
                       Text('17:00 - 20:00', // TODO replace with time,
