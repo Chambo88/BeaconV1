@@ -6,21 +6,21 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
 class LocationService {
-  UserLocationModel currentLocation;
+  UserLocationModel currentUserLocation;
 
   var location = Location();
 
   Future<UserLocationModel> getLocation() async {
     try {
       var userLocation = await location.getLocation();
-      currentLocation = UserLocationModel(
+      currentUserLocation = UserLocationModel(
         latitude: userLocation.latitude,
         longitude: userLocation.longitude,
       );
     } on Exception catch (e) {
       print('Could not get location: ${e.toString()}');
     }
-    return currentLocation;
+    return currentUserLocation;
   }
 
   var _userLocationController = StreamController<UserLocationModel>.broadcast();

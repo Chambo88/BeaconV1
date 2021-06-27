@@ -56,14 +56,14 @@ class FriendLiveItem extends StatelessWidget {
               children: [
                 Container(
                   child: Text(
-                    beacon.getUserName(),
-                    style: Theme.of(context).textTheme.headline5,
+                    beacon.userName,
+                    style: theme.textTheme.headline5,
                   ),
                 ),
                 Expanded(
                   child: Text(
                     beacon.desc,
-                    style: Theme.of(context).textTheme.bodyText2,
+                    style: theme.textTheme.bodyText2,
                   ),
                 )
               ],

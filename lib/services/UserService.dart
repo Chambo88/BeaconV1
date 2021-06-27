@@ -29,8 +29,15 @@ class UserService {
     // if (doc.data().containsKey('beacon')) {
     //   beacon = BeaconModel.toJson(doc.data()['beacon']);
     // } else {
-    beacon = LiveBeacon('0', '0', 'Robbie', BeaconType.live.toString(), false,
-        "123", "123", "A description");
+    beacon = LiveBeacon(
+      id: '0',
+      userId: '0',
+      userName: 'Robbie',
+      active: false,
+      lat: "123",
+      long: "123",
+      desc: "A description",
+    );
     // }
 
     if (doc.data().containsKey('notificationCount')) {
@@ -73,6 +80,15 @@ class UserService {
     return currentUser;
   }
 
+  addBeacon(BeaconModel beacon) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.id)
+        .update({
+      'beacons': FieldValue.arrayUnion([beacon.toJson()])
+    });
+  }
+
   updateBeacon(LiveBeacon beacon) async {
     await FirebaseFirestore.instance
         .collection('users')
@@ -80,7 +96,7 @@ class UserService {
         .set({
       'beacon': {
         'active': beacon.active,
-        'type': beacon.getType(),
+        'type': beacon.type.toString(),
         'lat': beacon.lat,
         'long': beacon.long,
         'description': beacon.desc,
@@ -112,10 +128,7 @@ class UserService {
       currentUser.groups.add(group);
     }
     String userId = user != null ? user.id : currentUser.id;
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .update({
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
       "groups": FieldValue.arrayUnion([group.toJson()]),
     });
   }
@@ -125,10 +138,7 @@ class UserService {
       currentUser.groups.remove(group);
     }
     String userId = user != null ? user.id : currentUser.id;
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .update({
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
       "groups": FieldValue.arrayRemove([group.toJson()]),
     });
   }
@@ -150,10 +160,7 @@ class UserService {
     }
     String userId = user != null ? user.id : currentUser.id;
     // Add to receivers friend list
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .update({
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
       "sentFriendRequests": FieldValue.arrayUnion([potentialFriend.id]),
     });
 
@@ -161,23 +168,19 @@ class UserService {
         .collection('users')
         .doc(potentialFriend.id)
         .update({
-      'receivedFriendRequests': FieldValue.arrayUnion(
-          [userId]),
+      'receivedFriendRequests': FieldValue.arrayUnion([userId]),
       'notificationCount': FieldValue.increment(1)
     });
   }
 
-   removeSentFriendRequest(UserModel potentialFriend, {UserModel user}) async {
+  removeSentFriendRequest(UserModel potentialFriend, {UserModel user}) async {
     // If user is null then current user
     if (user == null) {
       currentUser.sentFriendRequests.remove(potentialFriend.id);
     }
     String userId = user != null ? user.id : currentUser.id;
     // Add to receivers friend list
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .update({
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
       "sentFriendRequests": FieldValue.arrayRemove([potentialFriend.id]),
     });
 
@@ -185,8 +188,7 @@ class UserService {
         .collection('users')
         .doc(potentialFriend.id)
         .update({
-      'receivedFriendRequests': FieldValue.arrayRemove(
-          [userId]),
+      'receivedFriendRequests': FieldValue.arrayRemove([userId]),
       'notificationCount': FieldValue.increment(-1)
     });
   }
@@ -199,20 +201,13 @@ class UserService {
     }
     String userId = user != null ? user.id : currentUser.id;
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .update({
-      'receivedFriendRequests': FieldValue.arrayRemove(
-          [friend.id]),
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'receivedFriendRequests': FieldValue.arrayRemove([friend.id]),
       'notificationCount': FieldValue.increment(-1)
     });
 
     //remove from the other users firestores sent Notifications list
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .update({
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
       'sentFriendRequests': FieldValue.arrayRemove([userId])
     });
   }
@@ -222,33 +217,24 @@ class UserService {
       currentUser.friends.add(friend.id);
       currentUser.sentFriendRequests.remove(friend.id);
       currentUser.notifications.remove(friend.id);
-      currentUser.notificationCount = currentUser.notificationCount -1;
+      currentUser.notificationCount = currentUser.notificationCount - 1;
     }
     String userId = user != null ? user.id : currentUser.id;
 
     // Update receiver
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .update({
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
       "friends": FieldValue.arrayUnion([friend.id]),
       'receivedFriendRequests': FieldValue.arrayRemove([friend.id]),
       'notificationCount': FieldValue.increment(-1)
     });
 
     // Update requester
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(friend.id)
-        .update({
+    await FirebaseFirestore.instance.collection('users').doc(friend.id).update({
       "friends": FieldValue.arrayUnion([userId]),
       "sentFriendRequests": FieldValue.arrayRemove([userId]),
       'notificationCount': FieldValue.increment(1),
       'notifications': FieldValue.arrayUnion([
-        {
-          "notificationType": 'acceptedFriendRequest',
-          "sentFrom": userId
-        }
+        {"notificationType": 'acceptedFriendRequest', "sentFrom": userId}
       ])
     });
   }

@@ -30,7 +30,7 @@ class _MapPageState extends State<MapPage> {
       body: Stack(
         children: [
           MapComponent(),
-          new BeaconSelector(user: _user),
+          BeaconSelector(),
           Container(
             alignment: Alignment.bottomRight,
             padding: EdgeInsets.only(bottom: 30, right: 10),
