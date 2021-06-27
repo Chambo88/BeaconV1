@@ -4,7 +4,7 @@ import 'package:beacon/widgets/beacon_sheets/EventBeaconSheet.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:flutter/material.dart';
 
-import 'BecaonItem.dart';
+import 'BeaconItem.dart';
 
 class FriendEventItem extends StatelessWidget {
   final EventBeacon beacon;

@@ -6,7 +6,7 @@ import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'BecaonItem.dart';
+import 'BeaconItem.dart';
 
 class FriendLiveItem extends StatelessWidget {
   final LiveBeacon beacon;

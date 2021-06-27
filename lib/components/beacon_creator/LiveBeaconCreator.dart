@@ -1,5 +1,5 @@
-import 'package:beacon/components/beacon_creator/pages/DesciptionPage.dart';
-import 'package:beacon/components/beacon_creator/pages/AttendancePage.dart';
+import 'package:beacon/components/beacon_creator/pages/DescriptionPage.dart';
+import 'package:beacon/components/beacon_creator/pages/InvitePage.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 
 typedef void BeaconCallback(LiveBeacon beacon);
 
-enum LiveBeaconCreatorStage { whoCanSeeMyBeacon, description }
+enum LiveBeaconCreatorStage { invite, description }
 
 class LiveBeaconCreator extends StatefulWidget {
   final BeaconCallback onCreated;
@@ -29,7 +29,13 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
   UserService _userService;
   LocationService _locationService;
   LiveBeacon _beacon = LiveBeacon(active: true);
-  LiveBeaconCreatorStage _stage = LiveBeaconCreatorStage.whoCanSeeMyBeacon;
+  LiveBeaconCreatorStage _stage = LiveBeaconCreatorStage.invite;
+
+  // Holding here as well as the beacon model in case the user goes back
+  // e.g (initGroup, initFriends)
+  var _groups = Set<GroupModel>();
+  var _friends = Set<String>();
+  var _displayToAll = false;
 
   @override
   void dispose() {
@@ -50,17 +56,22 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
         _beacon.lat = snapshot.data.latitude.toString();
         _beacon.long = snapshot.data.longitude.toString();
         switch (_stage) {
-          case LiveBeaconCreatorStage.whoCanSeeMyBeacon:
-            return AttendancePage(
+          case LiveBeaconCreatorStage.invite:
+            return InvitePage(
               totalPageCount: 2,
               currentPageIndex: 0,
               onBackClick: null,
+              initFriends: _friends,
+              initGroups: _groups,
+              initDisplayToAll: _displayToAll,
               onClose: widget.onClose,
               onContinue: (displayToAll, groupList, friendList) {
                 setState(() {
                   if (displayToAll) {
                     _beacon.users = _userService.currentUser.friends;
                   } else {
+                    _groups = groupList;
+                    _friends = friendList;
                     Set<String> allFriends = groupList
                         .map((GroupModel g) => g.members)
                         .expand((friend) => friend)
@@ -78,24 +89,16 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
               currentPageIndex: 1,
               onBackClick: () {
                 setState(() {
-                  _stage = LiveBeaconCreatorStage.whoCanSeeMyBeacon;
+                  _stage = LiveBeaconCreatorStage.invite;
                 });
               },
               onClose: widget.onClose,
-              onContinue: (desc) {
+              onContinue: (title, desc) {
                 setState(() {
                   _beacon.desc = desc;
                   _beacon.userId = _userService.currentUser.id;
-                  _userService.addBeacon(_beacon);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Live beacon created!',
-                      ),
-                    ),
-                  );
+                  widget.onCreated(_beacon);
                 });
-                widget.onClose();
               },
               continueText: 'Light',
             );

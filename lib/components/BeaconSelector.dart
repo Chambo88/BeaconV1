@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:beacon/Assests/Icons.dart';
+import 'package:beacon/components/beacon_creator/CasualBeaconCreator.dart';
 import 'package:beacon/components/beacon_creator/LiveBeaconCreator.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/library/ColorHelper.dart';
@@ -170,11 +171,40 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             });
           },
           onCreated: (beacon) {
-            print(beacon.userName);
+            setState(() {
+              _showBeaconEditor = false;
+            });
+            _userService.addBeacon(beacon);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Live beacon created!',
+                ),
+              ),
+            );
           },
         );
       case BeaconType.casual:
-        // return _casualBeacon(context);
+        return CasualBeaconCreator(
+          onClose: () {
+            setState(() {
+              _showBeaconEditor = false;
+            });
+          },
+          onCreated: (beacon) {
+            setState(() {
+              _showBeaconEditor = false;
+            });
+            _userService.addBeacon(beacon);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Casual beacon created!',
+                ),
+              ),
+            );
+          },
+        );
       case BeaconType.event:
         // return _eventBeacon(context);
       default:

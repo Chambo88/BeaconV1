@@ -9,13 +9,14 @@ abstract class BeaconModel {
   List<String> users;
   String desc;
 
-  BeaconModel(this._id, this.userId, this._userName, this._type, this.active,
-      this.desc,
+  BeaconModel(
+      this._id, this.userId, this._userName, this._type, this.active, this.desc,
       {this.users = const []});
 
   BeaconModel.fromJson(Map<String, dynamic> json) {
     this.desc = json["description"];
-    this._type = BeaconType.values.firstWhere((e) => e.toString() == json["type"]);
+    this._type =
+        BeaconType.values.firstWhere((e) => e.toString() == json["type"]);
     this._userName = json["userName"];
     this.active = json["active"];
     this._id = json["userId"];
@@ -48,20 +49,22 @@ class LiveBeacon extends BeaconModel {
   String lat;
   String long;
 
+  @override
   LiveBeacon.fromJson(Map<String, dynamic> json)
       : this.lat = json["lat"],
         this.long = json["long"],
         super.fromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => {
-      'active': active,
-      'type': type.toString(),
-      'lat': lat,
-      'long': long,
-      'description': desc,
-      'users': users,
-      'userId': userId,
-  };
+        'active': active,
+        'type': type.toString(),
+        'lat': lat,
+        'long': long,
+        'description': desc,
+        'users': users,
+        'userId': userId,
+      };
 
   LiveBeacon({
     String id,
@@ -74,7 +77,8 @@ class LiveBeacon extends BeaconModel {
     List<String> users,
   })  : this.lat = lat,
         this.long = long,
-        super(id, userId, userName, BeaconType.live, active, desc, users: users);
+        super(id, userId, userName, BeaconType.live, active, desc,
+            users: users);
 }
 
 class CasualBeacon extends BeaconModel {
@@ -84,24 +88,36 @@ class CasualBeacon extends BeaconModel {
   String location; // Probably some sort of id???
   bool notificationsEnabled;
 
-  CasualBeacon(String id, String userId, String userName, String type,
-      bool active, String desc, bool notificationsEnabled, String eventName,
-      {DateTime startTime,
-      DateTime endTime,
-      List<String> users,
-      String location = "ABC"})
-      : this.eventName = eventName,
+  CasualBeacon({
+    String id,
+    String userId,
+    String userName,
+    String type,
+    bool active,
+    String desc,
+    bool notificationsEnabled,
+    String eventName,
+    DateTime startTime,
+    DateTime endTime,
+    List<String> users,
+    String location = "ABC",
+  })  : this.eventName = eventName,
         this.startTime = startTime,
         this.endTime = endTime,
         this.location = location,
         this.notificationsEnabled = notificationsEnabled,
-        super(id, userId, userName, BeaconType.casual, active, desc, users: users);
+        super(id, userId, userName, BeaconType.casual, active, desc,
+            users: users);
 
   @override
-  Map<String, dynamic> toJson() {
-    // TODO: implement toJson
-    throw UnimplementedError();
-  }
+  Map<String, dynamic> toJson() => {
+    'active': active,
+    'type': type.toString(),
+    'eventName': eventName,
+    'description': desc,
+    'users': users,
+    'userId': userId,
+  };
 }
 
 class EventBeacon extends BeaconModel {
@@ -126,7 +142,8 @@ class EventBeacon extends BeaconModel {
         this.location = location,
         this.minAttendance = minAttendance,
         this.maxAttendance = maxAttendance,
-        super(id, userId, userName, BeaconType.event, active, desc, users: users);
+        super(id, userId, userName, BeaconType.event, active, desc,
+            users: users);
 
   @override
   Map<String, dynamic> toJson() {
