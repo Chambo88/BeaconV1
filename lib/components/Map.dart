@@ -245,7 +245,7 @@ class Utils {
     "featureType": "road",
     "stylers": [
       {
-        "color": "#282c3e"
+        "color": "#282a3e"
       }
     ]
   },
@@ -264,6 +264,15 @@ class Utils {
     "stylers": [
       {
         "color": "#2c3044"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      {
+        "visibility": "off"
       }
     ]
   },
