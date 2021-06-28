@@ -32,7 +32,10 @@ class TimePage extends StatefulWidget {
 }
 
 class _TimePageState extends State<TimePage> {
-  DateTimeRange _dateRange;
+  DateTimeRange _dateRange = DateTimeRange(
+    start: new DateTime.now(),
+    end: new DateTime.now(),
+  );
 
   @override
   void initState() {
@@ -42,12 +45,11 @@ class _TimePageState extends State<TimePage> {
     }
   }
 
-  Future<DateTime> _selectDate(BuildContext context,
-      {DateTime initDate}) async {
+  Future<void> _selectDates(BuildContext context) async {
     var now = DateTime.now();
-    final DateTime datePicked = await showDatePicker(
+    DateTimeRange dateTimeRange = await showDateRangePicker(
       context: context,
-      initialDate: initDate,
+      initialDateRange: _dateRange,
       firstDate: now,
       lastDate: new DateTime(now.year + 5),
       builder: (BuildContext context, Widget child) {
@@ -64,51 +66,74 @@ class _TimePageState extends State<TimePage> {
         );
       },
     );
-    if (datePicked != null) {
-      final TimeOfDay timePicked = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.fromDateTime(_startDate),
-        builder: (BuildContext context, Widget child) {
-          return Theme(
-            data: ThemeData.light().copyWith(
-              primaryColor: Theme.of(context).primaryColor,
-              accentColor: Theme.of(context).accentColor,
-              backgroundColor: Theme.of(context).primaryColor,
-              colorScheme:
-                  ColorScheme.light(primary: Theme.of(context).accentColor),
-              buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-            ),
-            child: child,
-          );
-        },
+    setState(() {
+      _dateRange = new DateTimeRange(
+        start: new DateTime(
+          dateTimeRange.start.year,
+          dateTimeRange.start.month,
+          dateTimeRange.start.day,
+          _dateRange.start.hour,
+          _dateRange.start.minute,
+        ),
+        end: new DateTime(
+          dateTimeRange.end.year,
+          dateTimeRange.end.month,
+          dateTimeRange.end.day,
+          _dateRange.end.hour,
+          _dateRange.end.minute,
+        ),
       );
-      return new DateTime(datePicked.year, datePicked.month, datePicked.day,
-          timePicked.hour, timePicked.minute);
-    }
-    return null;
+    });
   }
 
-  Widget _date(BuildContext context, {DateTime date, VoidCallback onTap}) {
+  Future<DateTime> _selectTime(BuildContext context,
+      {DateTime dateTime}) async {
+    final TimeOfDay timePicked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(dateTime),
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Theme.of(context).primaryColor,
+            accentColor: Theme.of(context).accentColor,
+            backgroundColor: Theme.of(context).primaryColor,
+            colorScheme:
+                ColorScheme.light(primary: Theme.of(context).accentColor),
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child,
+        );
+      },
+    );
+    return new DateTime(dateTime.year, dateTime.month, dateTime.day,
+        timePicked.hour, timePicked.minute);
+  }
+
+  Widget _date(BuildContext context,
+      {DateTime date, VoidCallback onTimeTap, VoidCallback onDateTap}) {
     initializeDateFormatting();
     String languageCode = Localizations.localeOf(context).languageCode;
     String format = 'EEEE, d MMMM';
     return Container(
       color: Color(0xFF242424),
-      child: InkWell(
-        child: ListTile(
-          leading: Icon(
-            Icons.access_time,
-            color: Colors.grey,
-          ),
-          title: Text('${new DateFormat(
+      child: ListTile(
+        leading: Icon(
+          Icons.access_time,
+          color: Colors.grey,
+        ),
+        title: InkWell(
+          child: Text('${new DateFormat(
             format,
             languageCode,
           ).format(date)}'),
-          trailing: Text(
+          onTap: onDateTap,
+        ),
+        trailing: InkWell(
+          child: Text(
             new DateFormat.jm(languageCode).format(date),
             style: Theme.of(context).textTheme.headline4,
           ),
-          onTap: onTap,
+          onTap: onTimeTap,
         ),
       ),
     );
@@ -123,12 +148,7 @@ class _TimePageState extends State<TimePage> {
       continueText: widget.continueText,
       totalPageCount: widget.totalPageCount,
       currentPageIndex: widget.currentPageIndex,
-      onContinuePressed: () => widget.onContinue(
-        new DateTimeRange(
-          start: _startDate,
-          end: _endDate,
-        ),
-      ),
+      onContinuePressed: () => widget.onContinue(_dateRange),
       child: Column(
         children: [
           Container(
@@ -142,12 +162,15 @@ class _TimePageState extends State<TimePage> {
           ),
           _date(
             context,
-            date: _endDate,
-            onTap: () async {
-              DateTime date = await _selectDate(context, initDate: _endDate);
+            date: _dateRange.start,
+            onDateTap: () { _selectDates(context); },
+            onTimeTap: () async {
+              DateTime date =
+                  await _selectTime(context, dateTime: _dateRange.start);
               if (date != null) {
                 setState(() {
-                  _endDate = date;
+                  _dateRange =
+                      new DateTimeRange(start: date, end: _dateRange.end);
                 });
               }
             },
@@ -163,12 +186,15 @@ class _TimePageState extends State<TimePage> {
           ),
           _date(
             context,
-            date: _startDate,
-            onTap: () async {
-              DateTime date = await _selectDate(context, initDate: _startDate);
+            date: _dateRange.end,
+            onDateTap: () { _selectDates(context); },
+            onTimeTap: () async {
+              DateTime date =
+                  await _selectTime(context, dateTime: _dateRange.end);
               if (date != null) {
                 setState(() {
-                  _startDate = date;
+                  _dateRange =
+                      new DateTimeRange(start: _dateRange.start, end: date);
                 });
               }
             },

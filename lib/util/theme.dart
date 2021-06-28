@@ -13,6 +13,7 @@ class CustomTheme {
       primaryColorDark: Color(0xFF000000),
       accentColor: Color(0xFFB500E2),
 
+
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Colors.black,
       ),

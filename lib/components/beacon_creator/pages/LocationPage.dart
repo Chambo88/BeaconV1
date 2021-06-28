@@ -40,7 +40,9 @@ class _LocationPageState extends State<LocationPage> {
       onContinuePressed: () {
         widget.onContinue('');
       },
-      child: Container()
+      child: Center(
+        child: Text('TODO'),
+      )
     );
   }
 }

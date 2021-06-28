@@ -25,10 +25,15 @@ enum CasualBeaconCreatorStage {
 }
 
 class CasualBeaconCreator extends StatefulWidget {
+  final VoidCallback onBack;
   final BeaconCallback onCreated;
   final VoidCallback onClose;
 
-  CasualBeaconCreator({@required this.onClose, @required this.onCreated});
+  CasualBeaconCreator({
+    @required this.onClose,
+    @required this.onBack,
+    @required this.onCreated,
+  });
 
   @override
   _CasualBeaconCreatorState createState() => _CasualBeaconCreatorState();
@@ -36,7 +41,6 @@ class CasualBeaconCreator extends StatefulWidget {
 
 class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
   UserService _userService;
-  LocationService _locationService;
   CasualBeacon _beacon = CasualBeacon(active: true);
   CasualBeaconCreatorStage _stage = CasualBeaconCreatorStage.invite;
 
@@ -54,14 +58,13 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
   @override
   Widget build(BuildContext context) {
     _userService = Provider.of<UserService>(context);
-    _locationService = Provider.of<LocationService>(context);
 
     switch (_stage) {
       case CasualBeaconCreatorStage.invite:
         return InvitePage(
           totalPageCount: 5,
           currentPageIndex: 0,
-          onBackClick: null,
+          onBackClick: widget.onBack,
           onClose: widget.onClose,
           initGroups: _groups,
           initFriends: _friends,
@@ -109,10 +112,13 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
         return TimePage(
           totalPageCount: 5,
           currentPageIndex: 2,
-          initDateTimeRange: _beacon.startTime != null && _beacon.endTime != null ? new DateTimeRange(
-            start: _beacon.startTime,
-            end: _beacon.endTime,
-          ): null,
+          initDateTimeRange:
+              _beacon.startTime != null && _beacon.endTime != null
+                  ? new DateTimeRange(
+                      start: _beacon.startTime,
+                      end: _beacon.endTime,
+                    )
+                  : null,
           onBackClick: () {
             setState(() {
               _stage = CasualBeaconCreatorStage.description;

@@ -40,7 +40,9 @@ class _AttendancePageState extends State<AttendancePage> {
         },
         totalPageCount: widget.totalPageCount,
         currentPageIndex: widget.currentPageIndex,
-        child: Container()
+        child: Center(
+          child: Text('TODO'),
+        )
     );
   }
 }

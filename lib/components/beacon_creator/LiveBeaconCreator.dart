@@ -17,9 +17,14 @@ enum LiveBeaconCreatorStage { invite, description }
 
 class LiveBeaconCreator extends StatefulWidget {
   final BeaconCallback onCreated;
+  final VoidCallback onBack;
   final VoidCallback onClose;
 
-  LiveBeaconCreator({@required this.onClose, @required this.onCreated});
+  LiveBeaconCreator({
+    @required this.onClose,
+    @required this.onBack,
+    @required this.onCreated,
+  });
 
   @override
   _LiveBeaconCreatorState createState() => _LiveBeaconCreatorState();
@@ -48,64 +53,63 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
     _locationService = Provider.of<LocationService>(context);
 
     return StreamBuilder<UserLocationModel>(
-      stream: _locationService.userLocationStream,
-      builder: (context, snapshot) {
-        while (!snapshot.hasData) {
-          return circularProgress();
-        }
-        _beacon.lat = snapshot.data.latitude.toString();
-        _beacon.long = snapshot.data.longitude.toString();
-        switch (_stage) {
-          case LiveBeaconCreatorStage.invite:
-            return InvitePage(
-              totalPageCount: 2,
-              currentPageIndex: 0,
-              onBackClick: null,
-              initFriends: _friends,
-              initGroups: _groups,
-              initDisplayToAll: _displayToAll,
-              onClose: widget.onClose,
-              onContinue: (displayToAll, groupList, friendList) {
-                setState(() {
-                  if (displayToAll) {
-                    _beacon.users = _userService.currentUser.friends;
-                  } else {
-                    _groups = groupList;
-                    _friends = friendList;
-                    Set<String> allFriends = groupList
-                        .map((GroupModel g) => g.members)
-                        .expand((friend) => friend)
-                        .toSet();
-                    allFriends.addAll(friendList);
-                    _beacon.users = allFriends.toList();
-                  }
-                  _stage = LiveBeaconCreatorStage.description;
-                });
-              },
-            );
-          case LiveBeaconCreatorStage.description:
-            return DescriptionPage(
-              totalPageCount: 2,
-              currentPageIndex: 1,
-              onBackClick: () {
-                setState(() {
-                  _stage = LiveBeaconCreatorStage.invite;
-                });
-              },
-              onClose: widget.onClose,
-              onContinue: (title, desc) {
-                setState(() {
-                  _beacon.desc = desc;
-                  _beacon.userId = _userService.currentUser.id;
-                  widget.onCreated(_beacon);
-                });
-              },
-              continueText: 'Light',
-            );
-          default:
-            return Container();
-        }
-      }
-    );
+        stream: _locationService.userLocationStream,
+        builder: (context, snapshot) {
+          while (!snapshot.hasData) {
+            return circularProgress();
+          }
+          _beacon.lat = snapshot.data.latitude.toString();
+          _beacon.long = snapshot.data.longitude.toString();
+          switch (_stage) {
+            case LiveBeaconCreatorStage.invite:
+              return InvitePage(
+                totalPageCount: 2,
+                currentPageIndex: 0,
+                onBackClick: widget.onBack,
+                initFriends: _friends,
+                initGroups: _groups,
+                initDisplayToAll: _displayToAll,
+                onClose: widget.onClose,
+                onContinue: (displayToAll, groupList, friendList) {
+                  setState(() {
+                    if (displayToAll) {
+                      _beacon.users = _userService.currentUser.friends;
+                    } else {
+                      _groups = groupList;
+                      _friends = friendList;
+                      Set<String> allFriends = groupList
+                          .map((GroupModel g) => g.members)
+                          .expand((friend) => friend)
+                          .toSet();
+                      allFriends.addAll(friendList);
+                      _beacon.users = allFriends.toList();
+                    }
+                    _stage = LiveBeaconCreatorStage.description;
+                  });
+                },
+              );
+            case LiveBeaconCreatorStage.description:
+              return DescriptionPage(
+                totalPageCount: 2,
+                currentPageIndex: 1,
+                onBackClick: () {
+                  setState(() {
+                    _stage = LiveBeaconCreatorStage.invite;
+                  });
+                },
+                onClose: widget.onClose,
+                onContinue: (title, desc) {
+                  setState(() {
+                    _beacon.desc = desc;
+                    _beacon.userId = _userService.currentUser.id;
+                    widget.onCreated(_beacon);
+                  });
+                },
+                continueText: 'Light',
+              );
+            default:
+              return Container();
+          }
+        });
   }
 }

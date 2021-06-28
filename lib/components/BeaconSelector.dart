@@ -64,20 +64,12 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             _toggleBeaconEditor();
           },
           elevation: 2.0,
-          fillColor: _getBeaconColor(),
+          fillColor: Colors.grey,
           constraints: BoxConstraints.tight(Size(80, 80)),
           shape: CircleBorder(),
         ),
       ),
     );
-  }
-
-  Color _getBeaconColor() {
-    if (!_userService.currentUser.beacon.active) {
-      return Colors.grey;
-    } else {
-      return Color(0xFFFF00CC);
-    }
   }
 
   Widget _beaconType(BuildContext context, BeaconType type) {
@@ -170,6 +162,11 @@ class _BeaconSelectorState extends State<BeaconSelector> {
               _showBeaconEditor = false;
             });
           },
+          onBack: () {
+            setState(() {
+              _beaconTypeSelected = null;
+            });
+          },
           onCreated: (beacon) {
             setState(() {
               _showBeaconEditor = false;
@@ -189,6 +186,11 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           onClose: () {
             setState(() {
               _showBeaconEditor = false;
+            });
+          },
+          onBack: () {
+            setState(() {
+              _beaconTypeSelected = null;
             });
           },
           onCreated: (beacon) {
