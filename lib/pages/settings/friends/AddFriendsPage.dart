@@ -5,20 +5,30 @@ import 'package:beacon/widgets/progress_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:beacon/util/theme.dart';
 
 class AddFriendsPage extends StatefulWidget {
   @override
   _AddFriendsPageState createState() => _AddFriendsPageState();
+
+
 }
 
-class _AddFriendsPageState extends State<AddFriendsPage>
-    with AutomaticKeepAliveClientMixin<AddFriendsPage> {
-  TextEditingController searchTextEditingController = TextEditingController();
-  Future<QuerySnapshot> futureSearchResults;
+class _AddFriendsPageState extends State<AddFriendsPage> {
 
-  //
-  //
-  void filterSearchResults(String query) {
+  Future<QuerySnapshot> futureSearchResults;
+  FigmaColours figmaColours = FigmaColours();
+  TextEditingController searchTextEditingController = TextEditingController();
+
+
+  @override
+  void dispose() {
+    searchTextEditingController.dispose();
+    super.dispose();
+  }
+
+
+  void filterSearchResults(String query) async {
     if (query.isNotEmpty) {
       Query allUsers = FirebaseFirestore.instance.collection("users");
       //where("userId", isEqualTo: widget.user.id). why cant i add this in here
@@ -39,18 +49,46 @@ class _AddFriendsPageState extends State<AddFriendsPage>
     final theme = Theme.of(context);
 
     return TextField(
+      autofocus: true,
+        textAlignVertical: TextAlignVertical.center,
+        autocorrect: false,
         controller: searchTextEditingController,
         style: TextStyle(color: Colors.white),
         decoration: InputDecoration(
-          prefixIcon: Icon(Icons.person_pin),
-          suffix: IconButton(
-            icon: Icon(Icons.clear),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Color(figmaColours.greyLight),
+          ),
+          isCollapsed: true,
+          hintText: "Search",
+          hintStyle: TextStyle(
+            color: Color(figmaColours.greyLight),
+            fontSize: 18.0,
+          ),
+          fillColor: Color(figmaColours.greyMedium),
+          filled: true,
+
+          focusedBorder: OutlineInputBorder(
+            // borderSide: BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(15),
+          ),
+
+          enabledBorder: UnderlineInputBorder(
+            // borderSide: BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(15),
+          ),
+
+
+          suffixIcon: IconButton(
+            icon: Icon(Icons.clear,
+              color: Color(figmaColours.highlight),
+            ),
             onPressed: emptyTheTextFormField(),
           ),
         ),
-        onChanged: (value) {
-          filterSearchResults(value);
-        });
+
+        onChanged: filterSearchResults,
+    );
   }
 
   emptyTheTextFormField() {
@@ -64,7 +102,7 @@ class _AddFriendsPageState extends State<AddFriendsPage>
         shrinkWrap: true,
         children: [
           Text(
-            'Search friends',
+            '',
             style: Theme.of(context).textTheme.headline4,
           )
         ],
@@ -97,7 +135,6 @@ class _AddFriendsPageState extends State<AddFriendsPage>
     );
   }
 
-  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
@@ -106,10 +143,18 @@ class _AddFriendsPageState extends State<AddFriendsPage>
         title: Text('Add Friends'),
       ),
       body: Column(children: [
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: 200,
-          child: searchBar(context),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Container(
+
+            width: MediaQuery.of(context).size.width,
+            height: 60,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: searchBar(context)
+
+            ),
+          ),
         ),
         Expanded(
             child: futureSearchResults == null

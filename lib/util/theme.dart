@@ -13,6 +13,10 @@ class CustomTheme {
       primaryColorDark: Color(0xFF000000),
       accentColor: Color(0xFFB500E2),
 
+      //More basic colours from FIGMA
+
+
+
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Colors.black,
       ),
@@ -129,4 +133,15 @@ class CustomTheme {
       scaffoldBackgroundColor: Colors.black,
     );
   }
+}
+
+class FigmaColours {
+
+  FigmaColours();
+
+  int greyLight = 0xFF868A8C;
+  int greyMedium = 0xFF242424;
+  int greyDark = 0xFF0D0D0D;
+
+  int highlight = 0xFFAD00FF;
 }
