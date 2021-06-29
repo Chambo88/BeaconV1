@@ -40,9 +40,3 @@ class BeaconFlatButton extends StatelessWidget {
     );
   }
 }
-
-// ListTile(
-// leading: icon != null ? Icon(icon, color: Colors.grey) : null,
-// title:
-// trailing: arrow ? Icon(Icons.arrow_forward_ios, color: Colors.grey) : null,
-// ),

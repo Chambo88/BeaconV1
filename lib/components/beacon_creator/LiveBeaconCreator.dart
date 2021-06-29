@@ -1,5 +1,5 @@
 import 'package:beacon/components/beacon_creator/pages/DescriptionPage.dart';
-import 'package:beacon/components/beacon_creator/pages/InvitePage.dart';
+import 'package:beacon/components/beacon_creator/pages/WhoCanSeePage.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
@@ -62,7 +62,7 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
           _beacon.long = snapshot.data.longitude.toString();
           switch (_stage) {
             case LiveBeaconCreatorStage.invite:
-              return InvitePage(
+              return WhoCanSeePage(
                 totalPageCount: 2,
                 currentPageIndex: 0,
                 onBackClick: widget.onBack,

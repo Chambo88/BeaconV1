@@ -14,7 +14,7 @@ typedef void InviteCallback(
   Set<String> friendsList,
 );
 
-class InvitePage extends StatefulWidget {
+class WhoCanSeePage extends StatefulWidget {
   final VoidCallback onBackClick;
   final VoidCallback onClose;
   final InviteCallback onContinue;
@@ -25,7 +25,7 @@ class InvitePage extends StatefulWidget {
   final Set<String> initFriends;
   final bool initDisplayToAll;
 
-  InvitePage({
+  WhoCanSeePage({
     @required this.onBackClick,
     @required this.onClose,
     @required this.onContinue,
@@ -38,10 +38,10 @@ class InvitePage extends StatefulWidget {
   });
 
   @override
-  _InvitePageState createState() => _InvitePageState();
+  _WhoCanSeePageState createState() => _WhoCanSeePageState();
 }
 
-class _InvitePageState extends State<InvitePage> {
+class _WhoCanSeePageState extends State<WhoCanSeePage> {
   UserService _userService;
 
   var _displayToAll = false;

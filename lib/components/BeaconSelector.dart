@@ -175,7 +175,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Live beacon created!',
+                  'Live beacon created.',
                 ),
               ),
             );
@@ -201,7 +201,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Casual beacon created!',
+                  'Casual beacon created.',
                 ),
               ),
             );

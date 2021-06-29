@@ -119,9 +119,9 @@ class CustomTheme {
         contentTextStyle: TextStyle(color: Colors.black),
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: Color(0xFFB500E2),
+        backgroundColor: Color(0xCCEBE2F1),
         contentTextStyle: TextStyle(
-          color: Colors.white,
+          color: Colors.black,
           fontSize: 16,
         ),
       ),

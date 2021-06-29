@@ -66,24 +66,26 @@ class _TimePageState extends State<TimePage> {
         );
       },
     );
-    setState(() {
-      _dateRange = new DateTimeRange(
-        start: new DateTime(
-          dateTimeRange.start.year,
-          dateTimeRange.start.month,
-          dateTimeRange.start.day,
-          _dateRange.start.hour,
-          _dateRange.start.minute,
-        ),
-        end: new DateTime(
-          dateTimeRange.end.year,
-          dateTimeRange.end.month,
-          dateTimeRange.end.day,
-          _dateRange.end.hour,
-          _dateRange.end.minute,
-        ),
-      );
-    });
+    if (dateTimeRange != null) {
+      setState(() {
+        _dateRange = new DateTimeRange(
+          start: new DateTime(
+            dateTimeRange.start.year,
+            dateTimeRange.start.month,
+            dateTimeRange.start.day,
+            _dateRange.start.hour,
+            _dateRange.start.minute,
+          ),
+          end: new DateTime(
+            dateTimeRange.end.year,
+            dateTimeRange.end.month,
+            dateTimeRange.end.day,
+            _dateRange.end.hour,
+            _dateRange.end.minute,
+          ),
+        );
+      });
+    }
   }
 
   Future<DateTime> _selectTime(BuildContext context,
@@ -105,6 +107,9 @@ class _TimePageState extends State<TimePage> {
         );
       },
     );
+    if (timePicked == null) {
+      return null;
+    }
     return new DateTime(dateTime.year, dateTime.month, dateTime.day,
         timePicked.hour, timePicked.minute);
   }

@@ -3,11 +3,13 @@ import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/LoactionService.dart';
 import 'package:beacon/services/AuthService.dart';
 import 'package:beacon/pages/SignInPage.dart';
+import 'package:beacon/services/RemoteConfigService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +35,9 @@ class MyApp extends StatelessWidget {
         providers: [
           Provider<AuthService>(
             create: (_) => AuthService(FirebaseAuth.instance),
+          ),
+          Provider<RemoteConfigService>(
+            create: (_) => RemoteConfigService(RemoteConfig.instance),
           ),
           Provider<UserService>(
             create: (_) => UserService(),

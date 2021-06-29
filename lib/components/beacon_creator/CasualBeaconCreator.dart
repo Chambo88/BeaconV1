@@ -1,6 +1,6 @@
-import 'package:beacon/components/beacon_creator/pages/AttendancePage.dart';
+import 'package:beacon/components/beacon_creator/pages/InvitesPage.dart';
 import 'package:beacon/components/beacon_creator/pages/DescriptionPage.dart';
-import 'package:beacon/components/beacon_creator/pages/InvitePage.dart';
+import 'package:beacon/components/beacon_creator/pages/WhoCanSeePage.dart';
 import 'package:beacon/components/beacon_creator/pages/LocationPage.dart';
 import 'package:beacon/components/beacon_creator/pages/TimePage.dart';
 import 'package:beacon/models/BeaconModel.dart';
@@ -17,11 +17,11 @@ import 'package:provider/provider.dart';
 typedef void BeaconCallback(CasualBeacon beacon);
 
 enum CasualBeaconCreatorStage {
-  invite,
+  whoCanSee,
   description,
   time,
   location,
-  attendance,
+  invite,
 }
 
 class CasualBeaconCreator extends StatefulWidget {
@@ -42,7 +42,7 @@ class CasualBeaconCreator extends StatefulWidget {
 class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
   UserService _userService;
   CasualBeacon _beacon = CasualBeacon(active: true);
-  CasualBeaconCreatorStage _stage = CasualBeaconCreatorStage.invite;
+  CasualBeaconCreatorStage _stage = CasualBeaconCreatorStage.location;
 
   // Holding here as well as the beacon model in case the user goes back
   // e.g (initGroup, initFriends)
@@ -60,8 +60,8 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
     _userService = Provider.of<UserService>(context);
 
     switch (_stage) {
-      case CasualBeaconCreatorStage.invite:
-        return InvitePage(
+      case CasualBeaconCreatorStage.whoCanSee:
+        return WhoCanSeePage(
           totalPageCount: 5,
           currentPageIndex: 0,
           onBackClick: widget.onBack,
@@ -96,7 +96,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
           currentPageIndex: 1,
           onBackClick: () {
             setState(() {
-              _stage = CasualBeaconCreatorStage.invite;
+              _stage = CasualBeaconCreatorStage.whoCanSee;
             });
           },
           onClose: widget.onClose,
@@ -147,12 +147,12 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
           onContinue: (loc) {
             setState(() {
               _beacon.location = loc;
-              _stage = CasualBeaconCreatorStage.attendance;
+              _stage = CasualBeaconCreatorStage.invite;
             });
           },
         );
-      case CasualBeaconCreatorStage.attendance:
-        return AttendancePage(
+      case CasualBeaconCreatorStage.invite:
+        return InvitesPage(
           totalPageCount: 5,
           currentPageIndex: 4,
           onBackClick: () {

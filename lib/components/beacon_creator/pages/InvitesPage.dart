@@ -4,7 +4,7 @@ import 'CreatorPage.dart';
 
 typedef void AttendanceCallback(int min, int max);
 
-class AttendancePage extends StatefulWidget {
+class InvitesPage extends StatefulWidget {
   final VoidCallback onBackClick;
   final VoidCallback onClose;
   final AttendanceCallback onContinue;
@@ -12,7 +12,7 @@ class AttendancePage extends StatefulWidget {
   final int totalPageCount;
   final int currentPageIndex;
 
-  AttendancePage({
+  InvitesPage({
     @required this.onBackClick,
     @required this.onClose,
     @required this.onContinue,
@@ -22,16 +22,16 @@ class AttendancePage extends StatefulWidget {
   });
 
   @override
-  _AttendancePageState createState() => _AttendancePageState();
+  _InvitesPageState createState() => _InvitesPageState();
 }
 
-class _AttendancePageState extends State<AttendancePage> {
+class _InvitesPageState extends State<InvitesPage> {
 
 
   @override
   Widget build(BuildContext context) {
     return CreatorPage(
-        title: 'Attendance',
+        title: 'Invites',
         onClose: widget.onClose,
         onBackClick: widget.onBackClick,
         continueText: widget.continueText,
