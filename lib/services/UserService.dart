@@ -25,6 +25,7 @@ class UserService {
     int _notificationCount;
     List<dynamic> _data;
     List<NotificationModel> _notifications = [];
+    String _imageURL = '';
 
     // if (doc.data().containsKey('beacon')) {
     //   beacon = BeaconModel.toJson(doc.data()['beacon']);
@@ -64,18 +65,26 @@ class UserService {
       _notifications = [];
     }
 
+    if (doc.data().containsKey('imageURL')) {
+      _imageURL = doc.data()['imageURL'];
+    } else {
+      _imageURL = '';
+    }
+
     currentUser = UserModel(
-      doc.id,
-      doc.data()['email'],
-      doc.data()['firstName'],
-      doc.data()['lastName'],
-      _notificationCount,
-      beacon,
-      _groups,
-      List.from(doc.data()["friends"]),
-      List.from(doc.data()["sentFriendRequests"]),
-      List.from(doc.data()["receivedFriendRequests"]),
-      _notifications,
+      id: doc.id,
+      email: doc.data()['email'],
+      firstName: doc.data()['firstName'],
+      lastName: doc.data()['lastName'],
+      notificationCount: _notificationCount,
+      beacon: beacon,
+      groups: _groups,
+      friends: List.from(doc.data()["friends"]),
+      sentFriendRequests: List.from(doc.data()["sentFriendRequests"]),
+      receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"]),
+      notifications: _notifications,
+      imageURL: _imageURL,
+
     );
     return currentUser;
   }

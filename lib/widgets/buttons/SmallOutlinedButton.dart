@@ -6,10 +6,13 @@ import 'OutlinedGradientButton.dart';
 class SmallOutlinedButton extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
+  final IconData icon;
 
   SmallOutlinedButton({
     @required this.title,
     @required this.onPressed,
+    this.icon,
+
   });
 
   @override
@@ -26,6 +29,8 @@ class SmallOutlinedButton extends StatelessWidget {
           style: Theme.of(context).textTheme.headline5,
         ),
         onPressed: onPressed,
+        icon: icon,
+        iconSize: 20,
       ),
     );
   }

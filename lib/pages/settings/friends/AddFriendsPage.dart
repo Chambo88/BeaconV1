@@ -1,6 +1,7 @@
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/settings/groups/EditGroupsPage.dart';
 import 'package:beacon/services/UserService.dart';
+import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
   Future<QuerySnapshot> futureSearchResults;
   FigmaColours figmaColours = FigmaColours();
   TextEditingController searchTextEditingController = TextEditingController();
+
 
 
   // @override
@@ -43,7 +45,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
       Query allUsers = FirebaseFirestore.instance.collection("users");
       //where("userId", isEqualTo: widget.user.id). why cant i add this in here
       Future<QuerySnapshot> userDoc = allUsers
-          .where("nameSearch", arrayContains: query.toLowerCase())
+          .where("nameSearch", arrayContains: query.toLowerCase().trim().replaceAll(' ', ''))
           .get();
       setState(() {
         futureSearchResults = userDoc;
@@ -126,7 +128,8 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     ));
   }
 
-  FutureBuilder displayUsersFoundScreen() {
+  FutureBuilder displayUsersFoundScreen(List<String> friendsIds, String userId) {
+
     return FutureBuilder(
       future: futureSearchResults,
       builder: (context, dataSnapshot) {
@@ -137,9 +140,11 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
         List<UserResult> searchUsersResult = [];
         dataSnapshot.data.docs.forEach((document) {
           UserModel users = UserModel.fromDocument(document);
-          UserResult userResult = UserResult(
-              anotherUser: users);
-          searchUsersResult.add(userResult);
+          if (users.id != userId && !friendsIds.contains(users.id)) {
+            UserResult userResult = UserResult(
+                anotherUser: users);
+            searchUsersResult.add(userResult);
+          }
         });
 
         return ListView(
@@ -154,6 +159,8 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userId = context.read<UserService>().currentUser.id;
+    final userFriendsIds = context.read<UserService>().currentUser.friends;
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Friends'),
@@ -174,14 +181,11 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
 
 
         ),
-        TextButton(
-          child: Text("tho"),
-          onPressed: () {
-            setState(() {
+        Expanded(
+            child: futureSearchResults == null
+                ? displayNoSearchResultsScreen(context )
+                : displayUsersFoundScreen(userFriendsIds, userId)),
 
-            });
-          },
-        )
       ]),
     );
   }
@@ -190,6 +194,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
 class UserResult extends StatefulWidget {
   final UserModel anotherUser;
 
+
   UserResult({this.anotherUser});
 
   @override
@@ -197,52 +202,106 @@ class UserResult extends StatefulWidget {
 }
 
 class _UserResultState extends State<UserResult> {
+
+  int mutualFriends;
+  FigmaColours figmaColours = FigmaColours();
+
+  int getMutualFriends(List<String> userFriends, List<String> friendsFriends) {
+    int num = 0;
+    if (userFriends != null && friendsFriends != null) {
+      for (var user in userFriends) {
+        for (var user2 in friendsFriends) {
+          if (user == user2) {
+            num++;
+            break;
+          }
+        }
+      }
+    }
+    return num;
+  }
+
+  cancelFriendRequest(UserService userService) async {
+    userService.removeSentFriendRequest(widget.anotherUser);
+    setState(() {});
+  }
+
   //Get The Trailing IconBUtton
   Widget checkFriendShipAndPendingStatus(UserService userService) {
-    //Build this if already friends with them
-    if (userService.currentUser.friends
-        .contains(widget.anotherUser.id)) {
-      return Text('Already Friends', style: TextStyle(color: Colors.white),);
-    }
     //Build cancel button this if friends request is pending
-    else if (userService.currentUser.sentFriendRequests
+
+    if (userService.currentUser.sentFriendRequests
         .contains(widget.anotherUser.id)) {
-      return TextButton(
-        child: Text('cancel', style: TextStyle(color: Colors.white),),
-        onPressed: () async {
+      // return TextButton(
+      //   child: Text('cancel', style: TextStyle(color: Colors.white),),
+      //   onPressed: () async {
+
+      //   },
+      // );
+      return SmallOutlinedButton(
+          title: "pending",
+          onPressed: () async {
           userService.removeSentFriendRequest(widget.anotherUser);
           setState(() {});
-        },
+          });
+    } else {
+      // return
+      //   IconButton(
+      // //   icon: Icon(Icons.person_add_alt_1_rounded, color: Colors.white,),
+      // //   onPressed:
+      // //   },
+      // // );
+      return SmallOutlinedButton(
+          title: "add",
+          icon: Icons.person_add_alt_1_outlined,
+          onPressed: () async {
+              userService.sendFriendRequest(widget.anotherUser);
+              setState(() {});
+          });
+    }
+  }
+
+  CircleAvatar getImage() {
+    var userService = Provider.of<UserService>(context);
+    if (userService.currentUser.imageURL == '') {
+      return CircleAvatar(
+        radius: 24,
+        child: Text('${widget.anotherUser.firstName[0].toUpperCase()}${widget.anotherUser.lastName[0].toUpperCase()}',
+          style: TextStyle(
+            color: Color(figmaColours.greyMedium),
+          ),
+        ),
+        backgroundColor: Color(figmaColours.greyLight),
       );
     } else {
-      return IconButton(
-        icon: Icon(Icons.person_add_alt_1_rounded, color: Colors.white,),
-        onPressed: () async {
-          userService.sendFriendRequest(widget.anotherUser);
-          setState(() {});
-        },
+      return CircleAvatar(
+        radius: 24,
+        backgroundImage: NetworkImage(widget.anotherUser.imageURL),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+
     var userService = Provider.of<UserService>(context);
+
+    mutualFriends = getMutualFriends(userService.currentUser.friends, widget.anotherUser.friends);
     return Padding(
-      padding: EdgeInsets.all(4.0),
-      child: Container(
-        color: Colors.white54,
-        child: Column(
-          children: [
-            ListTile(
-              title: Text(
-                "${widget.anotherUser.firstName} ${widget.anotherUser.lastName}",
-                style: Theme.of(context).textTheme.headline4,
-              ),
-              trailing: checkFriendShipAndPendingStatus(userService),
-            )
-          ],
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+      child: ListTile(
+        leading: getImage(),
+        title: Text(
+          "${widget.anotherUser.firstName} ${widget.anotherUser.lastName}",
+          style: Theme.of(context).textTheme.headline4,
         ),
+        subtitle: Text(
+          "$mutualFriends mutual friends",
+          style: TextStyle(
+            fontSize: 16,
+              color: Color(figmaColours.greyLight)),
+        ),
+        trailing: checkFriendShipAndPendingStatus(userService),
       ),
     );
   }
