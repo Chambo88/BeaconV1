@@ -21,6 +21,15 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
   TextEditingController searchTextEditingController = TextEditingController();
 
 
+  // @override
+  // void initState() {
+  //   searchTextEditingController = TextEditingController();
+  //   searchTextEditingController.addListener(() {
+  //     setState(() {});
+  //   });
+  //   super.initState();
+  // }
+
   @override
   void dispose() {
     searchTextEditingController.dispose();
@@ -28,7 +37,8 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
   }
 
 
-  void filterSearchResults(String query) async {
+  void filterSearchResults(String query) {
+
     if (query.isNotEmpty) {
       Query allUsers = FirebaseFirestore.instance.collection("users");
       //where("userId", isEqualTo: widget.user.id). why cant i add this in here
@@ -43,9 +53,11 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
         futureSearchResults = null;
       });
     }
+
+
   }
 
-  TextField searchBar(BuildContext context) {
+  TextField searchBar() {
     final theme = Theme.of(context);
 
     return TextField(
@@ -83,17 +95,21 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
             icon: Icon(Icons.clear,
               color: Color(figmaColours.highlight),
             ),
-            onPressed: emptyTheTextFormField(),
+            onPressed: () {
+              searchTextEditingController.clear();
+              },
           ),
+
+
         ),
 
-        onChanged: filterSearchResults,
+      onChanged: (value) {
+        filterSearchResults(value);
+      },
+
     );
   }
 
-  emptyTheTextFormField() {
-    searchTextEditingController.clear();
-  }
 
   Container displayNoSearchResultsScreen(BuildContext context) {
     return Container(
@@ -151,15 +167,21 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
             height: 60,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: searchBar(context)
+              child: searchBar()
 
             ),
           ),
+
+
         ),
-        Expanded(
-            child: futureSearchResults == null
-                ? displayNoSearchResultsScreen(context)
-                : displayUsersFoundScreen()),
+        TextButton(
+          child: Text("tho"),
+          onPressed: () {
+            setState(() {
+
+            });
+          },
+        )
       ]),
     );
   }
