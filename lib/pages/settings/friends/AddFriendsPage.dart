@@ -157,21 +157,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
         title: Text('Add Friends'),
       ),
       body: Column(children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
-          child: Container(
 
-            width: MediaQuery.of(context).size.width,
-            height: 60,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: searchBar()
-
-            ),
-          ),
-
-
-        ),
         Expanded(
             child: futureSearchResults == null
                 ? displayNoSearchResultsScreen(context )

@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 class BeaconFlatButton extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
-  IconData icon;
+  final IconData icon;
   bool arrow;
 
   BeaconFlatButton(
