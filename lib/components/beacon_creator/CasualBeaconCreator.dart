@@ -42,7 +42,7 @@ class CasualBeaconCreator extends StatefulWidget {
 class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
   UserService _userService;
   CasualBeacon _beacon = CasualBeacon(active: true);
-  CasualBeaconCreatorStage _stage = CasualBeaconCreatorStage.location;
+  CasualBeaconCreatorStage _stage = CasualBeaconCreatorStage.whoCanSee;
 
   // Holding here as well as the beacon model in case the user goes back
   // e.g (initGroup, initFriends)

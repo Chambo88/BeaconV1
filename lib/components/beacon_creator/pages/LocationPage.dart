@@ -60,7 +60,7 @@ class _LocationPageState extends State<LocationPage> {
       onContinuePressed: () {
         widget.onContinue(_selectedPlace);
       },
-      child: Column(
+      child: _userLocation != null ? Column(
         children: [
           InkWell(
             child: _selectedPlace != null
@@ -128,7 +128,7 @@ class _LocationPageState extends State<LocationPage> {
             },
           ),
         ],
-      ),
+      ): circularProgress(),
     );
   }
 }
