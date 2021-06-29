@@ -4,7 +4,8 @@ import 'dart:io';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/services/BeaconService.dart';
-import 'package:beacon/services/LoactionService.dart';
+import 'package:beacon/services/CameraLocationService.dart';
+import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/beacon_sheets/LiveBeaconSheet.dart';
 import 'package:beacon/widgets/progress_widget.dart';
@@ -30,27 +31,26 @@ class _MapState extends State<MapComponent> {
         beaconIcon = onValue;
 
         final Marker marker = Marker(
-          markerId: MarkerId(beacon.id),
-          position: LatLng(
-            double.parse(beacon.lat),
-            double.parse(
-              beacon.long,
+            markerId: MarkerId(beacon.id),
+            position: LatLng(
+              double.parse(beacon.lat),
+              double.parse(
+                beacon.long,
+              ),
             ),
-          ),
-          icon: beaconIcon,
-          onTap: () {
-            showModalBottomSheet(
-              context: context,
-              backgroundColor: Colors.transparent,
-              isScrollControlled: true,
-              builder: (context) {
-                return LiveBeaconSheet(
-                  beacon: beacon,
-                );
-              },
-            );
-          }
-        );
+            icon: beaconIcon,
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.transparent,
+                isScrollControlled: true,
+                builder: (context) {
+                  return LiveBeaconSheet(
+                    beacon: beacon,
+                  );
+                },
+              );
+            });
 
         setState(() {
           // adding a new marker to map
@@ -72,43 +72,38 @@ class _MapState extends State<MapComponent> {
 
   @override
   Widget build(BuildContext context) {
-    final locationService = Provider.of<LocationService>(context);
+    final userLocationModel = Provider.of<UserLocationModel>(context);
     final userId = context.read<UserService>().currentUser.id;
+    var cameraLocationService = Provider.of<CameraLocationService>(context);
     context.read<BeaconService>().loadAllBeacons(userId);
     final liveBeacons = context.watch<BeaconService>().allLiveBeacons;
 
-    return StreamBuilder<UserLocationModel>(
-      stream: locationService.userLocationStream,
-      builder: (context, snapshot) {
-        while (!snapshot.hasData) {
-          return circularProgress();
-        }
-        return GoogleMap(
-          initialCameraPosition: CameraPosition(
-            target: LatLng(
-              snapshot.data.latitude,
-              snapshot.data.longitude,
-            ),
-            zoom: 12.0,
-          ),
-          markers: Set<Marker>.of(_markers.values),
-          onMapCreated: (controller) {
-            locationService.cameraLocationStream.listen((event) async {
-              await controller.animateCamera(
-                CameraUpdate.newCameraPosition(event),
-              );
-            });
-            liveBeacons.listen((event) {
-              _updateLiveBeaconMarkers(event);
-            });
-          },
-          compassEnabled: false,
-          zoomControlsEnabled: false,
-          myLocationEnabled: true,
-          myLocationButtonEnabled: true,
-          padding:  const EdgeInsets.only(top: 20),
-        );
+    if (userLocationModel == null) {
+      return circularProgress();
+    }
+
+    return GoogleMap(
+      initialCameraPosition: CameraPosition(
+        target: LatLng(userLocationModel.latitude, userLocationModel.longitude),
+        zoom: 12.0,
+      ),
+      markers: Set<Marker>.of(_markers.values),
+      onMapCreated: (controller) {
+
+        cameraLocationService.cameraLocationStream.listen((event) async {
+          await controller.animateCamera(
+            CameraUpdate.newCameraPosition(event),
+          );
+        });
+        liveBeacons.listen((event) {
+          _updateLiveBeaconMarkers(event);
+        });
       },
+      compassEnabled: false,
+      zoomControlsEnabled: false,
+      myLocationEnabled: true,
+      myLocationButtonEnabled: true,
+      padding: const EdgeInsets.only(top: 20),
     );
   }
 }

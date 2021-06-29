@@ -1,5 +1,6 @@
 import 'package:beacon/models/BeaconModel.dart';
-import 'package:beacon/services/LoactionService.dart';
+import 'package:beacon/services/CameraLocationService.dart';
+import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/widgets/BeaconBottomSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/LiveBeaconSheet.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
@@ -16,7 +17,7 @@ class FriendLiveItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final locationService = Provider.of<LocationService>(context);
+    final locationService = Provider.of<CameraLocationService>(context);
 
     return BeaconItem(
       height: 80,

@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
-class LocationService {
+class UserLocationService {
   UserLocationModel currentUserLocation;
 
   var location = Location();
@@ -23,18 +23,11 @@ class LocationService {
     return currentUserLocation;
   }
 
-  var _userLocationController = StreamController<UserLocationModel>.broadcast();
-
-  var _cameraLocationController = StreamController<CameraPosition>.broadcast();
+  var _userLocationController = StreamController<UserLocationModel>();
 
   Stream<UserLocationModel> get userLocationStream => _userLocationController.stream;
-  Stream<CameraPosition> get cameraLocationStream => _cameraLocationController.stream;
 
-  setCameraPosition({@required CameraPosition cameraPosition}) {
-    _cameraLocationController.add(cameraPosition);
-  }
-
-  LocationService() {
+  UserLocationService() {
     // Request permission to use location
     location.requestPermission().then((granted) {
       if (granted != null) {

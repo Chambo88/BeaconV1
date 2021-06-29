@@ -7,7 +7,7 @@ import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/services/BeaconService.dart';
-import 'package:beacon/services/LoactionService.dart';
+import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -144,9 +144,10 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
             });
           },
           onClose: widget.onClose,
-          onContinue: (loc) {
+          onContinue: (location) {
             setState(() {
-              _beacon.location = loc;
+              print(location.geometry);
+              // _beacon.location = location.geometry;
               _stage = CasualBeaconCreatorStage.invite;
             });
           },
@@ -164,8 +165,6 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
           continueText: 'Light',
           onContinue: (min, max) {
             setState(() {
-              // _beacon.minAttendance = min;
-              // _beacon.maxAttendance = max;
             });
           },
         );

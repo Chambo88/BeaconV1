@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'CreatorPage.dart';
 
-typedef void AttendanceCallback(int min, int max);
+typedef void InvitesCallback(int min, int max);
 
 class InvitesPage extends StatefulWidget {
   final VoidCallback onBackClick;
   final VoidCallback onClose;
-  final AttendanceCallback onContinue;
+  final InvitesCallback onContinue;
   final String continueText;
   final int totalPageCount;
   final int currentPageIndex;

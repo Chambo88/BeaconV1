@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:beacon/models/UserLocationModel.dart';
-import 'package:beacon/services/LoactionService.dart';
+import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/services/RemoteConfigService.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,7 @@ import 'package:google_maps_place_picker/google_maps_place_picker.dart';
 import 'package:provider/provider.dart';
 import 'CreatorPage.dart';
 
-typedef void LocationCallback(String loc);
+typedef void LocationCallback(PickResult location);
 
 class LocationPage extends StatefulWidget {
   final VoidCallback onBackClick;
@@ -35,12 +35,12 @@ class LocationPage extends StatefulWidget {
 
 class _LocationPageState extends State<LocationPage> {
   PickResult _selectedPlace;
-  LocationService _locationService;
+  UserLocationModel _userLocation;
   RemoteConfigService _configService;
 
   @override
   Widget build(BuildContext context) {
-    _locationService = Provider.of<LocationService>(context);
+    _userLocation = Provider.of<UserLocationModel>(context);
     _configService = Provider.of<RemoteConfigService>(context);
 
     String apiKey;
@@ -50,93 +50,85 @@ class _LocationPageState extends State<LocationPage> {
       apiKey = _configService.remoteConfig.getString('iOSGoogleMapsKey');
     }
 
-    return StreamBuilder<UserLocationModel>(
-      stream: _locationService.userLocationStream,
-      builder: (context, snapshot) {
-        while (!snapshot.hasData) {
-          return Center(
-            child: circularProgress(),
-          );
-        }
-        var loc = LatLng(snapshot.data.latitude, snapshot.data.longitude);
-        return CreatorPage(
-          title: 'Place',
-          onClose: widget.onClose,
-          onBackClick: widget.onBackClick,
-          continueText: widget.continueText,
-          totalPageCount: widget.totalPageCount,
-          currentPageIndex: widget.currentPageIndex,
-          onContinuePressed: () {
-            widget.onContinue('');
-          },
-          child: Column(
-            children: [
-              InkWell(
-                child: _selectedPlace != null
-                    ? ListTile(
-                        leading: Icon(
-                          Icons.location_on,
-                          color: Colors.grey,
-                        ),
-                        title: Text(_selectedPlace.formattedAddress),
-                      )
-                    : ListTile(
-                        leading: Icon(
-                          Icons.location_on,
-                          color: Colors.grey,
-                        ),
-                        title: Text('Current Location'),
-                      ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return Theme(
-                          data: ThemeData(
-                            // Define the default brightness and colors.
-                            brightness: Brightness.dark,
-                            primaryColor: Colors.lightBlue[800],
-                            accentColor: Colors.cyan[600],
-                            textTheme: TextTheme(
-                              headline1: TextStyle(
-                                fontSize: 72.0,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              headline6: TextStyle(
-                                fontSize: 36.0,
-                                color: Colors.black,
-                                fontStyle: FontStyle.italic,
-                              ),
-                              bodyText2: TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.black,
-                                fontFamily: 'Hind',
-                              ),
-                            ),
-                          ),
-                          child: PlacePicker(
-                            apiKey: apiKey,
-                            initialPosition: loc,
-                            useCurrentLocation: true,
-                            selectInitialPosition: true,
-                            onPlacePicked: (result) {
-                              _selectedPlace = result;
-                              Navigator.of(context).pop();
-                              setState(() {});
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        );
+    return CreatorPage(
+      title: 'Place',
+      onClose: widget.onClose,
+      onBackClick: widget.onBackClick,
+      continueText: widget.continueText,
+      totalPageCount: widget.totalPageCount,
+      currentPageIndex: widget.currentPageIndex,
+      onContinuePressed: () {
+        widget.onContinue(_selectedPlace);
       },
+      child: Column(
+        children: [
+          InkWell(
+            child: _selectedPlace != null
+                ? ListTile(
+                    leading: Icon(
+                      Icons.location_on,
+                      color: Colors.grey,
+                    ),
+                    title: Text(_selectedPlace.formattedAddress),
+                  )
+                : ListTile(
+                    leading: Icon(
+                      Icons.location_on,
+                      color: Colors.grey,
+                    ),
+                    title: Text('Current Location'),
+                  ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return Theme(
+                      data: ThemeData(
+                        // Define the default brightness and colors.
+                        brightness: Brightness.dark,
+                        primaryColor: Colors.lightBlue[800],
+                        accentColor: Colors.cyan[600],
+                        textTheme: TextTheme(
+                          headline1: TextStyle(
+                            fontSize: 72.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          headline6: TextStyle(
+                            fontSize: 36.0,
+                            color: Colors.black,
+                            fontStyle: FontStyle.italic,
+                          ),
+                          bodyText2: TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.black,
+                            fontFamily: 'Hind',
+                          ),
+                        ),
+                      ),
+                      child: PlacePicker(
+                        apiKey: apiKey,
+                        initialPosition: LatLng(
+                          _userLocation.latitude,
+                          _userLocation.longitude,
+                        ),
+                        useCurrentLocation: true,
+                        selectInitialPosition: true,
+                        onPlacePicked: (result) {
+                          _selectedPlace = result;
+                          Navigator.of(context).pop();
+                          setState(() {});
+                        },
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

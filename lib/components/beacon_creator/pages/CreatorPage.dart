@@ -1,7 +1,7 @@
 import 'package:beacon/library/ColorHelper.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/BeaconType.dart';
-import 'package:beacon/services/LoactionService.dart';
+import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/cupertino.dart';
