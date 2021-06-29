@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:beacon/util/theme.dart';
+import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 
 class AddFriendsPage extends StatefulWidget {
   @override
@@ -21,16 +22,6 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
   FigmaColours figmaColours = FigmaColours();
   TextEditingController searchTextEditingController = TextEditingController();
 
-
-
-  // @override
-  // void initState() {
-  //   searchTextEditingController = TextEditingController();
-  //   searchTextEditingController.addListener(() {
-  //     setState(() {});
-  //   });
-  //   super.initState();
-  // }
 
   @override
   void dispose() {
@@ -60,8 +51,6 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
   }
 
   TextField searchBar() {
-    final theme = Theme.of(context);
-
     return TextField(
       autofocus: true,
         textAlignVertical: TextAlignVertical.center,
@@ -98,6 +87,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
               color: Color(figmaColours.highlight),
             ),
             onPressed: () {
+              filterSearchResults('');
               searchTextEditingController.clear();
               },
           ),
@@ -148,6 +138,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
         });
 
         return ListView(
+          physics: BouncingScrollPhysics(),
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
           children: searchUsersResult,
@@ -167,7 +158,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
       ),
       body: Column(children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          padding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
           child: Container(
 
             width: MediaQuery.of(context).size.width,
@@ -232,25 +223,18 @@ class _UserResultState extends State<UserResult> {
 
     if (userService.currentUser.sentFriendRequests
         .contains(widget.anotherUser.id)) {
-      // return TextButton(
-      //   child: Text('cancel', style: TextStyle(color: Colors.white),),
-      //   onPressed: () async {
-
-      //   },
+      return SmallGradientButton(
+        child: Text("pending",
+            style: Theme.of(context).textTheme.headline5,),
+            onPressed: () async {
+            userService.removeSentFriendRequest(widget.anotherUser);
+            setState(() {});
+        });
       // );
-      return SmallOutlinedButton(
-          title: "pending",
-          onPressed: () async {
-          userService.removeSentFriendRequest(widget.anotherUser);
-          setState(() {});
-          });
+      // return SmallOutlinedButton(
+      //     title: "pending",
+
     } else {
-      // return
-      //   IconButton(
-      // //   icon: Icon(Icons.person_add_alt_1_rounded, color: Colors.white,),
-      // //   onPressed:
-      // //   },
-      // // );
       return SmallOutlinedButton(
           title: "add",
           icon: Icons.person_add_alt_1_outlined,

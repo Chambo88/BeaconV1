@@ -19,7 +19,7 @@ class SmallOutlinedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 25,
-      width: 85,
+      width: 90,
       child: OutlinedGradientButton(
         strokeWidth: 1,
         radius: 6,
