@@ -221,6 +221,36 @@ class UserService {
     });
   }
 
+  changeName(String firstName, String lastName, {UserModel user}) async {
+    currentUser.firstName = firstName;
+    currentUser.lastName = lastName;
+    List<String> caseSearchList = [];
+
+    String userName = (firstName + lastName).toLowerCase();
+    lastName = lastName.toLowerCase();
+    String temp = "";
+    for (int i = 0; i < userName.length; i++) {
+      temp = temp + userName[i];
+      caseSearchList.add(temp);
+    }
+    temp = "";
+    for (int i = 0; i < lastName.length; i++) {
+      temp = temp + lastName[i];
+      caseSearchList.add(temp);
+    }
+
+    await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
+      "firstName": firstName,
+    });
+    await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
+      "lastName": lastName,
+    });
+    await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
+      "nameSearch": caseSearchList,
+    });
+
+  }
+
   acceptFriendRequest(UserModel friend, {UserModel user}) async {
     if (user == null) {
       currentUser.friends.add(friend.id);

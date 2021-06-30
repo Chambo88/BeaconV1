@@ -1,3 +1,4 @@
+import 'package:beacon/util/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -6,6 +7,7 @@ class BeaconFlatButton extends StatelessWidget {
   final VoidCallback onTap;
   final IconData icon;
   bool arrow;
+  FigmaColours figmaColours = FigmaColours();
 
   BeaconFlatButton(
       {@required this.title,
@@ -23,7 +25,10 @@ class BeaconFlatButton extends StatelessWidget {
         height: 50,
         child: Row(
           children: [
-            if (icon != null) Icon(icon, color: Colors.grey),
+            if (icon != null) Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 8, 0),
+              child: Icon(icon, color: Color(figmaColours.greyLight)),
+            ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -33,7 +38,11 @@ class BeaconFlatButton extends StatelessWidget {
                 ),
               ),
             ),
-            if (arrow) Icon(Icons.arrow_forward_ios, color: Colors.white),
+            if (arrow) Padding(
+              padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
+              child: Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18,),
+
+            ),
           ],
         ),
       ),

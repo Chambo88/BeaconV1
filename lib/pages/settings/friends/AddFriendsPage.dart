@@ -4,7 +4,7 @@ import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/SearchBar.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:beacon/widgets/progress_widget.dart';
-import 'package:beacon/widgets/userListTile.dart';
+import 'package:beacon/widgets/tiles/userListTile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

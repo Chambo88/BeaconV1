@@ -3,7 +3,7 @@ import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/MapPage.dart';
-import 'package:beacon/pages/settings/SettingsPage.dart';
+import 'package:beacon/pages/settings/MenuPage.dart';
 import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,7 +27,7 @@ class _BuildHomePageState extends State<BuildHomePage> {
   final pages = [
     MapPage(),
     NotificationPage(),
-    SettingsPage(),
+    MenuPage(),
   ];
 
   @override

@@ -157,7 +157,7 @@ class _EditGroupPageState extends State<EditGroupPage> {
                     if (value == null || value.isEmpty) {
                       return 'Group name can not be empty.';
                     }
-                    if (userService.currentUser.groups
+                    else if (userService.currentUser.groups
                             .map((GroupModel group) => group.name)
                             .contains(value) &&
                         _group.name != widget.originalGroup.name) {

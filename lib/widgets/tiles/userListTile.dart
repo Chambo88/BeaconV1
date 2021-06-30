@@ -3,6 +3,8 @@ import 'package:beacon/util/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import '../ProfilePicWidget.dart';
+
 class userListTile extends StatelessWidget {
   UserModel user;
   String subText;
@@ -37,24 +39,21 @@ class userListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: ListTile(
-        leading: getImage(),
-        title: Text(
-          "${user.firstName} ${user.lastName}",
-          style: Theme.of(context).textTheme.headline4,
-        ),
-        subtitle: (subText != null)
-            ? Text(
-                // subText,
-                subText,
-                style: TextStyle(
-                    fontSize: 16, color: Color(figmaColours.greyLight)),
-              )
-            : null,
-        trailing: (trailing != null) ? trailing : null,
+    return ListTile(
+      leading: ProfilePicture(user: user,),
+      title: Text(
+        "${user.firstName} ${user.lastName}",
+        style: Theme.of(context).textTheme.headline4,
       ),
+      subtitle: (subText != null)
+          ? Text(
+              // subText,
+              subText,
+              style: TextStyle(
+                  fontSize: 16, color: Color(figmaColours.greyLight)),
+            )
+          : null,
+      trailing: (trailing != null) ? trailing : null,
     );
   }
 }
