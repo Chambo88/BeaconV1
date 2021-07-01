@@ -154,15 +154,6 @@ class UserService {
     });
   }
 
-  // updateGroups() async {
-  //   List<Map> _groupsMaps = [];
-  //   currentUser.groups.forEach((element) {
-  //     _groupsMaps.add(element.toJson());
-  //   });
-  //   await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update(
-  //     {"groups": _groupsMaps},
-  //   );
-  // }
 
   sendFriendRequest(UserModel potentialFriend, {UserModel user}) async {
     // If user is null then current user
@@ -250,6 +241,8 @@ class UserService {
 
 
   }
+
+
 
   changeProfilePic(File file, {UserModel user}) async {
     Reference firebaseStoragRef = FirebaseStorage.instance.ref("user/profle_pic/${currentUser.id}.jpg");

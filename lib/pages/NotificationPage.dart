@@ -36,7 +36,7 @@ class _NotificationPageState extends State<NotificationPage> {
             .get(),
         builder: (context, dataSnapshot) {
           while (!dataSnapshot.hasData) {
-            return circularProgress();
+            return circularProgress(Theme.of(context).accentColor);
           }
           List<FriendRequestTile> searchUsersResult = [];
           dataSnapshot.data.docs.forEach((doc) {

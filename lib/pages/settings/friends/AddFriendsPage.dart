@@ -27,6 +27,8 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     super.dispose();
   }
 
+
+
   void filterSearchResults(String query) {
     if (query.isNotEmpty) {
       Query allUsers = FirebaseFirestore.instance.collection("users");
@@ -66,7 +68,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
       future: futureSearchResults,
       builder: (context, dataSnapshot) {
         while (!dataSnapshot.hasData) {
-          return circularProgress();
+          return circularProgress(Theme.of(context).accentColor);
         }
 
         List<UserResult> searchUsersResult = [];
@@ -103,6 +105,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
             controller: searchTextEditingController,
             onChanged: filterSearchResults,
             width: MediaQuery.of(context).size.width,
+            autofocus: true,
           ),
         ),
         Expanded(

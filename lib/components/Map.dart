@@ -81,7 +81,7 @@ class _MapState extends State<MapComponent> {
       stream: locationService.userLocationStream,
       builder: (context, snapshot) {
         while (!snapshot.hasData) {
-          return circularProgress();
+          return circularProgress(Theme.of(context).accentColor);
         }
         return GoogleMap(
           initialCameraPosition: CameraPosition(

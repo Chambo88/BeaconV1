@@ -45,7 +45,7 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
       stream: _locationService.userLocationStream,
       builder: (context, snapshot) {
         while (!snapshot.hasData) {
-          return circularProgress();
+          return circularProgress(Theme.of(context).accentColor);
         }
         _beacon.lat = snapshot.data.latitude.toString();
         _beacon.long = snapshot.data.longitude.toString();

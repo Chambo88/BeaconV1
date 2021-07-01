@@ -7,6 +7,7 @@ import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'friends/AddFriendsPage.dart';
+import 'friends/FriendsPage.dart';
 import 'groups/GroupSettingsPage.dart';
 
 class MenuPage extends StatefulWidget {
@@ -89,6 +90,16 @@ class _MenuPageState extends State<MenuPage> {
               onTap: () {
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => AddFriendsPage()));
+              },
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: spacing),
+            child: BeaconFlatButton(
+              title: 'Friends',
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => FriendsPage()));
               },
             ),
           ),
