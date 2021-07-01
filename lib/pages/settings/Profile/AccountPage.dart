@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/settings/Profile/EditNamePage.dart';
 import 'package:beacon/pages/settings/Profile/EditPasswordPage.dart';
+import 'package:beacon/pages/settings/Profile/EditProfilePicturePage.dart';
 import 'package:beacon/services/AuthService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
@@ -23,22 +24,23 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   double spacing = 6.0;
   PickedFile _image;
+  String downloadURL;
 
   Future getImage() async {
+
+
     var image = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
 
-    setState(() {
-      _image = image;
-      print('Image path ${_image.path}');
-    });
+    if (image != null) {
+      Navigator.of(context).push(
+
+          CustomPageRoute(builder: (context) => EditProfilePicturePage(image: image))).
+      then((value) => setState(() {
+      }));
+    }
+
   }
 
-  Future uploadPic(BuildContext context) async {
-    String fileName = _image.path;
-    Reference firebaseStoragRef = FirebaseStorage.instance.ref(fileName);
-    UploadTask uploadTask = firebaseStoragRef.putFile(File(_image.path));
-    TaskSnapshot taskSnapshot = await uploadTask.whenComplete();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,5 +111,11 @@ class _AccountPageState extends State<AccountPage> {
   }
 }
 
+class CustomPageRoute extends MaterialPageRoute {
+  CustomPageRoute({builder}) : super(builder: builder);
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 0);
+}
 
 

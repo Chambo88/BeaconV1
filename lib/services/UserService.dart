@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/BeaconType.dart';
@@ -6,6 +7,7 @@ import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class UserService {
   FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
@@ -239,16 +241,25 @@ class UserService {
       caseSearchList.add(temp);
     }
 
+
     await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
       "firstName": firstName,
-    });
-    await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
       "lastName": lastName,
-    });
-    await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
       "nameSearch": caseSearchList,
     });
 
+
+  }
+
+  changeProfilePic(File file, {UserModel user}) async {
+    Reference firebaseStoragRef = FirebaseStorage.instance.ref("user/profle_pic/${currentUser.id}.jpg");
+    UploadTask uploadTask = firebaseStoragRef.putFile(file);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    String downloadURL = await taskSnapshot.ref.getDownloadURL();
+    currentUser.imageURL = downloadURL;
+    await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
+      "imageURL": downloadURL
+    });
   }
 
   acceptFriendRequest(UserModel friend, {UserModel user}) async {

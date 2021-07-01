@@ -82,9 +82,11 @@ class CustomTheme {
 
       // text
       textTheme: TextTheme(
+        //used in AppBar
         headline1: TextStyle(
           color: Colors.white,
           fontSize: 24.0,
+          fontWeight: FontWeight.bold
         ),
         headline2: TextStyle(
           color: Colors.white,
@@ -136,7 +138,22 @@ class CustomTheme {
           fontSize: 16,
         ),
       ),
-      appBarTheme: AppBarTheme(color: Colors.black),
+      appBarTheme: AppBarTheme(
+          color: Colors.black,
+        centerTitle: true,
+        iconTheme: IconThemeData(
+          color: Color(0xFFAD00FF)
+        ),
+        textTheme: TextTheme(
+          headline6: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          )
+        ),
+        // titleTextStyle: TextStyle(
+        //   fontWeight: FontWeight.bold,
+        // )
+      ),
       textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.white),
       scaffoldBackgroundColor: Colors.black,
     );
