@@ -13,32 +13,56 @@ import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AccountPage extends StatefulWidget {
+class ProfilePage extends StatefulWidget {
   @override
-  _AccountPageState createState() => _AccountPageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _AccountPageState extends State<AccountPage> {
+class _ProfilePageState extends State<ProfilePage> {
   double spacing = 6.0;
-  PickedFile _image;
+  File _editedImage;
   String downloadURL;
 
   Future getImage() async {
 
+    _editedImage = null;
 
     var image = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
-
     if (image != null) {
+      _editedImage = await cropImage(File(image.path));
+    }
+
+    if (_editedImage != null) {
       Navigator.of(context).push(
 
-          CustomPageRoute(builder: (context) => EditProfilePicturePage(image: image))).
+          CustomPageRoute(builder: (context) => EditProfilePicturePage(image: image, editedImage: _editedImage))).
       then((value) => setState(() {
       }));
     }
 
+  }
+
+  Future<File> cropImage(File imageFile) async {
+    return await ImageCropper.cropImage(sourcePath: imageFile.path,
+        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+        aspectRatioPresets: [CropAspectRatioPreset.square],
+        compressQuality: 100,
+        cropStyle: CropStyle.circle,
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: '',
+            toolbarColor: Colors.black,
+            toolbarWidgetColor: Theme.of(context).accentColor,
+            activeControlsWidgetColor: Theme.of(context).accentColor,
+            statusBarColor: Colors.black
+        ),
+        iosUiSettings: IOSUiSettings(
+          title: '',
+        )
+    );
   }
 
 
@@ -58,12 +82,44 @@ class _AccountPageState extends State<AccountPage> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-            child: ProfilePicture(
-              user: user,
-              onClicked: () {
-                getImage();
-              },
-              size: 60,
+            child: Stack(
+              children: [
+
+                ProfilePicture(
+                  user: user,
+                  onClicked: () {
+                    getImage();
+                  },
+                  size: 70,
+                ),
+                Positioned(
+                    bottom: -4,
+                    right: -4,
+                    child: Container(
+                      width: 50,
+                      height: 50,
+
+                      decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                              color: Colors.black,
+                              width: 5.0
+                          )
+                      ),
+                      child: ClipOval(
+                        child: Container(
+                          color: theme.accentColor,
+                          child: IconButton(
+                              onPressed: () {getImage();},
+                              icon: Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 20,
+                              )),
+                        ),
+                      ),
+                    )
+                ),]
             ),
           ),
           Padding(
@@ -88,14 +144,7 @@ class _AccountPageState extends State<AccountPage> {
 
             },
           ),
-          BeaconFlatButton(
-            icon: Icons.password_outlined,
-            title: 'Password',
-            onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => EditPasswordPage()));
-            },
-          ),
+
           BeaconFlatButton(
             icon: Icons.logout_outlined,
             title: 'Log Out',

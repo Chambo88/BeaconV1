@@ -1,5 +1,5 @@
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/pages/settings/Profile/AccountPage.dart';
+import 'package:beacon/pages/settings/Profile/ProflePage.dart';
 import 'package:beacon/services/AuthService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/ProfilePicWidget.dart';
@@ -41,7 +41,7 @@ class _MenuPageState extends State<MenuPage> {
                     user: user,
                     onClicked: () {
                       Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => AccountPage()));
+                          MaterialPageRoute(builder: (context) => ProfilePage()));
 
                     },
                 ),
@@ -50,10 +50,13 @@ class _MenuPageState extends State<MenuPage> {
                 padding: const EdgeInsets.fromLTRB(0, 0, 0, 25),
                 child: TextButton(
                   child: Text("${user.firstName} ${user.lastName}",
-                    style: theme.textTheme.bodyText1,),
+                    style: TextStyle(
+                      fontSize: 18
+                    ),
+                  ),
                   onPressed: () {
                     Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => AccountPage())).then((value) => setState(() {}));
+                        MaterialPageRoute(builder: (context) => ProfilePage())).then((value) => setState(() {}));
                   },
                 ),
               ),
@@ -72,10 +75,10 @@ class _MenuPageState extends State<MenuPage> {
           Padding(
             padding: EdgeInsets.only(bottom: spacing),
             child: BeaconFlatButton(
-              title: 'Account',
+              title: 'Edit Profile',
               onTap: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => AccountPage())).then((value) => setState(() {}));
+                    MaterialPageRoute(builder: (context) => ProfilePage())).then((value) => setState(() {}));
               },
             ),
           ),

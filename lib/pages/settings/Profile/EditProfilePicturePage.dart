@@ -8,23 +8,22 @@ import 'package:provider/provider.dart';
 
 class EditProfilePicturePage extends StatefulWidget {
   PickedFile image;
-  EditProfilePicturePage({@required this.image});
+  File editedImage;
+  EditProfilePicturePage({@required this.image, @required this.editedImage});
 
   @override
   _EditProfilePicturePageState createState() => _EditProfilePicturePageState();
 }
 
 class _EditProfilePicturePageState extends State<EditProfilePicturePage> {
-  File _editedImage;
+
   bool _loading = false;
-
-
 
   Future<File> cropImage(File imageFile) async {
     return await ImageCropper.cropImage(sourcePath: imageFile.path,
       aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
       aspectRatioPresets: [CropAspectRatioPreset.square],
-      compressQuality: 80,
+      compressQuality: 100,
       cropStyle: CropStyle.circle,
       androidUiSettings: AndroidUiSettings(
         toolbarTitle: '',
@@ -71,7 +70,7 @@ class _EditProfilePicturePageState extends State<EditProfilePicturePage> {
                 setState(()  {
                   _loading = true;
                 });
-                await userService.changeProfilePic(_editedImage ?? File(widget.image.path));
+                await userService.changeProfilePic(widget.editedImage);
                 Navigator.pop(context);},
               child: Text(
                 "Save",
@@ -86,36 +85,56 @@ class _EditProfilePicturePageState extends State<EditProfilePicturePage> {
       body: Column(
         children: [
           Flexible(
-            flex: 1,
+            flex: 2,
               child: Container()
           ),
-          Flexible(
-            flex: 8,
-            child: Center(
-              child: CircleAvatar(
-                radius: 120,
-                child: ClipOval(
-                  child: (_editedImage == null) ?
-                  Image.file(File(widget.image.path)) :
-                  Image.file(_editedImage),
+          Center(
+            child: Container(
+              width: 250,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: theme.accentColor,
+                  width: 2.0
                 )
+              ),
+              child: CircleAvatar(
+                radius: 150,
+                child: ClipOval(
+                  child: Image.file(widget.editedImage)
+
+                ),
+
               ),
             ),
           ),
-          Flexible(child:
-          BeaconFlatButton(
-            title: "Edit image",
-            icon: Icons.image_outlined,
-            onTap: () async {
-              final file = await cropImage(File(widget.image.path));
-              if (file != null) {
-                _editedImage = file;
-              }
-              setState(() {
+          Center(
+            child: TextButton.icon(
+          label: Text("Edit Image",
+            style: theme.textTheme.headline5,
+          ),
+          icon: Icon(Icons.image_outlined),
+          style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            backgroundColor: MaterialStateProperty.all<Color>(theme.accentColor),
+            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: theme.accentColor)
+            ))
+          ),
+          onPressed: () async {
+            final file = await cropImage(File(widget.image.path));
+            if (file != null) {
+              widget.editedImage = file;
+            }
+            setState(() {});
+          },
+            ),
+          ),
+          Flexible(
+            flex: 4,
+              child: Container())
 
-              });
-            },
-          ))
         ],
       ),
     );
