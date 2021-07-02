@@ -19,7 +19,6 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
-    final UserModel _user = context.read<UserService>().currentUser;
 
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     final theme = Theme.of(context);

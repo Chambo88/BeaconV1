@@ -9,9 +9,11 @@ class CustomTheme {
 
       backgroundColor: Colors.black,
       primaryColorLight: Color(0xFF2A2929),
-      primaryColor: Color(0xFF181818),
+      primaryColor: Color(0xFF111111),
       primaryColorDark: Color(0xFF000000),
-      accentColor: Color(0xFFB500E2),
+      accentColor: Color(0xFFAD00FF),
+
+      //More basic colours from FIGMA
 
 
       bottomSheetTheme: BottomSheetThemeData(
@@ -21,7 +23,7 @@ class CustomTheme {
       switchTheme: SwitchThemeData(
           trackColor: MaterialStateProperty.resolveWith((states) {
             if (states.contains(MaterialState.selected)) {
-              return Color(0xFFB500E2);
+              return Color(0xFFAD00FF);
             }
             return Color(0xFF323232);
           }),
@@ -41,43 +43,50 @@ class CustomTheme {
           style: ButtonStyle(
         foregroundColor: MaterialStateProperty.resolveWith((states) {
           return (states.contains(MaterialState.disabled))
-              ? Color(0xFF716F6F)
-              : Color(0xFFB500E2);
+              ? Color(0xFF868A8C)
+              : Color(0xFFAD00FF);
         }),
         textStyle: MaterialStateProperty.resolveWith((states) {
           return (states.contains(MaterialState.disabled))
               ? TextStyle(
-                  color: Colors.grey,
+                  color: Color(0xFF868A8C),
                   fontSize: 16,
                 )
               : TextStyle(
-                  color: Colors.grey,
+                  color: Color(0xFF868A8C),
                   fontSize: 16,
                 );
         }),
       )),
 
       inputDecorationTheme: InputDecorationTheme(
+
         counterStyle: TextStyle(color: Colors.white),
         labelStyle: TextStyle(
-          color: Color(0xFFC7C1C1),
+          color: Color(0xFF868A8C),
         ),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF6200EE)),
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF6200EE)),
-        ),
+          fillColor: Color(0xFF111111),
+          filled: true,
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+          contentPadding:
+          EdgeInsets.only(left: 0, bottom: 0, top: 0, right: 0),
+          hintStyle: TextStyle(color: Color(0xFF868A8C))
       ),
       iconTheme: IconThemeData(
-        color: Colors.grey,
+        color: Color(0xFF868A8C),
       ),
 
       // text
       textTheme: TextTheme(
+        //used in AppBar
         headline1: TextStyle(
           color: Colors.white,
           fontSize: 24.0,
+          fontWeight: FontWeight.bold
         ),
         headline2: TextStyle(
           color: Colors.white,
@@ -104,14 +113,18 @@ class CustomTheme {
           fontSize: 14.0,
         ),
         bodyText2: TextStyle(
-          color: Color(0xFF7E7E90),
+          color: Color(0xFF868A8C),
           fontSize: 14.0,
         ),
         caption: TextStyle(
-          color: Color(0xFFFF00CC),
+          color: Color(0xFFAD00FF),
           fontSize: 14.0,
         ),
-        subtitle1: TextStyle(color: Colors.white),
+        //THIS ONES THE LITTLE TEXt ABOVE OPTIONS IN MENUS ETC
+        subtitle1: TextStyle(
+            color: Color(0xFF868A8C),
+          fontSize: 16.0,
+        ),
       ),
       dialogTheme: DialogTheme(
         backgroundColor: Colors.white,
@@ -119,15 +132,42 @@ class CustomTheme {
         contentTextStyle: TextStyle(color: Colors.black),
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: Color(0xCCEBE2F1),
+        backgroundColor: Color(0xFFAD00FF),
         contentTextStyle: TextStyle(
-          color: Colors.black,
+          color: Colors.white,
           fontSize: 16,
         ),
       ),
-      appBarTheme: AppBarTheme(color: Colors.black),
+      appBarTheme: AppBarTheme(
+          color: Colors.black,
+        centerTitle: true,
+        iconTheme: IconThemeData(
+          color: Color(0xFFAD00FF)
+        ),
+        textTheme: TextTheme(
+          headline6: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          )
+        ),
+        // titleTextStyle: TextStyle(
+        //   fontWeight: FontWeight.bold,
+        // )
+      ),
       textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.white),
       scaffoldBackgroundColor: Colors.black,
     );
   }
+}
+
+class FigmaColours {
+
+  FigmaColours();
+
+  int greyLight = 0xFF868A8C;
+  int greyMedium = 0xFF242424;
+  int greyDark = 0xFF111111;
+  int highlight = 0xFFAD00FF;
+
+
 }

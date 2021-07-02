@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/BeaconType.dart';
@@ -6,6 +7,7 @@ import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class UserService {
   FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
@@ -25,6 +27,7 @@ class UserService {
     int _notificationCount;
     List<dynamic> _data;
     List<NotificationModel> _notifications = [];
+    String _imageURL = '';
 
     // if (doc.data().containsKey('beacon')) {
     //   beacon = BeaconModel.toJson(doc.data()['beacon']);
@@ -64,18 +67,26 @@ class UserService {
       _notifications = [];
     }
 
+    if (doc.data().containsKey('imageURL')) {
+      _imageURL = doc.data()['imageURL'];
+    } else {
+      _imageURL = '';
+    }
+
     currentUser = UserModel(
-      doc.id,
-      doc.data()['email'],
-      doc.data()['firstName'],
-      doc.data()['lastName'],
-      _notificationCount,
-      beacon,
-      _groups,
-      List.from(doc.data()["friends"]),
-      List.from(doc.data()["sentFriendRequests"]),
-      List.from(doc.data()["receivedFriendRequests"]),
-      _notifications,
+      id: doc.id,
+      email: doc.data()['email'],
+      firstName: doc.data()['firstName'],
+      lastName: doc.data()['lastName'],
+      notificationCount: _notificationCount,
+      beacon: beacon,
+      groups: _groups,
+      friends: List.from(doc.data()["friends"]),
+      sentFriendRequests: List.from(doc.data()["sentFriendRequests"]),
+      receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"]),
+      notifications: _notifications,
+      imageURL: _imageURL,
+
     );
     return currentUser;
   }
@@ -209,6 +220,45 @@ class UserService {
     //remove from the other users firestores sent Notifications list
     await FirebaseFirestore.instance.collection('users').doc(userId).update({
       'sentFriendRequests': FieldValue.arrayRemove([userId])
+    });
+  }
+
+  changeName(String firstName, String lastName, {UserModel user}) async {
+    currentUser.firstName = firstName;
+    currentUser.lastName = lastName;
+    List<String> caseSearchList = [];
+
+    String userName = (firstName + lastName).toLowerCase();
+    lastName = lastName.toLowerCase();
+    String temp = "";
+    for (int i = 0; i < userName.length; i++) {
+      temp = temp + userName[i];
+      caseSearchList.add(temp);
+    }
+    temp = "";
+    for (int i = 0; i < lastName.length; i++) {
+      temp = temp + lastName[i];
+      caseSearchList.add(temp);
+    }
+
+
+    await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
+      "firstName": firstName,
+      "lastName": lastName,
+      "nameSearch": caseSearchList,
+    });
+
+
+  }
+
+  changeProfilePic(File file, {UserModel user}) async {
+    Reference firebaseStoragRef = FirebaseStorage.instance.ref("user/profle_pic/${currentUser.id}.jpg");
+    UploadTask uploadTask = firebaseStoragRef.putFile(file);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    String downloadURL = await taskSnapshot.ref.getDownloadURL();
+    currentUser.imageURL = downloadURL;
+    await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
+      "imageURL": downloadURL
     });
   }
 

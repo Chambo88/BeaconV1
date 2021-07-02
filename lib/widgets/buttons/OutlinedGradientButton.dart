@@ -6,6 +6,8 @@ class OutlinedGradientButton extends StatelessWidget {
   final Widget _child;
   final VoidCallback _callback;
   final double _radius;
+  final IconData _icon;
+  final double _iconSize;
 
   OutlinedGradientButton({
     @required double strokeWidth,
@@ -13,6 +15,8 @@ class OutlinedGradientButton extends StatelessWidget {
     @required Gradient gradient,
     @required Widget child,
     @required VoidCallback onPressed,
+    IconData icon,
+    double iconSize,
   })  : this._painter = _GradientPainter(
           strokeWidth: strokeWidth,
           radius: radius,
@@ -20,7 +24,27 @@ class OutlinedGradientButton extends StatelessWidget {
         ),
         this._child = child,
         this._callback = onPressed,
+        this._iconSize = iconSize,
+        this._icon = icon,
         this._radius = radius;
+
+  List<Widget> buildChildren() {
+    List<Widget> builder = [];
+    if (_icon != null) {
+      builder.add(
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 6, 0),
+          child: Icon(
+            _icon,
+            color: Colors.white,
+            size: _iconSize,
+          ),
+        ),
+      );
+    }
+    builder.add(_child);
+    return builder;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +61,7 @@ class OutlinedGradientButton extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                _child,
-              ],
+              children: buildChildren(),
             ),
           ),
         ),
