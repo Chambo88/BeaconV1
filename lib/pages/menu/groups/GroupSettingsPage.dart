@@ -1,6 +1,6 @@
 import 'package:beacon/Assests/Icons.dart';
 import 'package:beacon/models/GroupModel.dart';
-import 'package:beacon/pages/settings/groups/CreateGroupPage.dart';
+import 'package:beacon/pages/menu/groups/CreateGroupPage.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

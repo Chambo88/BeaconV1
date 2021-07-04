@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+
 class FriendsPage extends StatefulWidget {
 
   @override
@@ -31,11 +32,13 @@ class _FriendsPageState extends State<FriendsPage> {
     searchTextEditingController = TextEditingController();
     UserService userService = context.read<UserService>();
     firstTime = true;
-    friendsFromFB = FirebaseFirestore.instance
-        .collection('users')
-        .where('userId',
-        whereIn: userService.currentUser.friends).orderBy('firstName')
-        .get();
+    if (userService.currentUser.friends.isNotEmpty) {
+      friendsFromFB = FirebaseFirestore.instance
+          .collection('users')
+          .where('userId',
+          whereIn: userService.currentUser.friends).orderBy('firstName')
+          .get();
+    }
     super.initState();
   }
 
@@ -52,13 +55,19 @@ class _FriendsPageState extends State<FriendsPage> {
     for (UserModel user in userModelsResult) {
       if ((user.firstName.toLowerCase() + user.lastName.toLowerCase() ).startsWith(query) ||
           user.lastName.toLowerCase().startsWith(query)) {
-        UserResult userResult = UserResult(user: user);
+        UserResult userResult = UserResult(user: user, onRemoved: removeUser,);
         userResultsTilesTemp.add(userResult);
       }
     }
     userResultsTiles = userResultsTilesTemp;
     setState(() {});
 
+  }
+
+  void removeUser(UserModel user) {
+    userModelsResult.remove(user);
+    print("removed ${user.firstName}");
+    filterSearchResults(searchTextEditingController.text);
   }
 
 
@@ -76,10 +85,15 @@ class _FriendsPageState extends State<FriendsPage> {
             dataSnapshot.data.docs.forEach((document) {
               UserModel user = UserModel.fromDocument(document);
               userModelsResult.add(user);
-              UserResult userResult = UserResult(user: user);
+
+            });
+            userModelsResult.forEach((user) {
+              UserResult userResult = UserResult(user: user, onRemoved: removeUser,);
               userResultsTiles.add(userResult);
             });
           }
+
+
           firstTime = false;
 
           return ListView(
@@ -93,6 +107,14 @@ class _FriendsPageState extends State<FriendsPage> {
     );
   }
 
+  Widget doesUserHaveFriendsLol() {
+    UserService userService = context.read<UserService>();
+    if (userService.currentUser.friends.isNotEmpty) {
+      return displayFriends();
+    } else {
+      return Container();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,17 +133,22 @@ class _FriendsPageState extends State<FriendsPage> {
               width: MediaQuery.of(context).size.width,
             ),
           ),
-          Expanded(child: displayFriends())
+          Expanded(child: doesUserHaveFriendsLol())
         ],
       ),
     );
   }
 }
 
+typedef void removeUser(UserModel user);
+
 class UserResult extends StatefulWidget {
 
   final UserModel user;
-  UserResult({this.user});
+  final removeUser onRemoved;
+  UserResult({this.user,
+    @required this.onRemoved
+  });
 
   @override
   _UserResultState createState() => _UserResultState();
@@ -140,7 +167,9 @@ class _UserResultState extends State<UserResult> {
       builder: (context) {
         return FriendSettingsSheet(
           user: widget.user,
+          onRemoved: widget.onRemoved,
         );
+        // return Tester();
       },
     );}
     , icon: Icon(

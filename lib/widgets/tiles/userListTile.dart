@@ -39,21 +39,29 @@ class userListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: ProfilePicture(user: user,),
-      title: Text(
-        "${user.firstName} ${user.lastName}",
-        style: Theme.of(context).textTheme.headline4,
+    return Padding(
+      padding: (subText == null)? EdgeInsets.only(bottom: 10) : EdgeInsets.all(0),
+      child: ListTile(
+        leading: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ProfilePicture(user: user,),
+          ],
+        ),
+        title: Text(
+          "${user.firstName} ${user.lastName}",
+          style: Theme.of(context).textTheme.headline4,
+        ),
+        subtitle: (subText != null)
+            ? Text(
+                // subText,
+                subText,
+                style: TextStyle(
+                    fontSize: 16, color: Color(figmaColours.greyLight)),
+              )
+            : null,
+        trailing: (trailing != null) ? trailing : null,
       ),
-      subtitle: (subText != null)
-          ? Text(
-              // subText,
-              subText,
-              style: TextStyle(
-                  fontSize: 16, color: Color(figmaColours.greyLight)),
-            )
-          : null,
-      trailing: (trailing != null) ? trailing : null,
     );
   }
 }

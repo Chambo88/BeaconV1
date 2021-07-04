@@ -17,6 +17,8 @@ class UserModel {
   List<String> sentFriendRequests;
   List<String> receivedFriendRequests;
   List<NotificationModel> notifications;
+  List<String> notificationSendBlocked;
+  List<String> notificationReceivedBlocked;
 
   UserModel({
       this.id,
@@ -31,6 +33,8 @@ class UserModel {
       this.receivedFriendRequests,
       this.notifications,
       this.imageURL,
+      this.notificationReceivedBlocked,
+      this.notificationSendBlocked,
   });
 
   get getFirstName => firstName;
@@ -53,7 +57,15 @@ class UserModel {
     // if (doc.data().containsKey('beacon')) {
     //   beacon = BeaconModel.toJson(doc.data()['beacon']);
     // } else {
-    //   beacon = BeaconModel('0', '0', '', 'interested', false);
+    beacon = LiveBeacon(
+      id: '0',
+      userId: '0',
+      userName: 'Robbie',
+      active: false,
+      lat: "123",
+      long: "123",
+      desc: "A description",
+    );
     // }
 
     if (doc.data().containsKey('notificationCount')) {
@@ -76,29 +88,25 @@ class UserModel {
       _data.forEach((element) {
         _notifications.add(NotificationModel.fromMap(element));
       });
-    } else {
-      _notifications = [];
     }
 
-    if (doc.data().containsKey('imageURL')) {
-      _imageURL = doc.data()['imageURL'];
-    } else {
-      _imageURL = '';
-    }
 
     return UserModel(
       id: doc.id,
       email: doc.data()['email'],
       firstName: doc.data()['firstName'],
       lastName: doc.data()['lastName'],
-      notificationCount: _notificationCount,
+      notificationCount: doc.data()['notificationCount'] ?? 0,
       beacon: beacon,
       groups: _groups,
-      friends: List.from(doc.data()["friends"]),
-      sentFriendRequests: List.from(doc.data()["sentFriendRequests"]),
-      receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"]),
+      friends: List.from(doc.data()["friends"] ?? []),
+      sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
+      receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       notifications: _notifications,
-      imageURL: _imageURL,
+      imageURL: doc.data()['imageURL'] ?? '',
+      notificationSendBlocked: doc.data()['notificationSendBlocked'] ?? [],
+      notificationReceivedBlocked: doc.data()['notificationReceivedBlocked'] ?? [],
+
     );
   }
 }

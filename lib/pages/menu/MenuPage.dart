@@ -1,5 +1,5 @@
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/pages/settings/Profile/ProflePage.dart';
+import 'package:beacon/pages/menu/Profile/ProflePage.dart';
 import 'package:beacon/services/AuthService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/ProfilePicWidget.dart';

@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/pages/settings/Profile/EditNamePage.dart';
-import 'package:beacon/pages/settings/Profile/EditPasswordPage.dart';
-import 'package:beacon/pages/settings/Profile/EditProfilePicturePage.dart';
+import 'package:beacon/pages/menu/Profile/EditNamePage.dart';
+import 'package:beacon/pages/menu/Profile/EditPasswordPage.dart';
+import 'package:beacon/pages/menu/Profile/EditProfilePicturePage.dart';
 import 'package:beacon/services/AuthService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';

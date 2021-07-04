@@ -24,10 +24,8 @@ class UserService {
 
     List<GroupModel> _groups = [];
     BeaconModel beacon;
-    int _notificationCount;
     List<dynamic> _data;
     List<NotificationModel> _notifications = [];
-    String _imageURL = '';
 
     // if (doc.data().containsKey('beacon')) {
     //   beacon = BeaconModel.toJson(doc.data()['beacon']);
@@ -43,11 +41,11 @@ class UserService {
     );
     // }
 
-    if (doc.data().containsKey('notificationCount')) {
-      _notificationCount = doc.data()['notificationCount'];
-    } else {
-      _notificationCount = 0;
-    }
+    // if (doc.data().containsKey('notificationCount')) {
+    //   _notificationCount = doc.data()['notificationCount'];
+    // } else {
+    //   _notificationCount = 0;
+    // }
 
     if (doc.data().containsKey('groups')) {
       _data = List.from(doc.data()["groups"]);
@@ -63,31 +61,28 @@ class UserService {
       _data.forEach((element) {
         _notifications.add(NotificationModel.fromMap(element));
       });
-    } else {
-      _notifications = [];
     }
 
-    if (doc.data().containsKey('imageURL')) {
-      _imageURL = doc.data()['imageURL'];
-    } else {
-      _imageURL = '';
-    }
 
     currentUser = UserModel(
       id: doc.id,
       email: doc.data()['email'],
       firstName: doc.data()['firstName'],
       lastName: doc.data()['lastName'],
-      notificationCount: _notificationCount,
+      notificationCount: doc.data()['notificationCount'] ?? 0,
       beacon: beacon,
       groups: _groups,
-      friends: List.from(doc.data()["friends"]),
-      sentFriendRequests: List.from(doc.data()["sentFriendRequests"]),
-      receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"]),
+      friends: List.from(doc.data()["friends"] ?? []),
+      sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
+      receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       notifications: _notifications,
-      imageURL: _imageURL,
+      imageURL: doc.data()['imageURL'] ?? '',
+      notificationSendBlocked: doc.data()['notificationSendBlocked'] ?? [],
+      notificationReceivedBlocked: doc.data()['notificationReceivedBlocked'] ?? [],
 
     );
+
+
     return currentUser;
   }
 
@@ -98,6 +93,22 @@ class UserService {
         .update({
       'beacons': FieldValue.arrayUnion([beacon.toJson()])
     });
+  }
+
+  removeFriend(UserModel friend, {UserModel user}) async {
+    currentUser.friends.remove(friend.id);
+
+
+    await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
+      "friends": FieldValue.arrayRemove([friend.id]),
+    });
+
+    
+    await FirebaseFirestore.instance.collection('users').doc(friend.id).update({
+      "friends": FieldValue.arrayRemove([currentUser.id]),
+    });
+
+
   }
 
   updateBeacon(LiveBeacon beacon) async {
@@ -131,6 +142,23 @@ class UserService {
         .collection('users')
         .doc(userId)
         .update({"notificationCount": x});
+  }
+
+  changeBlockNotificationStatus(UserModel otherUser, {UserModel user}) async {
+    //if the other user is already blocked undo the block
+    if(currentUser.notificationReceivedBlocked.contains(otherUser.id)) {
+      await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
+        "notificationReceivedBlocked": FieldValue.arrayRemove([otherUser.id])});
+      await FirebaseFirestore.instance.collection('users').doc(otherUser.id).update({
+      "notificationSendBlocked": FieldValue.arrayRemove([currentUser.id]),
+      });
+    } else {
+      await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
+        "notificationReceivedBlocked": FieldValue.arrayUnion([otherUser.id])});
+      await FirebaseFirestore.instance.collection('users').doc(otherUser.id).update({
+        "notificationSendBlocked": FieldValue.arrayUnion([currentUser.id]),
+      });
+    }
   }
 
   addGroup(GroupModel group, {UserModel user}) async {
