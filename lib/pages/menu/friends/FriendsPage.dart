@@ -66,7 +66,6 @@ class _FriendsPageState extends State<FriendsPage> {
 
   void removeUser(UserModel user) {
     userModelsResult.remove(user);
-    print("removed ${user.firstName}");
     filterSearchResults(searchTextEditingController.text);
   }
 

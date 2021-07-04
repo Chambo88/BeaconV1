@@ -77,8 +77,8 @@ class UserService {
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       notifications: _notifications,
       imageURL: doc.data()['imageURL'] ?? '',
-      notificationSendBlocked: doc.data()['notificationSendBlocked'] ?? [],
-      notificationReceivedBlocked: doc.data()['notificationReceivedBlocked'] ?? [],
+      notificationSendBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
+      notificationReceivedBlocked: List.from(doc.data()['notificationReceivedBlocked'] ?? []),
 
     );
 
@@ -146,18 +146,21 @@ class UserService {
 
   changeBlockNotificationStatus(UserModel otherUser, {UserModel user}) async {
     //if the other user is already blocked undo the block
+
     if(currentUser.notificationReceivedBlocked.contains(otherUser.id)) {
       await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
         "notificationReceivedBlocked": FieldValue.arrayRemove([otherUser.id])});
       await FirebaseFirestore.instance.collection('users').doc(otherUser.id).update({
       "notificationSendBlocked": FieldValue.arrayRemove([currentUser.id]),
       });
+      currentUser.notificationReceivedBlocked.remove(otherUser.id);
     } else {
       await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
         "notificationReceivedBlocked": FieldValue.arrayUnion([otherUser.id])});
       await FirebaseFirestore.instance.collection('users').doc(otherUser.id).update({
         "notificationSendBlocked": FieldValue.arrayUnion([currentUser.id]),
       });
+      currentUser.notificationReceivedBlocked.add(otherUser.id);
     }
   }
 

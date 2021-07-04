@@ -36,9 +36,32 @@ class FriendSettingsSheet extends StatelessWidget {
         });
   }
 
+  Future<dynamic> notificationDialog(BuildContext context, bool enabled) {
+    String ya = (enabled == true)? "enable" : "disable";
+    return showDialog(
+        context: context,
+        builder: (BuildContext) {
+          return TwoButtonDialog(
+            bodyText: "Are you sure you want to " + ya + " notifications from ${user.firstName} ${user.lastName}?",
+            onPressedGrey: () => Navigator.pop(context, false),
+            onPressedHighlight: () => Navigator.pop(context, true),
+            buttonGreyText: "No",
+            buttonHighlightText: "Yes",
+          );
+        });
+  }
+
+  Text getNotifStatusText(UserModel user, UserModel currentUser, ThemeData theme, bool enable) {
+    if(enable == true) {
+      return Text("Enable notifications from ${user.firstName} ${user.lastName}", style: theme.textTheme.headline4,);
+    }
+    return Text("Disable notifications from ${user.firstName} ${user.lastName}", style: theme.textTheme.headline4,);
+  }
+
   @override
   Widget build(BuildContext context) {
     UserService userService = context.read<UserService>();
+    bool enable = userService.currentUser.notificationReceivedBlocked.contains(user.id);
     final theme = Theme.of(context);
     return Wrap(children: [
       Container(
@@ -69,7 +92,6 @@ class FriendSettingsSheet extends StatelessWidget {
                     await Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => ViewFriendsFriendsPage(friend: user,)));
                     Navigator.pop(context);
-
                   },
                 ),
                 ListTile(
@@ -78,10 +100,16 @@ class FriendSettingsSheet extends StatelessWidget {
                     color: Color(figmaColours.greyLight),
                     size: 34,
                   ),
-                  title: Text(
-                    "Turn off notifications from ${user.firstName} ${user.lastName}",
-                    style: theme.textTheme.headline4,
-                  ),
+                  title: getNotifStatusText(user, userService.currentUser, theme, enable),
+                  onTap: () {
+                    notificationDialog(context, enable).then((value) {
+                      if (value == true) {
+                        userService.changeBlockNotificationStatus(user);
+                        Navigator.pop(context);
+                      }
+                    });
+                  },
+
                 ),
                 ListTile(
                   leading: Icon(

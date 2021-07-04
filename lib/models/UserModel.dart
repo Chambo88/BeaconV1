@@ -104,8 +104,8 @@ class UserModel {
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       notifications: _notifications,
       imageURL: doc.data()['imageURL'] ?? '',
-      notificationSendBlocked: doc.data()['notificationSendBlocked'] ?? [],
-      notificationReceivedBlocked: doc.data()['notificationReceivedBlocked'] ?? [],
+      notificationSendBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
+      notificationReceivedBlocked: List.from(doc.data()['notificationReceivedBlocked'] ?? []),
 
     );
   }
