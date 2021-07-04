@@ -1,5 +1,6 @@
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/menu/Profile/ProflePage.dart';
+import 'package:beacon/pages/menu/notificationsSettingsPage.dart';
 import 'package:beacon/services/AuthService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/ProfilePicWidget.dart';
@@ -106,11 +107,19 @@ class _MenuPageState extends State<MenuPage> {
           Padding(
             padding: EdgeInsets.only(bottom: spacing),
             child: BeaconFlatButton(
+              title: 'Notifications',
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => NotificationSettingsPage()));
+              },
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(bottom: spacing),
+            child: BeaconFlatButton(
               title: 'Sign Out',
               onTap: () async {
-
                 await _auth.signOut();
-
               },
             ),
           ),

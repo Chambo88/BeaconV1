@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'BeaconModel.dart';
 import 'GroupModel.dart';
 import 'NotificationModel.dart';
+import 'NotificationSettingsModel.dart';
 
 class UserModel {
   String id;
@@ -17,8 +18,7 @@ class UserModel {
   List<String> sentFriendRequests;
   List<String> receivedFriendRequests;
   List<NotificationModel> notifications;
-  List<String> notificationSendBlocked;
-  List<String> notificationReceivedBlocked;
+  NotificationSettingsModel notificationSettings;
 
   UserModel({
       this.id,
@@ -33,8 +33,7 @@ class UserModel {
       this.receivedFriendRequests,
       this.notifications,
       this.imageURL,
-      this.notificationReceivedBlocked,
-      this.notificationSendBlocked,
+    this.notificationSettings,
   });
 
   get getFirstName => firstName;
@@ -53,6 +52,7 @@ class UserModel {
     List<dynamic> _data;
     List<NotificationModel> _notifications = [];
     String _imageURL = '';
+    NotificationSettingsModel notificationSettings;
 
     // if (doc.data().containsKey('beacon')) {
     //   beacon = BeaconModel.toJson(doc.data()['beacon']);
@@ -83,6 +83,8 @@ class UserModel {
       _groups = [];
     }
 
+
+
     if (doc.data().containsKey('notifications')) {
       _data = List.from(doc.data()["notifications"]);
       _data.forEach((element) {
@@ -104,8 +106,12 @@ class UserModel {
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       notifications: _notifications,
       imageURL: doc.data()['imageURL'] ?? '',
-      notificationSendBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
-      notificationReceivedBlocked: List.from(doc.data()['notificationReceivedBlocked'] ?? []),
+      notificationSettings: NotificationSettingsModel(
+        notificationSummons: doc.data()['notificationSummons'] ?? true,
+        notificationReceivedBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
+        notificationSendBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
+        notificationVenue: doc.data()['notificationVenue'] ?? true,
+      )
 
     );
   }

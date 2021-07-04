@@ -5,6 +5,7 @@ import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/NotificationModel.dart';
+import 'package:beacon/models/NotificationSettingsModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -77,9 +78,12 @@ class UserService {
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       notifications: _notifications,
       imageURL: doc.data()['imageURL'] ?? '',
-      notificationSendBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
-      notificationReceivedBlocked: List.from(doc.data()['notificationReceivedBlocked'] ?? []),
-
+      notificationSettings: NotificationSettingsModel(
+        notificationSummons: doc.data()['notificationSummons'] ?? true,
+        notificationReceivedBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
+        notificationSendBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
+        notificationVenue: doc.data()['notificationVenue'] ?? true,
+      )
     );
 
 
@@ -144,25 +148,7 @@ class UserService {
         .update({"notificationCount": x});
   }
 
-  changeBlockNotificationStatus(UserModel otherUser, {UserModel user}) async {
-    //if the other user is already blocked undo the block
 
-    if(currentUser.notificationReceivedBlocked.contains(otherUser.id)) {
-      await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
-        "notificationReceivedBlocked": FieldValue.arrayRemove([otherUser.id])});
-      await FirebaseFirestore.instance.collection('users').doc(otherUser.id).update({
-      "notificationSendBlocked": FieldValue.arrayRemove([currentUser.id]),
-      });
-      currentUser.notificationReceivedBlocked.remove(otherUser.id);
-    } else {
-      await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
-        "notificationReceivedBlocked": FieldValue.arrayUnion([otherUser.id])});
-      await FirebaseFirestore.instance.collection('users').doc(otherUser.id).update({
-        "notificationSendBlocked": FieldValue.arrayUnion([currentUser.id]),
-      });
-      currentUser.notificationReceivedBlocked.add(otherUser.id);
-    }
-  }
 
   addGroup(GroupModel group, {UserModel user}) async {
     // If user is null then current user

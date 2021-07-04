@@ -4,6 +4,7 @@ import 'package:beacon/Assests/Icons.dart';
 import 'package:beacon/library/ColorHelper.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/menu/friends/ViewFriendsFriendsPage.dart';
+import 'package:beacon/services/NotificationService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/Dialogs/TwoButtonDialog.dart';
@@ -61,7 +62,8 @@ class FriendSettingsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserService userService = context.read<UserService>();
-    bool enable = userService.currentUser.notificationReceivedBlocked.contains(user.id);
+    NotificationService notService = NotificationService();
+    bool enable = userService.currentUser.notificationSettings.notificationReceivedBlocked.contains(user.id);
     final theme = Theme.of(context);
     return Wrap(children: [
       Container(
@@ -104,7 +106,7 @@ class FriendSettingsSheet extends StatelessWidget {
                   onTap: () {
                     notificationDialog(context, enable).then((value) {
                       if (value == true) {
-                        userService.changeBlockNotificationStatus(user);
+                        notService.changeBlockNotificationStatus(user: userService.currentUser, otherUser: user);
                         Navigator.pop(context);
                       }
                     });
