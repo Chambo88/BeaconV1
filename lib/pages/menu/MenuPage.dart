@@ -3,13 +3,17 @@ import 'package:beacon/pages/menu/Profile/ProflePage.dart';
 import 'package:beacon/pages/menu/notificationsSettingsPage.dart';
 import 'package:beacon/services/AuthService.dart';
 import 'package:beacon/services/UserService.dart';
+import 'package:beacon/util/theme.dart';
+import 'package:beacon/widgets/Dialogs/TwoButtonDialog.dart';
 import 'package:beacon/widgets/ProfilePicWidget.dart';
+import 'package:beacon/widgets/tiles/SubTitleText.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'friends/AddFriendsPage.dart';
 import 'friends/FriendsPage.dart';
 import 'groups/GroupSettingsPage.dart';
+import 'package:community_material_icon/community_material_icon.dart';
 
 class MenuPage extends StatefulWidget {
   @override
@@ -18,6 +22,21 @@ class MenuPage extends StatefulWidget {
 
 class _MenuPageState extends State<MenuPage> {
   double spacing = 6.0;
+  FigmaColours figmaColours = FigmaColours();
+
+  Future<dynamic> signOutDialog(BuildContext context,) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext) {
+          return TwoButtonDialog(
+            bodyText: "Are you sure you want to sign out?",
+            onPressedGrey: () => Navigator.pop(context, false),
+            onPressedHighlight: () => Navigator.pop(context, true),
+            buttonGreyText: "No",
+            buttonHighlightText: "Yes",
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +47,26 @@ class _MenuPageState extends State<MenuPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Menu"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 3, top: 5),
+            child: Ink(
+              decoration: ShapeDecoration(
+                color: Color(figmaColours.greyDark),
+                shape: CircleBorder(),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.person_add),
+                color: Color(figmaColours.highlight),
+                onPressed: () {
+                  Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => AddFriendsPage()));
+
+                },
+              ),
+            ),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.only(top: 10),
@@ -64,64 +103,55 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ]
           ),
-          Padding(
-            padding: EdgeInsets.only(bottom: spacing),
-            child: BeaconFlatButton(
-              title: 'Groups',
-              onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => GroupSettings()));
-              },
-            ),
+
+
+          SubTitleText(text: "People"),
+          BeaconFlatButton(
+            icon: CommunityMaterialIcons.account_group_outline,
+            title: 'Groups',
+            onTap: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => GroupSettings()));
+            },
           ),
-          Padding(
-            padding: EdgeInsets.only(bottom: spacing),
-            child: BeaconFlatButton(
-              title: 'Edit Profile',
-              onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ProfilePage())).then((value) => setState(() {}));
-              },
-            ),
+          BeaconFlatButton(
+            icon: Icons.people_outline_outlined,
+            title: 'Friends',
+            onTap: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => FriendsPage()));
+            },
           ),
-          Padding(
-            padding: EdgeInsets.only(bottom: spacing),
-            child: BeaconFlatButton(
-              title: 'Add Friend',
-              onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => AddFriendsPage()));
-              },
-            ),
+
+
+          SubTitleText(text: "Settings"),
+          BeaconFlatButton(
+            icon: Icons.account_circle_outlined,
+            title: 'Edit Profile',
+            onTap: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => ProfilePage())).then((value) => setState(() {}));
+            },
           ),
-          Padding(
-            padding: EdgeInsets.only(bottom: spacing),
-            child: BeaconFlatButton(
-              title: 'Friends',
-              onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => FriendsPage()));
-              },
-            ),
+          BeaconFlatButton(
+            icon: Icons.notifications_outlined,
+            title: 'Notifications',
+            onTap: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => NotificationSettingsPage()));
+            },
           ),
-          Padding(
-            padding: EdgeInsets.only(bottom: spacing),
-            child: BeaconFlatButton(
-              title: 'Notifications',
-              onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => NotificationSettingsPage()));
-              },
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: spacing),
-            child: BeaconFlatButton(
-              title: 'Sign Out',
-              onTap: () async {
-                await _auth.signOut();
-              },
-            ),
+          BeaconFlatButton(
+            icon: Icons.logout_outlined,
+            title: 'Log Out',
+            onTap: () async {
+              signOutDialog(context).then((value) async {
+                if (value)  {
+                  await _auth.signOut();
+                }
+              });
+
+            },
           ),
         ],
       ),

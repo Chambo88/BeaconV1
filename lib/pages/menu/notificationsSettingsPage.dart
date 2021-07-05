@@ -2,11 +2,13 @@ import 'package:beacon/models/NotificationSettingsModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/NotificationService.dart';
 import 'package:beacon/services/UserService.dart';
-import 'package:beacon/widgets/SubTitleText.dart';
+import 'package:beacon/widgets/tiles/SubTitleText.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/provider.dart';
+
+import 'NotificationFriendsPage.dart';
 
 class NotificationSettingsPage extends StatefulWidget {
   @override
@@ -54,7 +56,6 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                 activeTrackColor: Theme.of(context).accentColor,
                 value: summons,
                 onChanged: (value) {
-                  print(notifSettings.notificationSummons);
                   notifService.changeSummonsNotif(user);
                   summons = value;
                   setState(() {
@@ -74,8 +75,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                 activeColor: Colors.white,
                 activeTrackColor: Theme.of(context).accentColor,
                 value: venue,
-                onChanged: (value) {
-                  print(notifSettings.notificationVenue);
+                onChanged: (value) {;
                   notifService.changeVenueNotif(user);
                   venue = value;
                   setState(() {

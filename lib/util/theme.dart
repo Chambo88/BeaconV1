@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTheme {
   static ThemeData get theme {
@@ -139,6 +140,12 @@ class CustomTheme {
         ),
       ),
       appBarTheme: AppBarTheme(
+        systemOverlayStyle: SystemUiOverlayStyle(
+          systemNavigationBarColor: Colors.black,
+              statusBarColor: Colors.black,
+          systemNavigationBarDividerColor: Colors.black,
+
+        ),
           color: Colors.black,
         centerTitle: true,
         iconTheme: IconThemeData(

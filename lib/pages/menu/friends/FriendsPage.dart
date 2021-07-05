@@ -10,6 +10,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'AddFriendsPage.dart';
+
 
 class FriendsPage extends StatefulWidget {
 
@@ -26,9 +28,11 @@ class _FriendsPageState extends State<FriendsPage> {
   List<UserResult> userResultsTiles = [];
   Future<QuerySnapshot> friendsFromFB;
   bool firstTime;
+  FigmaColours figmaColours;
 
   @override
   void initState() {
+    figmaColours = FigmaColours();
     searchTextEditingController = TextEditingController();
     UserService userService = context.read<UserService>();
     firstTime = true;
@@ -121,6 +125,26 @@ class _FriendsPageState extends State<FriendsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Friends"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 3, top: 5),
+            child: Ink(
+              decoration: ShapeDecoration(
+                color: Color(figmaColours.greyDark),
+                shape: CircleBorder(),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.person_add),
+                color: Color(figmaColours.highlight),
+                onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => AddFriendsPage()));
+
+                },
+              ),
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
