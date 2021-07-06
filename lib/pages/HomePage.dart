@@ -17,6 +17,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:async/async.dart';
 import 'package:beacon/pages/NotificationPage.dart';
 
+import 'NotificationPageRedo.dart';
+
 class BuildHomePage extends StatefulWidget {
   @override
   _BuildHomePageState createState() => _BuildHomePageState();
@@ -26,7 +28,8 @@ class _BuildHomePageState extends State<BuildHomePage> {
   int _pageIndex = 0;
   final pages = [
     MapPage(),
-    NotificationPage(),
+    NotificationPageRedo(),
+    // NotificationPage(),
     MenuPage(),
   ];
 
