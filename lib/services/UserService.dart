@@ -212,24 +212,7 @@ class UserService {
     });
   }
 
-  declineFriendRequest(UserModel friend, {UserModel user}) async {
-    // If user is null then current user
-    if (user == null) {
-      currentUser.receivedFriendRequests.remove(friend.id);
-      currentUser.notifications.remove(friend.id);
-    }
-    String userId = user != null ? user.id : currentUser.id;
 
-    await FirebaseFirestore.instance.collection('users').doc(userId).update({
-      'receivedFriendRequests': FieldValue.arrayRemove([friend.id]),
-      'notificationCount': FieldValue.increment(-1)
-    });
-
-    //remove from the other users firestores sent Notifications list
-    await FirebaseFirestore.instance.collection('users').doc(userId).update({
-      'sentFriendRequests': FieldValue.arrayRemove([userId])
-    });
-  }
 
   changeName(String firstName, String lastName, {UserModel user}) async {
     currentUser.firstName = firstName;
@@ -275,9 +258,6 @@ class UserService {
   acceptFriendRequest(UserModel friend, {UserModel user}) async {
     if (user == null) {
       currentUser.friends.add(friend.id);
-      currentUser.sentFriendRequests.remove(friend.id);
-      currentUser.notifications.remove(friend.id);
-      currentUser.notificationCount = currentUser.notificationCount - 1;
     }
     String userId = user != null ? user.id : currentUser.id;
 
@@ -285,7 +265,6 @@ class UserService {
     await FirebaseFirestore.instance.collection('users').doc(userId).update({
       "friends": FieldValue.arrayUnion([friend.id]),
       'receivedFriendRequests': FieldValue.arrayRemove([friend.id]),
-      'notificationCount': FieldValue.increment(-1)
     });
 
     // Update requester
@@ -294,8 +273,25 @@ class UserService {
       "sentFriendRequests": FieldValue.arrayRemove([userId]),
       'notificationCount': FieldValue.increment(1),
       'notifications': FieldValue.arrayUnion([
-        {"notificationType": 'acceptedFriendRequest', "sentFrom": userId}
+        {"type": 'acceptedFriendRequest', "sentFrom": userId, "dateTime": DateTime.now().toString()}
       ])
+    });
+  }
+
+  declineFriendRequest(UserModel friend, {UserModel user}) async {
+    // If user is null then current user
+    if (user == null) {
+      currentUser.receivedFriendRequests.remove(friend.id);
+    }
+    String userId = user != null ? user.id : currentUser.id;
+
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'receivedFriendRequests': FieldValue.arrayRemove([friend.id]),
+    });
+
+    //remove from the other users firestores sent Notifications list
+    await FirebaseFirestore.instance.collection('users').doc(friend.id).update({
+      'sentFriendRequests': FieldValue.arrayRemove([userId])
     });
   }
 }
