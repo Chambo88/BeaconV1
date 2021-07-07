@@ -1,9 +1,13 @@
+import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/ProfilePicWidget.dart';
 import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 import 'package:beacon/widgets/buttons/SmallGreyButton.dart';
+import 'package:beacon/widgets/progress_widget.dart';
+import 'package:beacon/widgets/tiles/notification/VenueInvite.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +22,7 @@ class _NotificationPageRedoState extends State<NotificationPageRedo> {
   DateTime tempDateTimeCurrent;
   DateTime tempDateTimeSent;
   String tempBeaconTitle;
+  NotificationModel notifModel;
 
   @override
   void initState() {
@@ -25,7 +30,12 @@ class _NotificationPageRedoState extends State<NotificationPageRedo> {
     tempUser = context.read<UserService>().currentUser;
     tempDateTimeCurrent = DateTime.now();
     tempDateTimeSent = DateTime.parse("2021-07-05 14:27:04Z");
-    tempBeaconTitle = "Big energy";
+    notifModel = NotificationModel(
+        sentFromId: tempUser.id,
+        dateTime: tempDateTimeSent,
+        type: "venueBeaconInvite",
+        beaconTitle: "Big energy"
+    );
 
     super.initState();
   }
@@ -38,12 +48,10 @@ class _NotificationPageRedoState extends State<NotificationPageRedo> {
       ),
       body: ListView(
         children: [
-          VenueBeaconNotif(
-            dateSent: tempDateTimeSent,
-            sender: tempUser,
-            beaconTitle: tempBeaconTitle,
+          LoadNotification(
             currentTime: tempDateTimeCurrent,
-            notificationType: "friendrequest",
+            notification: notifModel,
+
           )
         ],
       ),
@@ -51,120 +59,46 @@ class _NotificationPageRedoState extends State<NotificationPageRedo> {
   }
 }
 
-class VenueBeaconNotif extends StatelessWidget {
-  UserModel sender;
-  DateTime dateSent;
+//Gets the sender data and returns the right type of notification
+class LoadNotification extends StatelessWidget {
+
+  NotificationModel notification;
   DateTime currentTime;
-  String beaconTitle;
-  String notificationType;
-  FigmaColours figmaColours = FigmaColours();
-
-  VenueBeaconNotif(
-      {this.sender, this.dateSent, this.currentTime, this.beaconTitle, this.notificationType});
-
-  String CalculateTime() {
-    int diff = currentTime.difference(dateSent).inDays;
-    String timeType = 'd';
-    if(diff == 0) {
-      diff = currentTime.difference(dateSent).inHours;
-      timeType = 'h';
-      if(diff == 0) {
-        diff = currentTime.difference(dateSent).inMinutes;
-        timeType = 'm';
-        if(diff == 0) {
-          diff = currentTime.difference(dateSent).inSeconds;
-          timeType = 's';
-        }
-      }
-    }
-    return diff.toString() + ' ' + timeType;
-  }
-
-  List<Widget> getTypeButtons() {
-    if (notificationType == 'friendrequest') {
-      return [Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: SmallGreyButton(
-            child: Text("Decline",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-      ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: SmallGradientButton(
-          child: Text("Accept",
-            style: TextStyle(color: Colors.white),
-          ),
-      ),
-        )
-    ];
-    }
-  }
+  LoadNotification({this.notification, this.currentTime});
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-    String timeDiff = CalculateTime();
-    return Column(
-      children: [
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 15, 8, 0),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 5, 8, 0),
-                  child: ProfilePicture(
-                    user: sender,
-                    size: 30,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 15),
-              child: Container(
-                child: RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                        text: ''''${sender.firstName} ${sender.lastName}''',
-                        style: theme.textTheme.headline4),
-                    TextSpan(
-                        text: '''' lit a venue beacon: ''',
-                        style: theme.textTheme.bodyText2),
-                    TextSpan(
-                        text: '''${beaconTitle}''',
-                        style: theme.textTheme.headline4)
-                  ]),
-                ),
-              ),
-            ),
-          ),
-          IconButton(
+    return FutureBuilder(
+        future: FirebaseFirestore.instance.collection('users').doc(notification.sentFromId).get(),
+        builder: (context, sentFrom)
+        {
+          while (!sentFrom.hasData) {
+            return Container();
+          }
+          UserModel sender = UserModel.fromDocument(sentFrom.data);
+          switch(notification.type) {
+            case "friendRequest" : {
+              return Text("need to implement accepted Friend Request");
+            } break;
+            case "acceptedFriendRequest" : {
+              return Text("need to implement accepted Friend Request");
+            }
+            case "venueBeaconInvite" : {
+              return VenueInvite(
+                sender: sender,
+                currentTime: currentTime,
+                notification: notification,
+              );
+            } break;
 
-              onPressed: null,
-              icon: Icon(
-                Icons.more_horiz,
-                color: Color(figmaColours.greyLight),
-              ))
-        ]),
-        Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 93),
-              child:Text(timeDiff),
-            ),
-            Spacer(),
-          ]..addAll(getTypeButtons()),
-        ),
-        Divider(
-          color: Color(figmaColours.greyLight),
-        )
-      ],
-
+          }
+          return Text("unknown notification type, maybe spelled wrong?");
+        }
     );
   }
 }
+
+
+
+
+

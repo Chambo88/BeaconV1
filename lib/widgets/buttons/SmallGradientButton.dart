@@ -6,18 +6,22 @@ class SmallGradientButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Widget child;
   final ColorHelper colorHelper = ColorHelper();
+  final double width;
+  final double height;
 
   SmallGradientButton({
     this.onPressed,
-    this.child
+    this.child,
+    this.width = 90,
+    this.height = 25,
   });
 
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 90,
-      height: 25,
+      width: width,
+      height: height,
       decoration: ShapeDecoration(
         shape:
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
