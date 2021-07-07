@@ -112,12 +112,9 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
         return TimePage(
           totalPageCount: 5,
           currentPageIndex: 2,
-          initDateTimeRange:
-              _beacon.startTime != null && _beacon.endTime != null
-                  ? new DateTimeRange(
-                      start: _beacon.startTime,
-                      end: _beacon.endTime,
-                    )
+          initStartDateTime:
+              _beacon.startTime != null
+                  ? _beacon.startTime
                   : null,
           onBackClick: () {
             setState(() {
@@ -125,11 +122,9 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
             });
           },
           onClose: widget.onClose,
-          onContinue: (dateTimeRange) {
-            print(dateTimeRange);
+          onContinue: (startTime, isAllDayEvent, length) {
             setState(() {
-              _beacon.startTime = dateTimeRange.start;
-              _beacon.endTime = dateTimeRange.end;
+              _beacon.startTime = startTime;
               _stage = CasualBeaconCreatorStage.location;
             });
           },
@@ -146,7 +141,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
           onClose: widget.onClose,
           onContinue: (location) {
             setState(() {
-              print(location.geometry);
+              print(location);
               // _beacon.location = location.geometry;
               _stage = CasualBeaconCreatorStage.invite;
             });

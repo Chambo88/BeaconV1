@@ -6,7 +6,11 @@ import 'package:intl/date_symbol_data_local.dart'; //for date locale
 
 import 'CreatorPage.dart';
 
-typedef void TimeCallback(DateTimeRange dateTimeRange);
+typedef void TimeCallback(
+  DateTime dateTimeRange,
+  bool isAllDayEvent,
+  double duration,
+);
 
 class TimePage extends StatefulWidget {
   final VoidCallback onBackClick;
@@ -15,7 +19,9 @@ class TimePage extends StatefulWidget {
   final String continueText;
   final int totalPageCount;
   final int currentPageIndex;
-  final DateTimeRange initDateTimeRange;
+  final DateTime initStartDateTime;
+  final bool initIsAllDayEvent;
+  final double initDuration;
 
   TimePage({
     @required this.onBackClick,
@@ -23,7 +29,9 @@ class TimePage extends StatefulWidget {
     @required this.onContinue,
     @required this.totalPageCount,
     @required this.currentPageIndex,
-    this.initDateTimeRange,
+    this.initStartDateTime,
+    this.initIsAllDayEvent,
+    this.initDuration,
     this.continueText = 'Next',
   });
 
@@ -32,86 +40,21 @@ class TimePage extends StatefulWidget {
 }
 
 class _TimePageState extends State<TimePage> {
-  DateTimeRange _dateRange = DateTimeRange(
-    start: new DateTime.now(),
-    end: new DateTime.now(),
-  );
+  DateTime _startDateTime = new DateTime.now();
+  DateTime _endDateTime = new DateTime.now();
+  var _isAllDayEvent = false;
+  double _duration = .5;
 
   @override
   void initState() {
     super.initState();
-    if (widget.initDateTimeRange != null) {
-      _dateRange = widget.initDateTimeRange;
+    if (widget.initStartDateTime != null) {
+      _startDateTime = widget.initStartDateTime;
     }
-  }
-
-  Future<void> _selectDates(BuildContext context) async {
-    var now = DateTime.now();
-    DateTimeRange dateTimeRange = await showDateRangePicker(
-      context: context,
-      initialDateRange: _dateRange,
-      firstDate: now,
-      lastDate: new DateTime(now.year + 5),
-      builder: (BuildContext context, Widget child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: Theme.of(context).primaryColor,
-            accentColor: Theme.of(context).accentColor,
-            backgroundColor: Theme.of(context).primaryColor,
-            colorScheme:
-                ColorScheme.light(primary: Theme.of(context).accentColor),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-          ),
-          child: child,
-        );
-      },
-    );
-    if (dateTimeRange != null) {
-      setState(() {
-        _dateRange = new DateTimeRange(
-          start: new DateTime(
-            dateTimeRange.start.year,
-            dateTimeRange.start.month,
-            dateTimeRange.start.day,
-            _dateRange.start.hour,
-            _dateRange.start.minute,
-          ),
-          end: new DateTime(
-            dateTimeRange.end.year,
-            dateTimeRange.end.month,
-            dateTimeRange.end.day,
-            _dateRange.end.hour,
-            _dateRange.end.minute,
-          ),
-        );
-      });
+    _isAllDayEvent = widget.initIsAllDayEvent;
+    if (widget.initDuration != null) {
+      _duration = widget.initDuration;
     }
-  }
-
-  Future<DateTime> _selectTime(BuildContext context,
-      {DateTime dateTime}) async {
-    final TimeOfDay timePicked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(dateTime),
-      builder: (BuildContext context, Widget child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: Theme.of(context).primaryColor,
-            accentColor: Theme.of(context).accentColor,
-            backgroundColor: Theme.of(context).primaryColor,
-            colorScheme:
-                ColorScheme.light(primary: Theme.of(context).accentColor),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-          ),
-          child: child,
-        );
-      },
-    );
-    if (timePicked == null) {
-      return null;
-    }
-    return new DateTime(dateTime.year, dateTime.month, dateTime.day,
-        timePicked.hour, timePicked.minute);
   }
 
   Widget _date(BuildContext context,
@@ -120,23 +63,19 @@ class _TimePageState extends State<TimePage> {
     String languageCode = Localizations.localeOf(context).languageCode;
     String format = 'EEEE, d MMMM';
     return Container(
-      color: Color(0xFF242424),
+      color: Color(0xFF131313),
       child: ListTile(
-        leading: Icon(
-          Icons.access_time,
-          color: Colors.grey,
-        ),
         title: InkWell(
-          child: Text('${new DateFormat(
-            format,
-            languageCode,
-          ).format(date)}'),
+          child: Text(
+            '${new DateFormat(format, languageCode).format(date)}',
+            style: Theme.of(context).textTheme.headline5,
+          ),
           onTap: onDateTap,
         ),
         trailing: InkWell(
           child: Text(
             new DateFormat.jm(languageCode).format(date),
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headline5,
           ),
           onTap: onTimeTap,
         ),
@@ -146,6 +85,9 @@ class _TimePageState extends State<TimePage> {
 
   @override
   Widget build(BuildContext context) {
+    final minDate = DateTime.now();
+    var theme = Theme.of(context);
+
     return CreatorPage(
       title: 'Time',
       onClose: widget.onClose,
@@ -153,56 +95,112 @@ class _TimePageState extends State<TimePage> {
       continueText: widget.continueText,
       totalPageCount: widget.totalPageCount,
       currentPageIndex: widget.currentPageIndex,
-      onContinuePressed: () => widget.onContinue(_dateRange),
+      onContinuePressed: () => widget.onContinue(
+        _startDateTime,
+        _isAllDayEvent,
+        1,
+      ),
       child: Column(
         children: [
+          ListTile(
+            leading: Icon(
+              Icons.access_time,
+              color: Colors.grey,
+            ),
+            title: Text(
+              'All day',
+              style: theme.textTheme.bodyText2,
+            ),
+            trailing: Switch(
+              value: _isAllDayEvent,
+              onChanged: (value) {
+                setState(() {
+                  _isAllDayEvent = value;
+                });
+              },
+            ),
+          ),
+          _date(
+            context,
+            date: _startDateTime,
+            onDateTap: () {},
+            onTimeTap: () async {},
+          ),
           Container(
+            padding: const EdgeInsets.only(left: 15, top: 10, bottom: 5),
             width: double.infinity,
-            padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10),
             child: Text(
-              'From',
-              style: Theme.of(context).textTheme.bodyText2,
+              'Start',
+              style: theme.textTheme.bodyText2,
+              textAlign: TextAlign.start,
+            ),
+          ),
+          SizedBox(
+            height: 130,
+            child: CupertinoTheme(
+              data: CupertinoThemeData(
+                textTheme: CupertinoTextThemeData(
+                  dateTimePickerTextStyle: TextStyle(
+                    color: Color(0xFF868A8C),
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              child: CupertinoDatePicker(
+                backgroundColor: Color(0xFF131313),
+                initialDateTime:
+                    _startDateTime.isBefore(minDate) ? minDate : _startDateTime,
+                mode: CupertinoDatePickerMode.dateAndTime,
+                minimumDate: minDate,
+                maximumDate: DateTime(DateTime.now().year + 5, 2, 1),
+                use24hFormat: false,
+                onDateTimeChanged: (newStartDate) {
+                  setState(() {
+                    _startDateTime = newStartDate;
+                    _endDateTime = _startDateTime
+                        .add(Duration(minutes: (_duration * 60).round()));
+                  });
+                },
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.only(left: 15, top: 10),
+            width: double.infinity,
+            child: Text(
+              'Duration (Hours)',
+              style: theme.textTheme.bodyText2,
+              textAlign: TextAlign.start,
+            ),
+          ),
+          Slider(
+            value: _duration,
+            min: 0,
+            max: 12,
+            divisions: 24,
+            label: _duration.toStringAsFixed(1),
+            onChanged: (double value) {
+              setState(() {
+                _duration = value;
+                _endDateTime = _startDateTime
+                    .add(Duration(minutes: (_duration * 60).round()));
+              });
+            },
+          ),
+          Container(
+            padding: const EdgeInsets.only(left: 15, top: 10, bottom: 5),
+            width: double.infinity,
+            child: Text(
+              'Finish',
+              style: theme.textTheme.bodyText2,
               textAlign: TextAlign.start,
             ),
           ),
           _date(
             context,
-            date: _dateRange.start,
-            onDateTap: () { _selectDates(context); },
-            onTimeTap: () async {
-              DateTime date =
-                  await _selectTime(context, dateTime: _dateRange.start);
-              if (date != null) {
-                setState(() {
-                  _dateRange =
-                      new DateTimeRange(start: date, end: _dateRange.end);
-                });
-              }
-            },
-          ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10),
-            child: Text(
-              'To',
-              style: Theme.of(context).textTheme.bodyText2,
-              textAlign: TextAlign.start,
-            ),
-          ),
-          _date(
-            context,
-            date: _dateRange.end,
-            onDateTap: () { _selectDates(context); },
-            onTimeTap: () async {
-              DateTime date =
-                  await _selectTime(context, dateTime: _dateRange.end);
-              if (date != null) {
-                setState(() {
-                  _dateRange =
-                      new DateTimeRange(start: _dateRange.start, end: date);
-                });
-              }
-            },
+            date: _endDateTime,
+            onDateTap: () {},
+            onTimeTap: () async {},
           ),
         ],
       ),

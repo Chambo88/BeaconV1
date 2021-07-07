@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../SearchBar.dart';
 
 class FriendSelectorSheet extends StatefulWidget {
   Function onContinue;
@@ -74,28 +75,24 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
         children: [
           ListTile(
             leading: CloseButton(
-              color: Colors.white,
+              color: Color(0xFF444444),
             ),
-            title: Text('Friends',
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.headline4),
+            title: Text(
+              'Friends',
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.headline4,
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16),
-            child: TextField(
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: SearchBar(
               controller: _searchController,
-              maxLength: 20,
-              focusNode: _focusNode,
-              style: TextStyle(color: Colors.white),
+              hintText: 'Name',
               onChanged: (filter) {
                 setState(() {
                   _filteredFriends = getFilteredFriends(filter);
                 });
               },
-              decoration: InputDecoration(
-                icon: Icon(Icons.search),
-                labelText: 'Name',
-              ).applyDefaults(theme.inputDecorationTheme),
             ),
           ),
           Expanded(

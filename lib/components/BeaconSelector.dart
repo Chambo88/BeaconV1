@@ -57,7 +57,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   Widget _beaconButton() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(30),
+        padding: EdgeInsets.all(15),
         child: RawMaterialButton(
           onPressed: () {
             _reset();

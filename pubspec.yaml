@@ -40,7 +40,8 @@ dependencies:
   google_maps_place_picker: ^2.0.0-nullsafety.3
   firebase_remote_config: ^0.10.0+2
   image_cropper: ^1.4.1
-  syncfusion_flutter_datepicker: ^19.2.44
+  geocoding: ^2.0.0
+  google_place: ^0.4.0
 
 dev_dependencies:
   flutter_test:

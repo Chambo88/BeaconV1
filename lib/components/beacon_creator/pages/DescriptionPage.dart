@@ -60,7 +60,7 @@ class _DescriptionPageState extends State<DescriptionPage> {
   @override
   Widget build(BuildContext context) {
     return CreatorPage(
-      title: 'Beacon\ndescription',
+      title: 'Beacon Description',
       onClose: widget.onClose,
       onBackClick: widget.onBackClick,
       continueText: widget.continueText,
@@ -95,6 +95,7 @@ class _DescriptionPageState extends State<DescriptionPage> {
                       const Radius.circular(10.0),
                     ),
                   ),
+                  contentPadding: const EdgeInsets.all(8.0),
                   hintText: 'Enter a title',
                   hintStyle: TextStyle(color: Colors.grey),
                   fillColor: Color(0xFF242424),
@@ -124,6 +125,7 @@ class _DescriptionPageState extends State<DescriptionPage> {
                   ),
                 ),
                 hintText: 'Come study with me!',
+                contentPadding: const EdgeInsets.all(8.0),
                 hintStyle: TextStyle(color: Colors.grey),
                 fillColor: Color(0xFF242424),
                 filled: true,

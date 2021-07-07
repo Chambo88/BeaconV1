@@ -135,14 +135,6 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
     }).toList();
   }
 
-  void _reset() {
-    setState(() {
-      _groupList = new Set();
-      _friendsList = new Set();
-      _displayToAll = false;
-    });
-  }
-
   void _updateFriendsList(Set<String> friendsList) {
     setState(() {
       _friendsList = friendsList;
