@@ -8,38 +8,53 @@ import 'package:provider/provider.dart';
 
 import 'CreatorPage.dart';
 
-typedef void WhoCanSeeMyBeaconCallback(
+typedef void InviteCallback(
   bool displayToAll,
   Set<GroupModel> groupList,
   Set<String> friendsList,
 );
 
-class AttendancePage extends StatefulWidget {
+class WhoCanSeePage extends StatefulWidget {
   final VoidCallback onBackClick;
   final VoidCallback onClose;
-  final WhoCanSeeMyBeaconCallback onContinue;
+  final InviteCallback onContinue;
   final String continueText;
   final int totalPageCount;
   final int currentPageIndex;
+  final Set<GroupModel> initGroups;
+  final Set<String> initFriends;
+  final bool initDisplayToAll;
 
-  AttendancePage(
-      {@required this.onBackClick,
-      @required this.onClose,
-      @required this.onContinue,
-      @required this.totalPageCount,
-      @required this.currentPageIndex,
-      this.continueText = 'Next'});
+  WhoCanSeePage({
+    @required this.onBackClick,
+    @required this.onClose,
+    @required this.onContinue,
+    @required this.totalPageCount,
+    @required this.currentPageIndex,
+    this.initGroups,
+    this.initFriends,
+    this.initDisplayToAll,
+    this.continueText = 'Next',
+  });
 
   @override
-  _AttendancePageState createState() => _AttendancePageState();
+  _WhoCanSeePageState createState() => _WhoCanSeePageState();
 }
 
-class _AttendancePageState extends State<AttendancePage> {
+class _WhoCanSeePageState extends State<WhoCanSeePage> {
   UserService _userService;
 
   var _displayToAll = false;
   var _groupList = Set<GroupModel>();
   var _friendsList = Set<String>();
+
+  @override
+  void initState() {
+    super.initState();
+    _groupList = widget.initGroups;
+    _friendsList = widget.initFriends;
+    _displayToAll = widget.initDisplayToAll;
+  }
 
   bool enableButton() {
     return _displayToAll || _groupList.isNotEmpty || _friendsList.isNotEmpty;
@@ -58,9 +73,7 @@ class _AttendancePageState extends State<AttendancePage> {
       totalPageCount: widget.totalPageCount,
       currentPageIndex: widget.currentPageIndex,
       onContinuePressed: enableButton()
-          ? () {
-              widget.onContinue(_displayToAll, _groupList, _friendsList);
-            }
+          ? () => widget.onContinue(_displayToAll, _groupList, _friendsList)
           : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -120,14 +133,6 @@ class _AttendancePageState extends State<AttendancePage> {
         leading: Icon(Icons.account_circle_rounded, color: Colors.grey),
       );
     }).toList();
-  }
-
-  void _reset() {
-    setState(() {
-      _groupList = new Set();
-      _friendsList = new Set();
-      _displayToAll = false;
-    });
   }
 
   void _updateFriendsList(Set<String> friendsList) {

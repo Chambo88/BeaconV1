@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:beacon/Assests/Icons.dart';
+import 'package:beacon/components/beacon_creator/CasualBeaconCreator.dart';
 import 'package:beacon/components/beacon_creator/LiveBeaconCreator.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/library/ColorHelper.dart';
@@ -8,7 +9,7 @@ import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/services/LoactionService.dart';
+import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
@@ -56,27 +57,19 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   Widget _beaconButton() {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(30),
+        padding: EdgeInsets.all(15),
         child: RawMaterialButton(
           onPressed: () {
             _reset();
             _toggleBeaconEditor();
           },
           elevation: 2.0,
-          fillColor: _getBeaconColor(),
+          fillColor: Colors.grey,
           constraints: BoxConstraints.tight(Size(80, 80)),
           shape: CircleBorder(),
         ),
       ),
     );
-  }
-
-  Color _getBeaconColor() {
-    if (!_userService.currentUser.beacon.active) {
-      return Colors.grey;
-    } else {
-      return Color(0xFFFF00CC);
-    }
   }
 
   Widget _beaconType(BuildContext context, BeaconType type) {
@@ -169,12 +162,51 @@ class _BeaconSelectorState extends State<BeaconSelector> {
               _showBeaconEditor = false;
             });
           },
+          onBack: () {
+            setState(() {
+              _beaconTypeSelected = null;
+            });
+          },
           onCreated: (beacon) {
-            print(beacon.userName);
+            setState(() {
+              _showBeaconEditor = false;
+            });
+            _userService.addBeacon(beacon);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Live beacon created.',
+                ),
+              ),
+            );
           },
         );
       case BeaconType.casual:
-        // return _casualBeacon(context);
+        return CasualBeaconCreator(
+          onClose: () {
+            setState(() {
+              _showBeaconEditor = false;
+            });
+          },
+          onBack: () {
+            setState(() {
+              _beaconTypeSelected = null;
+            });
+          },
+          onCreated: (beacon) {
+            setState(() {
+              _showBeaconEditor = false;
+            });
+            _userService.addBeacon(beacon);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Casual beacon created.',
+                ),
+              ),
+            );
+          },
+        );
       case BeaconType.event:
         // return _eventBeacon(context);
       default:

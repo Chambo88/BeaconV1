@@ -5,7 +5,7 @@ import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:flutter/material.dart';
 
-import 'BecaonItem.dart';
+import 'BeaconItem.dart';
 
 class FriendCasualItem extends StatelessWidget {
   final CasualBeacon beacon;

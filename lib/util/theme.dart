@@ -16,7 +16,6 @@ class CustomTheme {
 
       //More basic colours from FIGMA
 
-
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: Colors.black,
       ),
@@ -61,11 +60,10 @@ class CustomTheme {
       )),
 
       inputDecorationTheme: InputDecorationTheme(
-
-        counterStyle: TextStyle(color: Colors.white),
-        labelStyle: TextStyle(
-          color: Color(0xFF868A8C),
-        ),
+          counterStyle: TextStyle(color: Colors.white),
+          labelStyle: TextStyle(
+            color: Color(0xFF868A8C),
+          ),
           fillColor: Color(0xFF111111),
           filled: true,
           border: InputBorder.none,
@@ -73,10 +71,8 @@ class CustomTheme {
           enabledBorder: InputBorder.none,
           errorBorder: InputBorder.none,
           disabledBorder: InputBorder.none,
-          contentPadding:
-          EdgeInsets.only(left: 0, bottom: 0, top: 0, right: 0),
-          hintStyle: TextStyle(color: Color(0xFF868A8C))
-      ),
+          contentPadding: EdgeInsets.only(left: 0, bottom: 0, top: 0, right: 0),
+          hintStyle: TextStyle(color: Color(0xFF868A8C))),
       iconTheme: IconThemeData(
         color: Color(0xFF868A8C),
       ),
@@ -85,10 +81,7 @@ class CustomTheme {
       textTheme: TextTheme(
         //used in AppBar
         headline1: TextStyle(
-          color: Colors.white,
-          fontSize: 24.0,
-          fontWeight: FontWeight.bold
-        ),
+            color: Colors.white, fontSize: 24.0, fontWeight: FontWeight.bold),
         headline2: TextStyle(
           color: Colors.white,
           fontSize: 22.0,
@@ -123,7 +116,7 @@ class CustomTheme {
         ),
         //THIS ONES THE LITTLE TEXt ABOVE OPTIONS IN MENUS ETC
         subtitle1: TextStyle(
-            color: Color(0xFF868A8C),
+          color: Color(0xFF868A8C),
           fontSize: 16.0,
         ),
       ),
@@ -139,13 +132,16 @@ class CustomTheme {
           fontSize: 16,
         ),
       ),
+      sliderTheme: SliderThemeData(
+        thumbColor: Color(0xFFAD00FF),
+        activeTrackColor: Color(0xFFAD00FF),
+        inactiveTrackColor: Color(0xFF868A8C),
+        activeTickMarkColor: Colors.transparent,
+        inactiveTickMarkColor: Colors.transparent,
+        overlappingShapeStrokeColor: Colors.white,
+          overlayColor: Color(0x33AD00FF)
+      ),
       appBarTheme: AppBarTheme(
-        systemOverlayStyle: SystemUiOverlayStyle(
-          systemNavigationBarColor: Colors.black,
-              statusBarColor: Colors.black,
-          systemNavigationBarDividerColor: Colors.black,
-
-        ),
           color: Colors.black,
         centerTitle: true,
         iconTheme: IconThemeData(
@@ -168,13 +164,10 @@ class CustomTheme {
 }
 
 class FigmaColours {
-
   FigmaColours();
 
   int greyLight = 0xFF868A8C;
   int greyMedium = 0xFF242424;
   int greyDark = 0xFF111111;
   int highlight = 0xFFAD00FF;
-
-
 }
