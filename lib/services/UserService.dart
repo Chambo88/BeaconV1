@@ -5,6 +5,7 @@ import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/NotificationModel.dart';
+import 'package:beacon/models/NotificationSettingsModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -24,10 +25,8 @@ class UserService {
 
     List<GroupModel> _groups = [];
     BeaconModel beacon;
-    int _notificationCount;
     List<dynamic> _data;
     List<NotificationModel> _notifications = [];
-    String _imageURL = '';
 
     // if (doc.data().containsKey('beacon')) {
     //   beacon = BeaconModel.toJson(doc.data()['beacon']);
@@ -43,11 +42,11 @@ class UserService {
     );
     // }
 
-    if (doc.data().containsKey('notificationCount')) {
-      _notificationCount = doc.data()['notificationCount'];
-    } else {
-      _notificationCount = 0;
-    }
+    // if (doc.data().containsKey('notificationCount')) {
+    //   _notificationCount = doc.data()['notificationCount'];
+    // } else {
+    //   _notificationCount = 0;
+    // }
 
     if (doc.data().containsKey('groups')) {
       _data = List.from(doc.data()["groups"]);
@@ -63,31 +62,31 @@ class UserService {
       _data.forEach((element) {
         _notifications.add(NotificationModel.fromMap(element));
       });
-    } else {
-      _notifications = [];
     }
 
-    if (doc.data().containsKey('imageURL')) {
-      _imageURL = doc.data()['imageURL'];
-    } else {
-      _imageURL = '';
-    }
 
     currentUser = UserModel(
       id: doc.id,
       email: doc.data()['email'],
       firstName: doc.data()['firstName'],
       lastName: doc.data()['lastName'],
-      notificationCount: _notificationCount,
+      notificationCount: doc.data()['notificationCount'] ?? 0,
       beacon: beacon,
       groups: _groups,
-      friends: List.from(doc.data()["friends"]),
-      sentFriendRequests: List.from(doc.data()["sentFriendRequests"]),
-      receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"]),
+      friends: List.from(doc.data()["friends"] ?? []),
+      sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
+      receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       notifications: _notifications,
-      imageURL: _imageURL,
-
+      imageURL: doc.data()['imageURL'] ?? '',
+      notificationSettings: NotificationSettingsModel(
+        notificationSummons: doc.data()['notificationSummons'] ?? true,
+        notificationReceivedBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
+        notificationSendBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
+        notificationVenue: doc.data()['notificationVenue'] ?? true,
+      )
     );
+
+
     return currentUser;
   }
 
@@ -98,6 +97,22 @@ class UserService {
         .update({
       'beacons': FieldValue.arrayUnion([beacon.toJson()])
     });
+  }
+
+  removeFriend(UserModel friend, {UserModel user}) async {
+    currentUser.friends.remove(friend.id);
+
+
+    await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
+      "friends": FieldValue.arrayRemove([friend.id]),
+    });
+
+    
+    await FirebaseFirestore.instance.collection('users').doc(friend.id).update({
+      "friends": FieldValue.arrayRemove([currentUser.id]),
+    });
+
+
   }
 
   updateBeacon(LiveBeacon beacon) async {
@@ -133,6 +148,8 @@ class UserService {
         .update({"notificationCount": x});
   }
 
+
+
   addGroup(GroupModel group, {UserModel user}) async {
     // If user is null then current user
     if (user == null) {
@@ -154,15 +171,6 @@ class UserService {
     });
   }
 
-  // updateGroups() async {
-  //   List<Map> _groupsMaps = [];
-  //   currentUser.groups.forEach((element) {
-  //     _groupsMaps.add(element.toJson());
-  //   });
-  //   await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update(
-  //     {"groups": _groupsMaps},
-  //   );
-  // }
 
   sendFriendRequest(UserModel potentialFriend, {UserModel user}) async {
     // If user is null then current user
@@ -250,6 +258,8 @@ class UserService {
 
 
   }
+
+
 
   changeProfilePic(File file, {UserModel user}) async {
     Reference firebaseStoragRef = FirebaseStorage.instance.ref("user/profle_pic/${currentUser.id}.jpg");

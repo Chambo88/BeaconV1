@@ -35,41 +35,45 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          Provider<AuthService>(
-            create: (_) => AuthService(FirebaseAuth.instance),
-          ),
-          Provider<RemoteConfigService>(
-            create: (_) => RemoteConfigService(RemoteConfig.instance),
-          ),
-          Provider<UserService>(
-            create: (_) => UserService(),
-          ),
-          Provider<BeaconService>(
-            create: (_) => BeaconService(),
-          ),
-          Provider<UserLocationService>(
-            create: (_) => UserLocationService(),
-          ),
-          StreamProvider<UserLocationModel>(
-            create: (context) => context.read<UserLocationService>().userLocationStream,
-          ),
-          Provider<CameraLocationService>(
-            create: (_) => CameraLocationService(),
-          ),
-          StreamProvider<CameraPosition>(
-            create: (context) => context.read<CameraLocationService>().cameraLocationStream,
-          ),
-          StreamProvider(
-            create: (context) => context.read<AuthService>().authStateChanges,
-          ),
-        ],
-        child: MaterialApp(
-            title: 'Flutter Demo',
-            theme: CustomTheme.theme,
-            home: AuthenticationWrapper()
-            // MyHomePage(title: 'Beacon MVP'),
-            ));
+      providers: [
+        Provider<AuthService>(
+          create: (_) => AuthService(FirebaseAuth.instance),
+        ),
+        Provider<RemoteConfigService>(
+          create: (_) => RemoteConfigService(RemoteConfig.instance),
+        ),
+        Provider<UserService>(
+          create: (_) => UserService(),
+        ),
+        Provider<BeaconService>(
+          create: (_) => BeaconService(),
+        ),
+        Provider<UserLocationService>(
+          create: (_) => UserLocationService(),
+        ),
+        StreamProvider<UserLocationModel>(
+          create: (context) =>
+              context.read<UserLocationService>().userLocationStream,
+        ),
+        Provider<CameraLocationService>(
+          create: (_) => CameraLocationService(),
+        ),
+        StreamProvider<CameraPosition>(
+          create: (context) =>
+              context.read<CameraLocationService>().cameraLocationStream,
+        ),
+        StreamProvider(
+          create: (context) => context.read<AuthService>().authStateChanges,
+        ),
+      ],
+      child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Flutter Demo',
+          theme: CustomTheme.theme,
+          home: AuthenticationWrapper()
+          // MyHomePage(title: 'Beacon MVP'),
+      ),
+    );
   }
 }
 

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTheme {
   static ThemeData get theme {
@@ -141,14 +142,17 @@ class CustomTheme {
           overlayColor: Color(0x33AD00FF)
       ),
       appBarTheme: AppBarTheme(
-        color: Colors.black,
+          color: Colors.black,
         centerTitle: true,
-        iconTheme: IconThemeData(color: Color(0xFFAD00FF)),
+        iconTheme: IconThemeData(
+          color: Color(0xFFAD00FF)
+        ),
         textTheme: TextTheme(
-            headline6: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 24,
-        )),
+          headline6: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          )
+        ),
         // titleTextStyle: TextStyle(
         //   fontWeight: FontWeight.bold,
         // )

@@ -78,30 +78,34 @@ class _MapState extends State<MapComponent> {
     context.read<BeaconService>().loadAllBeacons(userId);
     final liveBeacons = context.watch<BeaconService>().allLiveBeacons;
 
-
-    return GoogleMap(
-      initialCameraPosition: CameraPosition(
-        target: LatLng(userLocationModel.latitude, userLocationModel.longitude),
-        zoom: 12.0,
-      ),
-      markers: Set<Marker>.of(_markers.values),
-      onMapCreated: (controller) {
-        controller.setMapStyle(Utils.mapStyle);
-        cameraLocationService.cameraLocationStream.listen((event) async {
-          await controller.animateCamera(
-            CameraUpdate.newCameraPosition(event),
-          );
-        });
-        liveBeacons.listen((event) {
-          _updateLiveBeaconMarkers(event);
-        });
-      },
-      compassEnabled: false,
-      zoomControlsEnabled: false,
-      myLocationEnabled: true,
-      myLocationButtonEnabled: true,
-      padding: const EdgeInsets.only(top: 20),
-    );
+    return userLocationModel != null
+        ? GoogleMap(
+            initialCameraPosition: CameraPosition(
+              target: LatLng(
+                userLocationModel.latitude,
+                userLocationModel.longitude,
+              ),
+              zoom: 12.0,
+            ),
+            markers: Set<Marker>.of(_markers.values),
+            onMapCreated: (controller) {
+              controller.setMapStyle(Utils.mapStyle);
+              cameraLocationService.cameraLocationStream.listen((event) async {
+                await controller.animateCamera(
+                  CameraUpdate.newCameraPosition(event),
+                );
+              });
+              liveBeacons.listen((event) {
+                _updateLiveBeaconMarkers(event);
+              });
+            },
+            compassEnabled: false,
+            zoomControlsEnabled: false,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            padding: const EdgeInsets.only(top: 20),
+          )
+        : circularProgress(Theme.of(context).accentColor);
   }
 }
 

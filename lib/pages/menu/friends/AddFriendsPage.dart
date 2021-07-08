@@ -1,10 +1,11 @@
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/pages/settings/groups/EditGroupsPage.dart';
+import 'package:beacon/pages/menu/groups/EditGroupsPage.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/SearchBar.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:beacon/widgets/tiles/userListTile.dart';
+import 'package:beacon/widgets/tiles/userTileAddable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +27,8 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     searchTextEditingController.dispose();
     super.dispose();
   }
+
+
 
   void filterSearchResults(String query) {
     if (query.isNotEmpty) {
@@ -66,14 +69,14 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
       future: futureSearchResults,
       builder: (context, dataSnapshot) {
         while (!dataSnapshot.hasData) {
-          return circularProgress();
+          return circularProgress(Theme.of(context).accentColor);
         }
 
-        List<UserResult> searchUsersResult = [];
+        List<UserResultAddable> searchUsersResult = [];
         dataSnapshot.data.docs.forEach((document) {
           UserModel users = UserModel.fromDocument(document);
           if (users.id != userId && !friendsIds.contains(users.id)) {
-            UserResult userResult = UserResult(anotherUser: users);
+            UserResultAddable userResult = UserResultAddable(anotherUser: users);
             searchUsersResult.add(userResult);
           }
         });
@@ -103,6 +106,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
             controller: searchTextEditingController,
             onChanged: filterSearchResults,
             width: MediaQuery.of(context).size.width,
+            autofocus: true,
           ),
         ),
         Expanded(
@@ -114,73 +118,4 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
   }
 }
 
-class UserResult extends StatefulWidget {
-  final UserModel anotherUser;
 
-  UserResult({this.anotherUser});
-
-  @override
-  _UserResultState createState() => _UserResultState();
-}
-
-class _UserResultState extends State<UserResult> {
-  int mutualFriends;
-  FigmaColours figmaColours = FigmaColours();
-
-  int getMutualFriends(List<String> userFriends, List<String> friendsFriends) {
-    int num = 0;
-    if (userFriends != null && friendsFriends != null) {
-      for (var user in userFriends) {
-        for (var user2 in friendsFriends) {
-          if (user == user2) {
-            num++;
-            break;
-          }
-        }
-      }
-    }
-    return num;
-  }
-
-  //Get The Trailing IconBUtton
-  Widget checkFriendShipAndPendingStatus(UserService userService) {
-    //Build cancel button this if friends request is pending
-
-    if (userService.currentUser.sentFriendRequests
-        .contains(widget.anotherUser.id)) {
-      return SmallGradientButton(
-          child: Text(
-            "pending",
-            style: Theme.of(context).textTheme.headline5,
-          ),
-          onPressed: () async {
-            userService.removeSentFriendRequest(widget.anotherUser);
-            setState(() {});
-          });
-      // );
-      // return SmallOutlinedButton(
-      //     title: "pending",
-
-    } else {
-      return SmallOutlinedButton(
-          title: "add",
-          icon: Icons.person_add_alt_1_outlined,
-          onPressed: () async {
-            userService.sendFriendRequest(widget.anotherUser);
-            setState(() {});
-          });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var userService = Provider.of<UserService>(context);
-    mutualFriends = getMutualFriends(
-        userService.currentUser.friends, widget.anotherUser.friends);
-    return userListTile(
-      user: widget.anotherUser,
-      subText: "$mutualFriends mutual friends",
-      trailing: checkFriendShipAndPendingStatus(userService),
-    );
-  }
-}

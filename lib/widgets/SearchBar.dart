@@ -8,17 +8,19 @@ class SearchBar extends StatelessWidget {
   final String hintText;
   final Function(String) onChanged;
   final double width;
+  final bool autofocus;
 
   SearchBar({
     @required this.controller,
     @required this.onChanged,
     @required this.width,
     this.hintText,
+    this.autofocus=false,
   });
 
   TextField searchBar() {
     return TextField(
-      autofocus: true,
+      autofocus: autofocus,
       textAlignVertical: TextAlignVertical.center,
       autocorrect: false,
       controller: controller,

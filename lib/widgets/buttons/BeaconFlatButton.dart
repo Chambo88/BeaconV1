@@ -6,6 +6,7 @@ class BeaconFlatButton extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
   final IconData icon;
+  final Widget trailing;
   bool arrow;
   FigmaColours figmaColours = FigmaColours();
 
@@ -13,7 +14,8 @@ class BeaconFlatButton extends StatelessWidget {
       {@required this.title,
       @required this.onTap,
       this.icon,
-      this.arrow = true});
+      this.arrow = true,
+      this.trailing});
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +28,12 @@ class BeaconFlatButton extends StatelessWidget {
         child: Row(
           children: [
             if (icon != null) Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 8, 0),
+              padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
               child: Icon(icon, color: Color(figmaColours.greyLight)),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Text(
                   title,
                   style: theme.textTheme.headline4,
@@ -43,6 +45,7 @@ class BeaconFlatButton extends StatelessWidget {
               child: Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18,),
 
             ),
+            if (trailing != null) trailing,
           ],
         ),
       ),

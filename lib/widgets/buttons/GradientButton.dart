@@ -25,19 +25,19 @@ class GradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: double.infinity,
-        height: 40,
-        decoration: ShapeDecoration(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          gradient: _getGradient(),
-        ),
-        child: MaterialButton(
-          child: child,
-          onPressed: onPressed,
-        ),
+    return Container(
+      width: double.infinity,
+      height: 40,
+      decoration: ShapeDecoration(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        gradient: _getGradient(),
+
+      ),
+      child: MaterialButton(
+        elevation: 15,
+        child: child,
+        onPressed: onPressed,
       ),
     );
   }

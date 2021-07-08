@@ -14,7 +14,7 @@ class SubTitleText extends StatelessWidget {
     return Row(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(12, 5, 0, 5),
+          padding: const EdgeInsets.fromLTRB(12, 8, 0, 8),
           child: Text(
               text,
               style: theme.textTheme.subtitle1,
