@@ -42,6 +42,7 @@ dependencies:
   image_cropper: ^1.4.1
   geocoding: ^2.0.0
   google_place: ^0.4.0
+  community_material_icon: ^5.9.55
 
 dev_dependencies:
   flutter_test:
