@@ -12,37 +12,33 @@ import 'package:provider/provider.dart';
 
 import 'AddFriendsPage.dart';
 
-
 class FriendsPage extends StatefulWidget {
-
   @override
   _FriendsPageState createState() => _FriendsPageState();
 }
 
 class _FriendsPageState extends State<FriendsPage> {
-
   TextEditingController searchTextEditingController;
-  bool searchReady = false;
-  List<String> userNames = [];
-  List<UserModel> userModelsResult = [];
-  List<UserResult> userResultsTiles = [];
-  Future<QuerySnapshot> friendsFromFB;
-  bool firstTime;
+  List<UserModel> userModelsResult;
+  List<UserResult> userResultsTiles;
   FigmaColours figmaColours;
+  UserService userService;
 
   @override
   void initState() {
     figmaColours = FigmaColours();
     searchTextEditingController = TextEditingController();
-    UserService userService = context.read<UserService>();
-    firstTime = true;
-    if (userService.currentUser.friends.isNotEmpty) {
-      friendsFromFB = FirebaseFirestore.instance
-          .collection('users')
-          .where('userId',
-          whereIn: userService.currentUser.friends).orderBy('firstName')
-          .get();
-    }
+    userService = context.read<UserService>();
+    userModelsResult = [];
+    userResultsTiles = [];
+    userService.currentUser.friendModels.forEach((user) {
+      UserResult userResult = UserResult(
+        user: user,
+        onRemoved: removeUser,
+      );
+      userResultsTiles.add(userResult);
+    });
+
     super.initState();
   }
 
@@ -56,16 +52,19 @@ class _FriendsPageState extends State<FriendsPage> {
     userResultsTiles.clear();
     List<UserResult> userResultsTilesTemp = [];
     query = query.toLowerCase().replaceAll(' ', '');
-    for (UserModel user in userModelsResult) {
-      if ((user.firstName.toLowerCase() + user.lastName.toLowerCase() ).startsWith(query) ||
+    for (UserModel user in userService.currentUser.friendModels) {
+      if ((user.firstName.toLowerCase() + user.lastName.toLowerCase())
+              .startsWith(query) ||
           user.lastName.toLowerCase().startsWith(query)) {
-        UserResult userResult = UserResult(user: user, onRemoved: removeUser,);
+        UserResult userResult = UserResult(
+          user: user,
+          onRemoved: removeUser,
+        );
         userResultsTilesTemp.add(userResult);
       }
     }
     userResultsTiles = userResultsTilesTemp;
     setState(() {});
-
   }
 
   void removeUser(UserModel user) {
@@ -73,55 +72,17 @@ class _FriendsPageState extends State<FriendsPage> {
     filterSearchResults(searchTextEditingController.text);
   }
 
-
-
-
-  FutureBuilder displayFriends() {
-    return FutureBuilder(
-      future: friendsFromFB,
-        builder: (context, dataSnapshot) {
-          while (!dataSnapshot.hasData) {
-            return circularProgress(Theme.of(context).accentColor);
-          }
-
-          if(firstTime == true) {
-            dataSnapshot.data.docs.forEach((document) {
-              UserModel user = UserModel.fromDocument(document);
-              userModelsResult.add(user);
-
-            });
-            userModelsResult.forEach((user) {
-              UserResult userResult = UserResult(user: user, onRemoved: removeUser,);
-              userResultsTiles.add(userResult);
-            });
-          }
-
-
-          firstTime = false;
-
-          return ListView(
-            physics: BouncingScrollPhysics(),
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            children: userResultsTiles,
-          );
-          
-    }
+  ListView displayFriends() {
+    return ListView(
+      physics: BouncingScrollPhysics(),
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      children: userResultsTiles,
     );
-  }
-
-  Widget doesUserHaveFriendsLol() {
-    UserService userService = context.read<UserService>();
-    if (userService.currentUser.friends.isNotEmpty) {
-      return displayFriends();
-    } else {
-      return Container();
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Friends"),
@@ -137,9 +98,8 @@ class _FriendsPageState extends State<FriendsPage> {
                 icon: const Icon(Icons.person_add),
                 color: Color(figmaColours.highlight),
                 onPressed: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => AddFriendsPage()));
-
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => AddFriendsPage()));
                 },
               ),
             ),
@@ -156,7 +116,7 @@ class _FriendsPageState extends State<FriendsPage> {
               width: MediaQuery.of(context).size.width,
             ),
           ),
-          Expanded(child: doesUserHaveFriendsLol())
+          Expanded(child: displayFriends())
         ],
       ),
     );
@@ -166,40 +126,37 @@ class _FriendsPageState extends State<FriendsPage> {
 typedef void removeUser(UserModel user);
 
 class UserResult extends StatefulWidget {
-
   final UserModel user;
   final removeUser onRemoved;
-  UserResult({this.user,
-    @required this.onRemoved
-  });
+  UserResult({this.user, @required this.onRemoved});
 
   @override
   _UserResultState createState() => _UserResultState();
 }
 
 class _UserResultState extends State<UserResult> {
-
   FigmaColours figmaColours = FigmaColours();
 
   Widget userSettings() {
     return IconButton(
-        onPressed: () {showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) {
-        return FriendSettingsSheet(
-          user: widget.user,
-          onRemoved: widget.onRemoved,
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          backgroundColor: Colors.transparent,
+          isScrollControlled: true,
+          builder: (context) {
+            return FriendSettingsSheet(
+              user: widget.user,
+              onRemoved: widget.onRemoved,
+            );
+            // return Tester();
+          },
         );
-        // return Tester();
       },
-    );}
-    , icon: Icon(
-      Icons.more_horiz,
-      color: Color(figmaColours.greyLight),
-    ),
-
+      icon: Icon(
+        Icons.more_horiz,
+        color: Color(figmaColours.greyLight),
+      ),
     );
   }
 
@@ -211,6 +168,3 @@ class _UserResultState extends State<UserResult> {
     );
   }
 }
-
-
-

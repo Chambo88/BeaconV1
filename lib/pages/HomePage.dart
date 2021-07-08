@@ -17,7 +17,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:async/async.dart';
 import 'package:beacon/pages/NotificationPage.dart';
 
-import 'NotificationPageRedo.dart';
+import 'Notifications/NotificationPageRedo.dart';
 
 class BuildHomePage extends StatefulWidget {
   @override

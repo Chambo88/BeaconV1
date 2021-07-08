@@ -23,10 +23,12 @@ class NotificationSkeleton extends StatelessWidget {
   List<Widget> extraButtons = [];
   RichText body;
   String timeDiff;
+  bool moreOptionsButton;
 
   NotificationSkeleton({
     this.currentTime,
     this.notification,
+    this.moreOptionsButton = true,
     @required this.sender,
     this.extraButtons,
     @required this.body,
@@ -82,12 +84,13 @@ class NotificationSkeleton extends StatelessWidget {
               ),
             ),
           ),
-          IconButton(
+          //TODO Add options on notification tiles, currenty blacked out
+          moreOptionsButton ? IconButton(
               onPressed: null,
               icon: Icon(
                 Icons.more_horiz,
-                color: Color(figmaColours.greyLight),
-              ))
+                color: Colors.black,
+              )) : Container(width: 10, height: 10,),
         ]),
         Row(
           children: [

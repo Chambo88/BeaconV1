@@ -1,7 +1,9 @@
+import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 import 'package:beacon/widgets/buttons/SmallGreyButton.dart';
+import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:beacon/widgets/tiles/notification/NotificationSkeleton.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +24,7 @@ class VenueInvite extends StatefulWidget {
 }
 
 class _VenueInviteState extends State<VenueInvite> {
+
   RichText getBodyText(ThemeData theme) {
     return RichText(
       text: TextSpan(children: [
@@ -32,7 +35,7 @@ class _VenueInviteState extends State<VenueInvite> {
             text: '''' lit a venue beacon: ''',
             style: theme.textTheme.bodyText2),
         TextSpan(
-            text: '''${widget.notification.beaconTitle}''',
+            text: '''${widget.notification.beacon.eventName}''',
             style: theme.textTheme.headline4)
       ]),
     );
@@ -41,12 +44,15 @@ class _VenueInviteState extends State<VenueInvite> {
   List<Widget> getTypeButtons() {
     return [Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: SmallGreyButton(
-        child: Text("Decline",
+      child: SmallOutlinedButton(
+        child: Text("Going?",
           style: TextStyle(color: Colors.white),
         ),
         width: 120,
         height: 35,
+        onPressed: () {
+          //TODO ADD PEOPLE TO BEACON ATTENDIES
+        },
       ),
     ),
       Padding(

@@ -5,23 +5,23 @@ import 'package:beacon/widgets/buttons/SmallGreyButton.dart';
 import 'package:beacon/widgets/tiles/notification/NotificationSkeleton.dart';
 import 'package:flutter/material.dart';
 
-class AcceptedFriendRequest extends StatefulWidget {
+class Summoned extends StatefulWidget {
 
   UserModel sender;
   NotificationModel notification;
   DateTime currentTime;
 
-  AcceptedFriendRequest({
+  Summoned({
     @required this.sender,
     @required this.notification,
     @required this.currentTime
   });
 
   @override
-  _AcceptedFriendRequestState createState() => _AcceptedFriendRequestState();
+  _SummonedState createState() => _SummonedState();
 }
 
-class _AcceptedFriendRequestState extends State<AcceptedFriendRequest> {
+class _SummonedState extends State<Summoned> {
   RichText getBodyText(ThemeData theme) {
     return RichText(
       text: TextSpan(children: [
@@ -29,12 +29,10 @@ class _AcceptedFriendRequestState extends State<AcceptedFriendRequest> {
             text: ''''${widget.sender.firstName} ${widget.sender.lastName}''',
             style: theme.textTheme.headline4),
         TextSpan(
-            text: '''' lit a venue beacon: ''',
+            text: '''' summoned you to join them! ''',
             style: theme.textTheme.bodyText2),
-        TextSpan(
-            text: '''${widget.notification.beaconTitle}''',
-            style: theme.textTheme.headline4)
-      ]),
+        ])
+
     );
   }
 

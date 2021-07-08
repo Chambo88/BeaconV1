@@ -27,6 +27,8 @@ class UserService {
     BeaconModel beacon;
     List<dynamic> _data;
     List<NotificationModel> _notifications = [];
+    List<UserModel> _friendModels = [];
+    List<String> _friends = [];
 
     // if (doc.data().containsKey('beacon')) {
     //   beacon = BeaconModel.toJson(doc.data()['beacon']);
@@ -64,6 +66,24 @@ class UserService {
       });
     }
 
+    if(doc.data().containsKey('friends')) {
+      _friends = List.from(doc.data()["friends"]);
+    }
+
+
+    if (_friends.isNotEmpty) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .where('userId',
+          whereIn: List.from(List.from(doc.data()["friends"]))).orderBy('firstName')
+          .get().then((value) => value.docs.forEach((friendData) {
+        UserModel user = UserModel.fromDocument(friendData);
+        _friendModels.add(user);
+      }))
+      ;
+    }
+
+
 
     currentUser = UserModel(
       id: doc.id,
@@ -73,11 +93,13 @@ class UserService {
       notificationCount: doc.data()['notificationCount'] ?? 0,
       beacon: beacon,
       groups: _groups,
-      friends: List.from(doc.data()["friends"] ?? []),
+      friends: _friends,
+      friendModels: _friendModels,
       sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       notifications: _notifications,
       imageURL: doc.data()['imageURL'] ?? '',
+      //TODO refactor the way settings are stored into a map
       notificationSettings: NotificationSettingsModel(
         notificationSummons: doc.data()['notificationSummons'] ?? true,
         notificationReceivedBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
@@ -101,6 +123,9 @@ class UserService {
 
   removeFriend(UserModel friend, {UserModel user}) async {
     currentUser.friends.remove(friend.id);
+    currentUser.friendModels.remove(friend);
+
+    //TODO need to remove from groups as well
 
 
     await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
@@ -258,6 +283,7 @@ class UserService {
   acceptFriendRequest(UserModel friend, {UserModel user}) async {
     if (user == null) {
       currentUser.friends.add(friend.id);
+      currentUser.friendModels.add(friend);
     }
     String userId = user != null ? user.id : currentUser.id;
 

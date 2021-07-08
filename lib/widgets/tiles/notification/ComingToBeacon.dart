@@ -5,23 +5,25 @@ import 'package:beacon/widgets/buttons/SmallGreyButton.dart';
 import 'package:beacon/widgets/tiles/notification/NotificationSkeleton.dart';
 import 'package:flutter/material.dart';
 
-class AcceptedFriendRequest extends StatefulWidget {
+
+//TODO find a way to merge lots of notifications of people coming to your beacon, probably use a cloud function
+class ComingToBeacon extends StatefulWidget {
 
   UserModel sender;
   NotificationModel notification;
   DateTime currentTime;
 
-  AcceptedFriendRequest({
+  ComingToBeacon({
     @required this.sender,
     @required this.notification,
     @required this.currentTime
   });
 
   @override
-  _AcceptedFriendRequestState createState() => _AcceptedFriendRequestState();
+  _ComingToBeaconState createState() => _ComingToBeaconState();
 }
 
-class _AcceptedFriendRequestState extends State<AcceptedFriendRequest> {
+class _ComingToBeaconState extends State<ComingToBeacon> {
   RichText getBodyText(ThemeData theme) {
     return RichText(
       text: TextSpan(children: [
@@ -29,10 +31,10 @@ class _AcceptedFriendRequestState extends State<AcceptedFriendRequest> {
             text: ''''${widget.sender.firstName} ${widget.sender.lastName}''',
             style: theme.textTheme.headline4),
         TextSpan(
-            text: '''' lit a venue beacon: ''',
+            text: '''' is coming to your venue beacon ''',
             style: theme.textTheme.bodyText2),
         TextSpan(
-            text: '''${widget.notification.beaconTitle}''',
+            text: '''${widget.notification.beacon.eventName}''',
             style: theme.textTheme.headline4)
       ]),
     );

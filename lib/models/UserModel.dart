@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'BeaconModel.dart';
 import 'GroupModel.dart';
@@ -19,6 +20,7 @@ class UserModel {
   List<String> receivedFriendRequests;
   List<NotificationModel> notifications;
   NotificationSettingsModel notificationSettings;
+  List<UserModel> friendModels;
 
   UserModel({
       this.id,
@@ -34,6 +36,7 @@ class UserModel {
       this.notifications,
       this.imageURL,
     this.notificationSettings,
+    this.friendModels,
   });
 
   get getFirstName => firstName;
@@ -101,6 +104,7 @@ class UserModel {
       notificationCount: doc.data()['notificationCount'] ?? 0,
       beacon: beacon,
       groups: _groups,
+
       friends: List.from(doc.data()["friends"] ?? []),
       sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),

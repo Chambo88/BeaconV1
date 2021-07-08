@@ -20,10 +20,9 @@ class NotificationFriendsPage extends StatefulWidget {
 class _NotificationFriendsPageState extends State<NotificationFriendsPage> {
 
   TextEditingController searchTextEditingController;
-  bool searchReady = false;
   List<String> userNames = [];
-  List<UserModel> userModelsResult = [];
-  List<UserResultSwitch> userResultsTiles = [];
+  List<UserModel> userModelsResult;
+  List<UserResultSwitch> userResultsTiles;
   Future<QuerySnapshot> friendsFromFB;
   bool firstTime;
 
@@ -31,14 +30,14 @@ class _NotificationFriendsPageState extends State<NotificationFriendsPage> {
   void initState() {
     searchTextEditingController = TextEditingController();
     UserService userService = context.read<UserService>();
-    firstTime = true;
-    if (userService.currentUser.friends.isNotEmpty) {
-      friendsFromFB = FirebaseFirestore.instance
-          .collection('users')
-          .where('userId',
-          whereIn: userService.currentUser.friends).orderBy('firstName')
-          .get();
-    }
+    userModelsResult = [];
+    userResultsTiles = [];
+    userService.currentUser.friendModels.forEach((user) {
+      UserResultSwitch userResult = UserResultSwitch(
+        user: user,
+      );
+      userResultsTiles.add(userResult);
+    });
     super.initState();
   }
 
@@ -65,48 +64,15 @@ class _NotificationFriendsPageState extends State<NotificationFriendsPage> {
 
   }
 
-  FutureBuilder displayFriends() {
-    return FutureBuilder(
-        future: friendsFromFB,
-        builder: (context, dataSnapshot) {
-          while (!dataSnapshot.hasData) {
-            return circularProgress(Theme.of(context).accentColor);
-          }
-
-          if(firstTime == true) {
-            dataSnapshot.data.docs.forEach((document) {
-              UserModel user = UserModel.fromDocument(document);
-              userModelsResult.add(user);
-
-            });
-            userModelsResult.forEach((user) {
-              UserResultSwitch userResult = UserResultSwitch(user: user,);
-              userResultsTiles.add(userResult);
-            });
-          }
-
-
-          firstTime = false;
-
-          return ListView(
-            physics: BouncingScrollPhysics(),
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            children: userResultsTiles,
-          );
-
-        }
+  ListView displayFriends() {
+    return ListView(
+      physics: BouncingScrollPhysics(),
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      children: userResultsTiles,
     );
   }
 
-  Widget doesUserHaveFriendsLol() {
-    UserService userService = context.read<UserService>();
-    if (userService.currentUser.friends.isNotEmpty) {
-      return displayFriends();
-    } else {
-      return Container();
-    }
-  }
 
 
 
@@ -126,7 +92,7 @@ class _NotificationFriendsPageState extends State<NotificationFriendsPage> {
               width: MediaQuery.of(context).size.width,
             ),
           ),
-          Expanded(child: doesUserHaveFriendsLol())
+          Expanded(child: displayFriends())
         ],
       ),
     );
