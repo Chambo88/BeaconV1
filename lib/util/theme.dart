@@ -103,7 +103,7 @@ class CustomTheme {
           fontSize: 14.0,
         ),
         bodyText1: TextStyle(
-          color: Colors.white,
+          color: Color(0xFF868A8C),
           fontSize: 14.0,
         ),
         bodyText2: TextStyle(

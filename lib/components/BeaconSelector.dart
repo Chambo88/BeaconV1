@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:beacon/Assests/Icons.dart';
 import 'package:beacon/components/beacon_creator/CasualBeaconCreator.dart';
 import 'package:beacon/components/beacon_creator/LiveBeaconCreator.dart';
+import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/library/ColorHelper.dart';
 import 'package:beacon/models/BeaconModel.dart';
@@ -80,43 +81,58 @@ class _BeaconSelectorState extends State<BeaconSelector> {
         });
       },
       child: Container(
-        height: 90,
-        margin: EdgeInsets.only(top: 3),
-        color: const Color(0xFF181818),
+        height: 110,
+        margin: EdgeInsets.only(top: 8),
+        color: Color(FigmaColours().greyDark),
         child: Container(
           margin: EdgeInsets.all(10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             mainAxisSize: MainAxisSize.max,
             children: [
-              Container(
-                width: 50.0,
-                height: 50.0,
-                decoration: new BoxDecoration(
-                  color: type.color,
-                  shape: BoxShape.circle,
+              Padding(
+                padding: const EdgeInsets.only(right: 13, left: 5),
+                child: Container(
+                  width: 50.0,
+                  height: 50.0,
+                  decoration: new BoxDecoration(
+                    color: type.color,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    type.title,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                  Container(
-                    width: 200,
-                    child: Text(
-                      type.description,
-                      style: Theme.of(context).textTheme.bodyText2,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 13,
+                      width: 10,
                     ),
-                  )
-                ],
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5),
+                      child: Text(
+                        type.title,
+                        style: Theme.of(context).textTheme.headline4,
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        width: 250,
+                        child: Text(
+                          type.description,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Theme.of(context).iconTheme.color,
+                color: Colors.white,
+                size: 20,
               )
             ],
           ),
@@ -144,7 +160,6 @@ class _BeaconSelectorState extends State<BeaconSelector> {
               children: [
                 _beaconType(context, BeaconType.live),
                 _beaconType(context, BeaconType.casual),
-                _beaconType(context, BeaconType.event)
               ],
             ),
           ),

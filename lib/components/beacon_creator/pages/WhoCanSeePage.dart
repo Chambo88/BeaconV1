@@ -176,10 +176,10 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
   Container _leftSubHeader(BuildContext context, String text) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10),
+      padding: const EdgeInsets.only(left: 16, top: 7, bottom: 7),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.bodyText2,
+        style: Theme.of(context).textTheme.bodyText1,
         textAlign: TextAlign.start,
       ),
     );

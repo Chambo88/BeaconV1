@@ -125,8 +125,27 @@ class UserService {
     currentUser.friends.remove(friend.id);
     currentUser.friendModels.remove(friend);
 
-    //TODO need to remove from groups as well
+    //remove friend from their groups
+    for (GroupModel group in friend.groups) {
+      if (group.members.contains(currentUser.id)) {
+        GroupModel temp = GroupModel.clone(group);
+        temp.members.remove(currentUser.id);
+        for (String friend in temp.members) {
+          print(friend);
+        }
+        removeGroup(group, user: friend);
+        addGroup(temp, user: friend);
+      }
+    }
 
+    for (GroupModel group in currentUser.groups) {
+      if (group.members.contains(friend.id)) {
+        GroupModel temp = GroupModel.clone(group);
+        temp.members.remove(friend.id);
+        removeGroup(group,);
+        addGroup(temp,);
+      }
+    }
 
     await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update({
       "friends": FieldValue.arrayRemove([friend.id]),
