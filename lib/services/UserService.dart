@@ -7,6 +7,7 @@ import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/NotificationSettingsModel.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/services/NotificationService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -22,6 +23,9 @@ class UserService {
       print("user is NULL, in UserModelFrom doc");
       return null;
     }
+
+    String token = await NotificationService().getToken();
+    print(token);
 
     List<GroupModel> _groups = [];
     BeaconModel beacon;

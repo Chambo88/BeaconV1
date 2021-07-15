@@ -1,7 +1,7 @@
 import 'package:beacon/models/UserLocationModel.dart';
-import 'package:beacon/pages/HomeLoadPage.dart';
 import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/CameraLocationService.dart';
+import 'package:beacon/services/NotificationService.dart';
 import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/services/AuthService.dart';
 import 'package:beacon/pages/SignInPage.dart';
@@ -24,16 +24,19 @@ import 'pages/HomePage.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  NotificationService().initialize();
   runApp(MyApp());
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Color(0xFFB500E2),
+    statusBarColor: Color(0xFF000000),
   ));
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
+
     return MultiProvider(
       providers: [
         Provider<AuthService>(

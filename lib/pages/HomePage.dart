@@ -29,7 +29,6 @@ class _BuildHomePageState extends State<BuildHomePage> {
   final pages = [
     MapPage(),
     NotificationPageRedo(),
-    // NotificationPage(),
     MenuPage(),
   ];
 
