@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:uuid/uuid.dart';
 
 // notificationSummons: doc.data()['notificationSummons'] ?? true,
 // notificationEventInvites: doc.data()['notificationEventInvites'] ?? true,
@@ -102,6 +103,17 @@ class NotificationService {
       "notificationSummons": !user.notificationSettings.notificationSummons
     });
     user.notificationSettings.notificationSummons = !user.notificationSettings.notificationSummons;
+  }
+
+  sendPushNotification(List<UserModel> sendToUsers, UserModel currentUser, {String title, String body, String type}) async {
+    List<String> tokens = [];
+    sendToUsers.forEach((element) { 
+      tokens.add(element.)
+    });
+    await FirebaseFirestore.instance
+        .collection('sendMessage')
+        .doc(currentUser.id)
+        .set({'token' : 
   }
 
 
