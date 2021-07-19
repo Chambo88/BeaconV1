@@ -21,6 +21,7 @@ class UserModel {
   List<NotificationModel> notifications;
   NotificationSettingsModel notificationSettings;
   List<UserModel> friendModels;
+  Set<String> tokens;
 
   UserModel({
       this.id,
@@ -35,8 +36,9 @@ class UserModel {
       this.receivedFriendRequests,
       this.notifications,
       this.imageURL,
-    this.notificationSettings,
-    this.friendModels,
+      this.notificationSettings,
+      this.friendModels,
+      this.tokens,
   });
 
   get getFirstName => firstName;
@@ -104,7 +106,7 @@ class UserModel {
       notificationCount: doc.data()['notificationCount'] ?? 0,
       beacon: beacon,
       groups: _groups,
-
+      tokens: Set.from(doc.data()["tokens"] ?? []),
       friends: List.from(doc.data()["friends"] ?? []),
       sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),

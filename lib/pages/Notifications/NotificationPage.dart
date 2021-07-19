@@ -19,12 +19,12 @@ import 'package:provider/provider.dart';
 
 import 'FriendRequestsTab.dart';
 
-class NotificationPageRedo extends StatefulWidget {
+class NotificationPage extends StatefulWidget {
   @override
-  _NotificationPageRedoState createState() => _NotificationPageRedoState();
+  _NotificationPageState createState() => _NotificationPageState();
 }
 
-class _NotificationPageRedoState extends State<NotificationPageRedo> {
+class _NotificationPageState extends State<NotificationPage> {
 
   List<Widget> tiles;
 
@@ -150,7 +150,6 @@ class GetNotificationTile extends StatelessWidget {
   }
 
   FutureBuilder<DocumentSnapshot> getUserFromFB() {
-    print(notification.sentFrom);
     return FutureBuilder(
       future: FirebaseFirestore.instance.collection('users').doc(notification.sentFrom).get(),
       builder: (context, sentFrom)

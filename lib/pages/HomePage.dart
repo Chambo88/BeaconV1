@@ -6,6 +6,7 @@ import 'package:beacon/pages/MapPage.dart';
 import 'package:beacon/pages/menu/MenuPage.dart';
 import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/UserService.dart';
+import 'package:beacon/util/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +16,8 @@ import '../services/AuthService.dart';
 import 'package:beacon/services/AuthService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:async/async.dart';
-import 'package:beacon/pages/NotificationPage.dart';
 
-import 'Notifications/NotificationPageRedo.dart';
+import 'Notifications/NotificationPage.dart';
 
 class BuildHomePage extends StatefulWidget {
   @override
@@ -28,7 +28,7 @@ class _BuildHomePageState extends State<BuildHomePage> {
   int _pageIndex = 0;
   final pages = [
     MapPage(),
-    NotificationPageRedo(),
+    NotificationPage(),
     MenuPage(),
   ];
 
@@ -87,7 +87,7 @@ class _BuildHomePageState extends State<BuildHomePage> {
           children: <Widget>[
             new Icon(
               Icons.notifications,
-              color: Colors.purple,
+              color: Color(FigmaColours().highlight),
             ),
             redCircleStuff(userFromFireStore),
           ],
@@ -108,7 +108,7 @@ class _BuildHomePageState extends State<BuildHomePage> {
           children: <Widget>[
             new Icon(
               Icons.notifications,
-              color: Colors.purple,
+              color: Color(FigmaColours().highlight),
             ),
           ],
         ),
@@ -152,7 +152,7 @@ class _BuildHomePageState extends State<BuildHomePage> {
                     ),
                     activeIcon: Icon(
                       Icons.local_fire_department_rounded,
-                      color: Colors.purple,
+                      color: Color(FigmaColours().highlight),
                     ),
                   ),
                   notificationsIcon(snapshot.data),
@@ -164,7 +164,7 @@ class _BuildHomePageState extends State<BuildHomePage> {
                     ),
                     activeIcon: Icon(
                       Icons.menu,
-                      color: Colors.purple,
+                      color: Color(FigmaColours().highlight),
                     ),
                   )
                 ],

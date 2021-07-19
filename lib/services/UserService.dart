@@ -24,8 +24,6 @@ class UserService {
       return null;
     }
 
-    String token = await NotificationService().getToken();
-    print(token);
 
     List<GroupModel> _groups = [];
     BeaconModel beacon;
@@ -33,6 +31,7 @@ class UserService {
     List<NotificationModel> _notifications = [];
     List<UserModel> _friendModels = [];
     List<String> _friends = [];
+    Set<String> _tokens = Set.from(doc.data()["tokens"] ?? []);
 
     // if (doc.data().containsKey('beacon')) {
     //   beacon = BeaconModel.toJson(doc.data()['beacon']);
@@ -48,11 +47,6 @@ class UserService {
     );
     // }
 
-    // if (doc.data().containsKey('notificationCount')) {
-    //   _notificationCount = doc.data()['notificationCount'];
-    // } else {
-    //   _notificationCount = 0;
-    // }
 
     if (doc.data().containsKey('groups')) {
       _data = List.from(doc.data()["groups"]);
@@ -87,6 +81,15 @@ class UserService {
       ;
     }
 
+    if(Platform.isAndroid) {
+      String token = await NotificationService().getToken();
+      if(!_tokens.contains(token)) {
+        _tokens.add(token);
+        NotificationService().setToken(token, userId);
+      }
+
+    }
+
 
 
     currentUser = UserModel(
@@ -99,6 +102,7 @@ class UserService {
       groups: _groups,
       friends: _friends,
       friendModels: _friendModels,
+      tokens: _tokens,
       sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       notifications: _notifications,
