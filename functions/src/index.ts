@@ -70,6 +70,7 @@ exports.sendPushNotification = functions.firestore
         data: {
             type: data.type,
         },
+        android_channel_id: "easyapproach",
     };
 
 

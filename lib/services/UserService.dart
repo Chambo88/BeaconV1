@@ -13,6 +13,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 class UserService {
   FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
+  NotificationService _notificationService = NotificationService();
 
   UserModel currentUser;
 
@@ -242,6 +243,12 @@ class UserService {
       'receivedFriendRequests': FieldValue.arrayUnion([userId]),
       'notificationCount': FieldValue.increment(1)
     });
+
+    _notificationService.sendPushNotification([potentialFriend],
+        title: "${currentUser.firstName} ${currentUser.lastName} sent you a friend request",
+        body: "",
+        type: "friendRequest"
+    );
   }
 
   removeSentFriendRequest(UserModel potentialFriend, {UserModel user}) async {
@@ -329,6 +336,14 @@ class UserService {
         {"type": 'acceptedFriendRequest', "sentFrom": userId, "dateTime": DateTime.now().toString()}
       ])
     });
+
+    // Send Push notification
+    _notificationService.sendPushNotification([friend],
+        title: "${currentUser.firstName} ${currentUser.lastName} accepted your friend request",
+        body: "",
+        type: "friendRequest"
+    );
+
   }
 
   declineFriendRequest(UserModel friend, {UserModel user}) async {

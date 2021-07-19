@@ -12,38 +12,31 @@ import 'package:uuid/uuid.dart';
 // notificationSendBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
 // notificationVenue: doc.data()['notificationVenue'] ?? true,
 
-const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel',
-    'High Importance Notifications',
-    'This channel is for important notifications',
-  importance: Importance.max,
 
-);
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
 
 ///Recieve message bwhen app is in background
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a backgroud message: ${message.messageId}in NotificationService");
+Future<void> backgroundHandler(RemoteMessage message) async{
+  print(message.data.toString());
   print(message.notification.title);
 }
 
 
 
 class NotificationService {
+  static final FlutterLocalNotificationsPlugin _notificationsPlugin =
+  FlutterLocalNotificationsPlugin();
 
   initialize() async {
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onBackgroundMessage(backgroundHandler);
 
-    await flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()?.createNotificationChannel(channel);
+    final InitializationSettings initializationSettings =
+    InitializationSettings(
+        android: AndroidInitializationSettings("@mipmap/ic_launcher"));
 
-    //TODO add beacon icon here for notifications
-    var initializationSettingsAndroid = AndroidInitializationSettings('@mipmap.ic_launcher');
-    var initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
-    
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    _notificationsPlugin.initialize(initializationSettings,onSelectNotification: (String route) async{
+      if(route != null){
+      }
+    });
 
 
     ///give you the message which user taps and it opens the app on terminated state
@@ -51,31 +44,27 @@ class NotificationService {
 
     });
 
-    ///called when app is in the foreground
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification notification = message.notification;
-      AndroidNotification android = message.notification?.android;
-      AppleNotification ios = message.notification?.apple;
-      if(notification != null && android != null) {
-        display(message);
-      }
+    ///forground work
+    FirebaseMessaging.onMessage.listen((message) {
+      display(message);
     });
 
     ///When the app is background but open (minimmised sorta thing) and user taps
-    ///on the notification
+    ///on the notification. used for routing mainly
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
       print(message.data["type"]);
     });
   }
   static void display(RemoteMessage message) async {
 
-    final FlutterLocalNotificationsPlugin _notificationsPlugin =
-    FlutterLocalNotificationsPlugin();
-
     try {
+      final id = DateTime.now().millisecondsSinceEpoch ~/1000;
+
       final NotificationDetails notificationDetails = NotificationDetails(
           android: AndroidNotificationDetails(
-            channel.id, channel.name, channel.description,
+            "easyapproach",
+            "easyapproach channel",
+            "this is our channel",
             importance: Importance.max,
             priority: Priority.high,
           )
@@ -83,11 +72,10 @@ class NotificationService {
 
 
       await _notificationsPlugin.show(
-        message.notification.hashCode,
+        id,
         message.notification.title,
         message.notification.body,
         notificationDetails,
-        payload: message.data["route"],
       );
     } on Exception catch (e) {
       print(e);
@@ -139,20 +127,24 @@ class NotificationService {
     user.notificationSettings.notificationSummons = !user.notificationSettings.notificationSummons;
   }
 
-  sendPushNotification(List<UserModel> sendToUsers, UserModel currentUser, {String title, String body, String type}) async {
+  sendPushNotification(List<UserModel> sendToUsers, {String title, String body, String type}) async {
     Set<String> tokens = {};
-    sendToUsers.forEach((element) { 
-      tokens.addAll(element.tokens);
+    sendToUsers.forEach((element) {
+      if (element.tokens.isNotEmpty) {
+        tokens.addAll(element.tokens);
+      }
     });
-    await FirebaseFirestore.instance
-        .collection('sendMessage')
-        .doc(Uuid().v4())
-        .set({
-            'token': tokens,
-            'title': title,
-            'body': body,
-            'type': type,
-          });
+    if(tokens.isNotEmpty) {
+      await FirebaseFirestore.instance
+          .collection('sendMessage')
+          .doc(Uuid().v4())
+          .set({
+        'token': tokens,
+        'title': title,
+        'body': body,
+        'type': type,
+      });
+    }
   }
 
   setToken(String token, String id) async {
