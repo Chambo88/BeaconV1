@@ -272,11 +272,11 @@ class UserService {
     String userId = user != null ? user.id : currentUser.id;
     // Add to receivers friend list
     await FirebaseFirestore.instance.collection('users').doc(userId).update({
-      "sentFriendRequests": FieldValue.arrayUnion([potentialFriend.id]),
+      "receivedFriendRequests": FieldValue.arrayUnion([potentialFriend.id]),
     });
 
     await FirebaseFirestore.instance.collection('users').doc(potentialFriend.id).update({
-      "sentFriendRequests": FieldValue.arrayUnion([user.id]),
+      "sentFriendRequests": FieldValue.arrayUnion([currentUser.id]),
     });
 
     _notificationService.sendNotification([potentialFriend], currentUser, 'friendRequest', customId: currentUser.id);

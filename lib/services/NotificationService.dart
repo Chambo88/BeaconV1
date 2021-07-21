@@ -162,6 +162,7 @@ class NotificationService {
         "sentFrom": currentUser.id,
         "dateTime": DateTime.now().toString(),
         "orderBy" : DateTime.now().millisecondsSinceEpoch,
+        "seen" : false,
       });
     });
   }

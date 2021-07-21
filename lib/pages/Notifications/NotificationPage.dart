@@ -1,5 +1,6 @@
 import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/pages/Notifications/NotificationTab.dart';
 import 'package:beacon/pages/menu/notificationsSettingsPage.dart';
 import 'package:beacon/services/NotificationService.dart';
 import 'package:beacon/services/UserService.dart';
@@ -30,15 +31,17 @@ class _NotificationPageState extends State<NotificationPage> {
   List<Widget> tiles;
   Set<String> notificationsTempUnread;
   FigmaColours figmaColours = FigmaColours();
+  int currentIndex;
 
   @override
   void initState() {
     // context.read<UserService>().setNotificationCount(0);
     notificationsTempUnread = {};
     super.initState();
+    currentIndex = 0;
   }
 
-  StreamBuilder NotificationTab(UserModel currentUser, BuildContext context) {
+  StreamBuilder NotificationTab2(UserModel currentUser, BuildContext context) {
     DateTime _currentTime = DateTime.now();
     return StreamBuilder(
       stream: FirebaseFirestore.instance
@@ -163,23 +166,101 @@ class _NotificationPageState extends State<NotificationPage> {
             labelColor: theme.accentColor,
             unselectedLabelColor: Colors.white,
             labelStyle: theme.textTheme.headline3,
+            onTap: (index) {
+              currentIndex = index;
+              setState(() {});
+            },
             tabs: [
               Tab(
                 text: 'General',
               ),
               Tab(
-                icon: Icon(Icons.person_add_outlined),
+                icon: getFriendRequestIcon(),
               ),
             ],
           ),
         ),
         body: TabBarView(
           children: [
-            NotificationTab(currentUser, context),
+            NotificationTab(),
             friendRequestsTab(currentUser, context),
           ],
         ),
       ),
+    );
+  }
+
+  Widget getFriendRequestIcon () {
+    return Container(
+      width: 40,
+      child: new Stack(
+        clipBehavior: Clip.none,
+        children: <Widget>[
+          Center(
+            child: Icon(
+              (currentIndex == 1)? Icons.person_add : Icons.person_add_outlined,
+              color: (currentIndex == 1)? Color(FigmaColours().highlight) : Colors.white,
+            ),
+          ),
+          getFriendRequestDot(context),
+        ],
+      ),
+    );
+  }
+
+  ///kadsuufkadf
+  StreamBuilder getFriendRequestDot(BuildContext context) {
+    UserModel currentUser = context.read<UserService>().currentUser;
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .collection('notifications')
+          .where('type', isEqualTo: 'friendRequest')
+          .snapshots()?.take(30),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          print(snapshot.error);
+        }
+        while (!snapshot.hasData) {
+          return Container();
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {}
+        int notificationCount = 0;
+        snapshot.data.docs.forEach((doc){
+          if(doc.data()["seen"] == false) {
+            notificationCount += 1;
+          }
+        });
+        if (notificationCount == 0) {
+          return Positioned(child: Container());
+        }
+
+        return Positioned(
+          right: 0,
+          top: 0,
+          child: new Container(
+            padding: EdgeInsets.all(1),
+            decoration: new BoxDecoration(
+              color: Color(FigmaColours().highlight),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            constraints: BoxConstraints(
+              minWidth: 12,
+              minHeight: 12,
+            ),
+            child: new Text(
+              notificationCount.toString(),
+              style: new TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+      }
     );
   }
 }
@@ -194,18 +275,9 @@ class GetNotificationTile extends StatelessWidget {
   GetNotificationTile(
       {@required this.notification,
       this.currentTime,
-      this.notificationUnread,
-      this.justFriendRequests});
+      this.notificationUnread,});
 
   Widget getTile(UserModel sentFrom) {
-    if (justFriendRequests) {
-      return FriendRequestNotification(
-        sender: sentFrom,
-        currentTime: currentTime,
-        notification: notification,
-        notificationUnread: notificationUnread,
-      );
-    }
     switch (notification.type) {
       case "acceptedFriendRequest":
         {
