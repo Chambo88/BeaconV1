@@ -27,7 +27,6 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
-
   List<Widget> tiles;
   Set<String> notificationsTempUnread;
   FigmaColours figmaColours = FigmaColours();
@@ -39,7 +38,6 @@ class _NotificationPageState extends State<NotificationPage> {
     super.initState();
   }
 
-
   StreamBuilder NotificationTab(UserModel currentUser, BuildContext context) {
     DateTime _currentTime = DateTime.now();
     return StreamBuilder(
@@ -48,133 +46,212 @@ class _NotificationPageState extends State<NotificationPage> {
           .doc(currentUser.id)
           .collection('notifications')
           .orderBy('orderBy', descending: true)
-          .snapshots()?.take(20)?.map((snapShot) => snapShot.docs.map((document) {
-        return NotificationModel.fromMap(document.data());
-      }).toList()),
-
+          .snapshots()
+          ?.take(20)
+          ?.map((snapShot) => snapShot.docs.map((document) {
+                return NotificationModel.fromMap(document.data());
+              }).toList()),
       builder: (context, snapshot) {
-        tiles = [Divider(color: Color(figmaColours.greyLight),height: 1,)];
-        if(snapshot.hasError) {
+        tiles = [
+          Divider(
+            color: Color(figmaColours.greyLight),
+            height: 1,
+          )
+        ];
+        if (snapshot.hasError) {
           print(snapshot.error);
         }
-        while(!snapshot.hasData) {
+        while (!snapshot.hasData) {
           return circularProgress(Color(FigmaColours().highlight));
         }
-        if (snapshot.connectionState == ConnectionState.done) {
-
-        }
+        if (snapshot.connectionState == ConnectionState.done) {}
         snapshot.data.forEach((NotificationModel notificationModel) {
-          if(notificationModel.seen == false) {
-            notificationsTempUnread.add(notificationModel.id);
-            NotificationService().setNotificationRead(notificationModel.id, currentUser);
+          if (notificationModel.type != 'friendRequest') {
+            if (notificationModel.seen == false) {
+              notificationsTempUnread.add(notificationModel.id);
+              NotificationService()
+                  .setNotificationRead(notificationModel.id, currentUser);
+            }
+            tiles.add(GetNotificationTile(
+                notification: notificationModel,
+                currentTime: _currentTime,
+                notificationUnread: notificationsTempUnread));
+            tiles.add(Divider(
+              color: Color(figmaColours.greyLight),
+              height: 1,
+            ));
           }
-          tiles.add(GetNotificationTile(
-              notification: notificationModel,
-              currentTime: _currentTime,
-              notificationUnread: notificationsTempUnread));
-          tiles.add(Divider(color: Color(figmaColours.greyLight),height: 1,));
         });
-        return ListView(children: tiles,);
+        return ListView(
+          children: tiles,
+        );
       },
     );
   }
 
+  StreamBuilder friendRequestsTab(UserModel currentUser, BuildContext context) {
+    DateTime _currentTime = DateTime.now();
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .collection('notifications')
+          .where('type', isEqualTo: 'friendRequest')
+          .orderBy('orderBy', descending: true)
+          .snapshots()
+          ?.take(20)
+          ?.map((snapShot) => snapShot.docs.map((document) {
+                return NotificationModel.fromMap(document.data());
+              }).toList()),
+      builder: (context, snapshot) {
+        tiles = [
+          Divider(
+            color: Color(figmaColours.greyLight),
+            height: 1,
+          )
+        ];
+        if (snapshot.hasError) {
+          print(snapshot.error);
+        }
+        while (!snapshot.hasData) {
+          return circularProgress(Color(FigmaColours().highlight));
+        }
+        if (snapshot.connectionState == ConnectionState.done) {}
+        snapshot.data.forEach((NotificationModel notificationModel) {
+          if (notificationModel.seen == false) {
+            notificationsTempUnread.add(notificationModel.id);
+            NotificationService()
+                .setNotificationRead(notificationModel.id, currentUser);
+          }
+
+          tiles.add(GetFriendRequestTile(
+              notification: notificationModel,
+              currentTime: _currentTime,
+              notificationUnread: notificationsTempUnread));
+          tiles.add(Divider(
+            color: Color(figmaColours.greyLight),
+            height: 1,
+          ));
+        });
+        return ListView(
+          children: tiles,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     UserModel currentUser = context.read<UserService>().currentUser;
     final theme = Theme.of(context);
     return DefaultTabController(
-        initialIndex: 0,
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text("Notifications"),
-            actions: [
-              IconButton(onPressed: () async {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => NotificationSettingsPage()));
-              }, icon: Icon(Icons.settings_outlined))
-            ],
-            automaticallyImplyLeading: false,
-            bottom: TabBar(
-              labelColor: theme.accentColor,
-              unselectedLabelColor: Colors.white,
-              labelStyle: theme.textTheme.headline3,
-              tabs: [
-                Tab(
-                  text: 'General',
-                ),
-                Tab(
-                  icon: Icon(Icons.person_add_outlined),
-                ),
-              ],
-            ),
-          ),
-          body: TabBarView(
-            children: [
-              NotificationTab(currentUser, context),
-              LoadFriendRequestTab(),
+      initialIndex: 0,
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Notifications"),
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => NotificationSettingsPage()));
+                },
+                icon: Icon(Icons.settings_outlined))
+          ],
+          automaticallyImplyLeading: false,
+          bottom: TabBar(
+            labelColor: theme.accentColor,
+            unselectedLabelColor: Colors.white,
+            labelStyle: theme.textTheme.headline3,
+            tabs: [
+              Tab(
+                text: 'General',
+              ),
+              Tab(
+                icon: Icon(Icons.person_add_outlined),
+              ),
             ],
           ),
         ),
+        body: TabBarView(
+          children: [
+            NotificationTab(currentUser, context),
+            friendRequestsTab(currentUser, context),
+          ],
+        ),
+      ),
     );
   }
 }
 
 //Gets the sender data and returns the right type of notification
 class GetNotificationTile extends StatelessWidget {
-
   NotificationModel notification;
   DateTime currentTime;
   Set<String> notificationUnread;
+  bool justFriendRequests;
 
-  GetNotificationTile({@required this.notification, this.currentTime, this.notificationUnread});
-
+  GetNotificationTile(
+      {@required this.notification,
+      this.currentTime,
+      this.notificationUnread,
+      this.justFriendRequests});
 
   Widget getTile(UserModel sentFrom) {
-    switch(notification.type) {
-      case "acceptedFriendRequest" : {
-        return AcceptedFriendRequest(
-          sender: sentFrom,
-          notification: notification,
-          currentTime: currentTime,
-          notificationUnread: notificationUnread,
-        );
-      }
-      case "venueBeaconInvite" : {
-        return VenueInvite(
-          sender: sentFrom,
-          currentTime: currentTime,
-          notification: notification,
-          notificationUnread: notificationUnread,
-        );
-      } break;
-      case "comingToBeacon" : {
-        return ComingToBeacon(
-          sender: sentFrom,
-          currentTime: currentTime,
-          notification: notification,
-          notificationUnread: notificationUnread,
-        );
-      }
-      case "summoned" : {
-        return Summoned(
-          sender: sentFrom,
-          currentTime: currentTime,
-          notification: notification,
-          notificationUnread: notificationUnread,
-        );
-      }
-
+    if (justFriendRequests) {
+      return FriendRequestNotification(
+        sender: sentFrom,
+        currentTime: currentTime,
+        notification: notification,
+        notificationUnread: notificationUnread,
+      );
     }
-    return Text("unknown notification type, maybe spelled wrong?");
+    switch (notification.type) {
+      case "acceptedFriendRequest":
+        {
+          return AcceptedFriendRequest(
+            sender: sentFrom,
+            notification: notification,
+            currentTime: currentTime,
+            notificationUnread: notificationUnread,
+          );
+        }
+      case "venueBeaconInvite":
+        {
+          return VenueInvite(
+            sender: sentFrom,
+            currentTime: currentTime,
+            notification: notification,
+            notificationUnread: notificationUnread,
+          );
+        }
+        break;
+      case "comingToBeacon":
+        {
+          return ComingToBeacon(
+            sender: sentFrom,
+            currentTime: currentTime,
+            notification: notification,
+            notificationUnread: notificationUnread,
+          );
+        }
+      case "summoned":
+        {
+          return Summoned(
+            sender: sentFrom,
+            currentTime: currentTime,
+            notification: notification,
+            notificationUnread: notificationUnread,
+          );
+        }
+    }
+    return Container();
   }
 
   //checking to see if the userModel is already in the user, If Not get it from FB
   Widget isUserInDownloadedModels(UserModel currentUser) {
     for (UserModel friends in currentUser.friendModels) {
-      if(notification.sentFrom == friends.id) {
+      if (notification.sentFrom == friends.id) {
         return getTile(friends);
       }
     }
@@ -189,22 +266,55 @@ class GetNotificationTile extends StatelessWidget {
 
   FutureBuilder<DocumentSnapshot> getUserFromFB() {
     return FutureBuilder(
-      future: FirebaseFirestore.instance.collection('users').doc(notification.sentFrom).get(),
-      builder: (context, sentFrom)
-      {
-        while (!sentFrom.hasData) {
-          return Container();
-        }
-        UserModel sender = UserModel.fromDocument(sentFrom.data);
-        return getTile(sender);
-      }
-  );
+        future: FirebaseFirestore.instance
+            .collection('users')
+            .doc(notification.sentFrom)
+            .get(),
+        builder: (context, sentFrom) {
+          while (!sentFrom.hasData) {
+            return Container();
+          }
+          UserModel sender = UserModel.fromDocument(sentFrom.data);
+          return getTile(sender);
+        });
   }
 }
 
+//Gets the sender data and returns friendrequesttiles
+class GetFriendRequestTile extends StatelessWidget {
+  NotificationModel notification;
+  DateTime currentTime;
+  Set<String> notificationUnread;
+  bool justFriendRequests;
 
+  GetFriendRequestTile(
+      {@required this.notification,
+      this.currentTime,
+      this.notificationUnread,
+      this.justFriendRequests});
 
+  @override
+  Widget build(BuildContext context) {
+    return getUserFromFB();
+  }
 
-
-
-
+  FutureBuilder<DocumentSnapshot> getUserFromFB() {
+    return FutureBuilder(
+        future: FirebaseFirestore.instance
+            .collection('users')
+            .doc(notification.sentFrom)
+            .get(),
+        builder: (context, sentFrom) {
+          while (!sentFrom.hasData) {
+            return Container();
+          }
+          UserModel sender = UserModel.fromDocument(sentFrom.data);
+          return FriendRequestNotification(
+            sender: sender,
+            currentTime: currentTime,
+            notification: notification,
+            notificationUnread: notificationUnread,
+          );
+        });
+  }
+}

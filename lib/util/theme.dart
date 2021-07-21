@@ -35,8 +35,8 @@ class CustomTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          primary: Colors.purple,
-          backgroundColor: Colors.red,
+          primary: Color(0xFFAD00FF),
+          backgroundColor: Color(0xFFFF6648),
         ),
       ),
       textButtonTheme: TextButtonThemeData(

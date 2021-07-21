@@ -20,9 +20,15 @@ import 'package:provider/provider.dart';
 class FriendRequestNotification extends StatefulWidget {
 
   UserModel sender;
+  NotificationModel notification;
+  DateTime currentTime;
+  Set<String> notificationUnread;
 
   FriendRequestNotification({
     @required this.sender,
+    @required this.notification,
+    @required this.currentTime,
+    @required this.notificationUnread,
   });
 
   @override
@@ -103,7 +109,7 @@ class _FriendRequestNotificationState extends State<FriendRequestNotification> {
         ),
       ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.all(6),
           child: SmallGradientButton(
             child: Text("Accept",
               style: theme.textTheme.headline4,
@@ -148,7 +154,8 @@ class _FriendRequestNotificationState extends State<FriendRequestNotification> {
       extraButtons: getTypeButtons(theme, service),
       sender: widget.sender,
       moreOptionsButton: false,
-      notificationUnread: {},
+      notificationUnread: widget.notificationUnread,
+      notification: widget.notification,
     );
   }
 }

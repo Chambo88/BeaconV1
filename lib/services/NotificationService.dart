@@ -149,8 +149,8 @@ class NotificationService {
     }
   }
 
-  sendNotification(List<UserModel> sendToUsers,UserModel currentUser, String type) async {
-    String notificationId = Uuid().v4();
+  sendNotification(List<UserModel> sendToUsers,UserModel currentUser, String type, {String customId}) async {
+    String notificationId = customId != null? customId: Uuid().v4();
     sendToUsers.forEach((element) async {
       await FirebaseFirestore.instance
           .collection('users')
