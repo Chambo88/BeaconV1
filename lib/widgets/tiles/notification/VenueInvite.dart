@@ -12,11 +12,14 @@ class VenueInvite extends StatefulWidget {
   UserModel sender;
   NotificationModel notification;
   DateTime currentTime;
+  Set<String> notificationUnread;
+
 
   VenueInvite({
     @required this.sender,
     @required this.notification,
-    @required this.currentTime
+    @required this.currentTime,
+    @required this.notificationUnread,
   });
 
   @override
@@ -77,6 +80,7 @@ class _VenueInviteState extends State<VenueInvite> {
       currentTime: widget.currentTime,
       notification: widget.notification,
       sender: widget.sender,
+      notificationUnread: widget.notificationUnread,
 
     );
   }

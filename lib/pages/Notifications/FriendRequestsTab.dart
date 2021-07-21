@@ -1,5 +1,6 @@
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/UserService.dart';
+import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:beacon/widgets/tiles/notification/FriendRequest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class LoadFriendRequestTab extends StatelessWidget {
-
+  FigmaColours figmaColours = FigmaColours();
 
   Widget DisplayNoRequestsScreen () {
     return Container();
@@ -34,13 +35,14 @@ class LoadFriendRequestTab extends StatelessWidget {
                 .accentColor);
           };
 
-          List<FriendRequestNotification> friendRequestsTiles = [];
+          List<Widget> friendRequestsTiles = [Divider(color: Color(figmaColours.greyLight),height: 1,)];
           DateTime currentTime = DateTime.now();
 
           friendRequests.data.docs.forEach((document) {
             UserModel user = UserModel.fromDocument(document);
             friendRequestsTiles.add(
                 FriendRequestNotification(sender: user,));
+            friendRequestsTiles.add(Divider(color: Color(figmaColours.greyLight),height: 1,));
           });
 
           friendRequestsTiles = friendRequestsTiles.reversed.toList();

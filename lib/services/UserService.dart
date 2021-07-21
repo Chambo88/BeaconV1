@@ -29,7 +29,6 @@ class UserService {
     List<GroupModel> _groups = [];
     BeaconModel beacon;
     List<dynamic> _data;
-    List<NotificationModel> _notifications = [];
     List<UserModel> _friendModels = [];
     List<String> _friends = [];
     Set<String> _tokens = Set.from(doc.data()["tokens"] ?? []);
@@ -58,12 +57,6 @@ class UserService {
       _groups = [];
     }
 
-    if (doc.data().containsKey('notifications')) {
-      _data = List.from(doc.data()["notifications"]);
-      _data.forEach((element) {
-        _notifications.add(NotificationModel.fromMap(element));
-      });
-    }
 
     if(doc.data().containsKey('friends')) {
       _friends = List.from(doc.data()["friends"]);
@@ -106,7 +99,6 @@ class UserService {
       tokens: _tokens,
       sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
-      notifications: _notifications,
       imageURL: doc.data()['imageURL'] ?? '',
       //TODO refactor the way settings are stored into a map
       notificationSettings: NotificationSettingsModel(
@@ -189,17 +181,17 @@ class UserService {
 
   // update my beacon
 
-  setNotificationCount(int x, {UserModel user}) async {
-    // If user is null then current user
-    if (user == null) {
-      currentUser.notificationCount = x;
-    }
-    String userId = user != null ? user.id : currentUser.id;
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .update({"notificationCount": x});
-  }
+  // setNotificationCount(int x, {UserModel user}) async {
+  //   // If user is null then current user
+  //   if (user == null) {
+  //     currentUser.notificationCount = x;
+  //   }
+  //   String userId = user != null ? user.id : currentUser.id;
+  //   await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(userId)
+  //       .update({"notificationCount": x});
+  // }
 
 
 
@@ -241,7 +233,7 @@ class UserService {
         .doc(potentialFriend.id)
         .update({
       'receivedFriendRequests': FieldValue.arrayUnion([userId]),
-      'notificationCount': FieldValue.increment(1)
+      // 'notificationCount': FieldValue.increment(1)
     });
 
     _notificationService.sendPushNotification([potentialFriend],
@@ -332,11 +324,11 @@ class UserService {
       "friends": FieldValue.arrayUnion([userId]),
       "sentFriendRequests": FieldValue.arrayRemove([userId]),
       'notificationCount': FieldValue.increment(1),
-      'notifications': FieldValue.arrayUnion([
-        {"type": 'acceptedFriendRequest', "sentFrom": userId, "dateTime": DateTime.now().toString()}
-      ])
+
     });
 
+    //send server notification
+    _notificationService.sendNotification([friend], currentUser, 'acceptedFriendRequest');
     // Send Push notification
     _notificationService.sendPushNotification([friend],
         title: "${currentUser.firstName} ${currentUser.lastName} accepted your friend request",

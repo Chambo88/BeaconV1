@@ -12,11 +12,13 @@ class AcceptedFriendRequest extends StatefulWidget {
   UserModel sender;
   NotificationModel notification;
   DateTime currentTime;
+  Set<String> notificationUnread;
 
   AcceptedFriendRequest({
     @required this.sender,
     @required this.notification,
-    @required this.currentTime
+    @required this.currentTime,
+    @required this.notificationUnread,
   });
 
   @override
@@ -38,10 +40,10 @@ class _AcceptedFriendRequestState extends State<AcceptedFriendRequest> {
     return RichText(
       text: TextSpan(children: [
         TextSpan(
-            text: ''''${widget.sender.firstName} ${widget.sender.lastName}''',
+            text: '${widget.sender.firstName} ${widget.sender.lastName}',
             style: theme.textTheme.headline4),
         TextSpan(
-            text: '''' accepted you friend request! ''',
+            text: ' accepted you friend request!' ,
             style: theme.textTheme.bodyText2),
 
       ]),
@@ -73,7 +75,7 @@ class _AcceptedFriendRequestState extends State<AcceptedFriendRequest> {
       currentTime: widget.currentTime,
       notification: widget.notification,
       sender: widget.sender,
-
+      notificationUnread: widget.notificationUnread,
     );
   }
 }

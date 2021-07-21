@@ -24,6 +24,7 @@ class NotificationSkeleton extends StatelessWidget {
   RichText body;
   String timeDiff;
   bool moreOptionsButton;
+  Set<String> notificationUnread;
 
   NotificationSkeleton({
     this.currentTime,
@@ -32,6 +33,7 @@ class NotificationSkeleton extends StatelessWidget {
     @required this.sender,
     this.extraButtons,
     @required this.body,
+    @required this.notificationUnread,
   });
 
 
@@ -56,56 +58,70 @@ class NotificationSkeleton extends StatelessWidget {
     return diff.toString() + ' ' + timeType;
   }
 
+  Color getColourContainer(ThemeData theme) {
+    ///Checking to see if friend request type or event invite type
+    if(notification != null) {
+      if(notificationUnread.contains(notification.id) || !notification.seen) {
+        return theme.primaryColor;
+      }
+    }
+    return Colors.black;
+  }
+
+
 
   Widget NotifSkeleton(UserModel sentFrom, ThemeData theme) {
     timeDiff = CalculateTime();
-    return Column(
-      children: [
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 15, 8, 0),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 5, 8, 0),
-                  child: ProfilePicture(
-                    user: sentFrom,
-                    size: 30,
+    return Container(
+      color: getColourContainer(theme),
+      child: Column(
+        children: [
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 15, 8, 0),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 5, 8, 0),
+                    child: ProfilePicture(
+                      user: sentFrom,
+                      size: 30,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 15),
-              child: Container(
-                child: body,
+                ],
               ),
             ),
-          ),
-          //TODO Add options on notification tiles, currenty blacked out
-          moreOptionsButton ? IconButton(
-              onPressed: null,
-              icon: Icon(
-                Icons.more_horiz,
-                color: Colors.black,
-              )) : Container(width: 10, height: 10,),
-        ]),
-        Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 93),
-              child:Text(timeDiff),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 15),
+                child: Container(
+                  child: body,
+                ),
+              ),
             ),
-            Spacer(),
-          ]..addAll(extraButtons),
-        ),
-        Divider(
-          color: Color(figmaColours.greyLight),
-        )
-      ],
+            //TODO Add options on notification tiles, currenty blacked out
+            // moreOptionsButton ? IconButton(
+            //     onPressed: null,
+            //     icon: Icon(
+            //       Icons.more_horiz,
+            //       color: Colors.black,
+            //     )) : Container(width: 10, height: 10,),
+            ///temp for spacing of the icon
+            Container(width: 10, height: 10),
+          ]),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 93),
+                child:Text(timeDiff),
+              ),
+              Spacer(),
+            ]..addAll(extraButtons),
+          ),
 
+        ],
+
+      ),
     );
   }
 

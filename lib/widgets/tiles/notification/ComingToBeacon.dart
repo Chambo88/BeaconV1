@@ -12,11 +12,14 @@ class ComingToBeacon extends StatefulWidget {
   UserModel sender;
   NotificationModel notification;
   DateTime currentTime;
+  Set<String> notificationUnread;
+
 
   ComingToBeacon({
     @required this.sender,
     @required this.notification,
-    @required this.currentTime
+    @required this.currentTime,
+    @required this.notificationUnread,
   });
 
   @override
@@ -51,7 +54,7 @@ class _ComingToBeaconState extends State<ComingToBeacon> {
       currentTime: widget.currentTime,
       notification: widget.notification,
       sender: widget.sender,
-
+      notificationUnread: widget.notificationUnread,
     );
   }
 }

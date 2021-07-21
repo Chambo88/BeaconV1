@@ -148,6 +148,7 @@ class _FriendRequestNotificationState extends State<FriendRequestNotification> {
       extraButtons: getTypeButtons(theme, service),
       sender: widget.sender,
       moreOptionsButton: false,
+      notificationUnread: {},
     );
   }
 }

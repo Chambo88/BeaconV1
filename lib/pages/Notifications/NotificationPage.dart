@@ -1,6 +1,7 @@
 import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/menu/notificationsSettingsPage.dart';
+import 'package:beacon/services/NotificationService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/ProfilePicWidget.dart';
@@ -13,6 +14,7 @@ import 'package:beacon/widgets/tiles/notification/FriendRequest.dart';
 import 'package:beacon/widgets/tiles/notification/Summoned.dart';
 import 'package:beacon/widgets/tiles/notification/VenueInvite.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,22 +29,53 @@ class NotificationPage extends StatefulWidget {
 class _NotificationPageState extends State<NotificationPage> {
 
   List<Widget> tiles;
+  Set<String> notificationsTempUnread;
+  FigmaColours figmaColours = FigmaColours();
 
   @override
   void initState() {
-    tiles = [];
-    context.read<UserService>().setNotificationCount(0);
+    // context.read<UserService>().setNotificationCount(0);
+    notificationsTempUnread = {};
     super.initState();
   }
 
-  ListView NotificationTab(UserModel currentUser) {
+
+  StreamBuilder NotificationTab(UserModel currentUser, BuildContext context) {
     DateTime _currentTime = DateTime.now();
-    currentUser.notifications.forEach((element) {
-      tiles.add(GetNotificationTile(notification: element, currentTime: _currentTime,));
-    });
-    tiles = tiles.reversed.toList();
-    return ListView(
-      children: tiles
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .collection('notifications')
+          .orderBy('orderBy', descending: true)
+          .snapshots()?.take(20)?.map((snapShot) => snapShot.docs.map((document) {
+        return NotificationModel.fromMap(document.data());
+      }).toList()),
+
+      builder: (context, snapshot) {
+        tiles = [Divider(color: Color(figmaColours.greyLight),height: 1,)];
+        if(snapshot.hasError) {
+          print(snapshot.error);
+        }
+        while(!snapshot.hasData) {
+          return circularProgress(Color(FigmaColours().highlight));
+        }
+        if (snapshot.connectionState == ConnectionState.done) {
+
+        }
+        snapshot.data.forEach((NotificationModel notificationModel) {
+          if(notificationModel.seen == false) {
+            notificationsTempUnread.add(notificationModel.id);
+            NotificationService().setNotificationRead(notificationModel.id, currentUser);
+          }
+          tiles.add(GetNotificationTile(
+              notification: notificationModel,
+              currentTime: _currentTime,
+              notificationUnread: notificationsTempUnread));
+          tiles.add(Divider(color: Color(figmaColours.greyLight),height: 1,));
+        });
+        return ListView(children: tiles,);
+      },
     );
   }
 
@@ -51,23 +84,18 @@ class _NotificationPageState extends State<NotificationPage> {
   Widget build(BuildContext context) {
     UserModel currentUser = context.read<UserService>().currentUser;
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Notifications"),
-        toolbarHeight: kToolbarHeight,
-        actions: [
-          IconButton(onPressed: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => NotificationSettingsPage()));
-          }, icon: Icon(Icons.settings_outlined))
-        ],
-      ),
-      body: DefaultTabController(
+    return DefaultTabController(
         initialIndex: 0,
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            toolbarHeight: 60,
+            title: Text("Notifications"),
+            actions: [
+              IconButton(onPressed: () async {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => NotificationSettingsPage()));
+              }, icon: Icon(Icons.settings_outlined))
+            ],
             automaticallyImplyLeading: false,
             bottom: TabBar(
               labelColor: theme.accentColor,
@@ -78,19 +106,18 @@ class _NotificationPageState extends State<NotificationPage> {
                   text: 'General',
                 ),
                 Tab(
-                  text: 'Friend Requests',
+                  icon: Icon(Icons.person_add_outlined),
                 ),
               ],
             ),
           ),
           body: TabBarView(
             children: [
-              NotificationTab(currentUser),
+              NotificationTab(currentUser, context),
               LoadFriendRequestTab(),
             ],
           ),
         ),
-      ),
     );
   }
 }
@@ -100,18 +127,27 @@ class GetNotificationTile extends StatelessWidget {
 
   NotificationModel notification;
   DateTime currentTime;
-  GetNotificationTile({@required this.notification, this.currentTime});
+  Set<String> notificationUnread;
+
+  GetNotificationTile({@required this.notification, this.currentTime, this.notificationUnread});
+
 
   Widget getTile(UserModel sentFrom) {
     switch(notification.type) {
       case "acceptedFriendRequest" : {
-        return AcceptedFriendRequest(sender: sentFrom, notification: notification, currentTime: currentTime);
+        return AcceptedFriendRequest(
+          sender: sentFrom,
+          notification: notification,
+          currentTime: currentTime,
+          notificationUnread: notificationUnread,
+        );
       }
       case "venueBeaconInvite" : {
         return VenueInvite(
           sender: sentFrom,
           currentTime: currentTime,
           notification: notification,
+          notificationUnread: notificationUnread,
         );
       } break;
       case "comingToBeacon" : {
@@ -119,6 +155,7 @@ class GetNotificationTile extends StatelessWidget {
           sender: sentFrom,
           currentTime: currentTime,
           notification: notification,
+          notificationUnread: notificationUnread,
         );
       }
       case "summoned" : {
@@ -126,6 +163,7 @@ class GetNotificationTile extends StatelessWidget {
           sender: sentFrom,
           currentTime: currentTime,
           notification: notification,
+          notificationUnread: notificationUnread,
         );
       }
 

@@ -10,11 +10,13 @@ class Summoned extends StatefulWidget {
   UserModel sender;
   NotificationModel notification;
   DateTime currentTime;
+  Set<String> notificationUnread;
 
   Summoned({
     @required this.sender,
     @required this.notification,
-    @required this.currentTime
+    @required this.currentTime,
+    @required this.notificationUnread,
   });
 
   @override
@@ -47,7 +49,7 @@ class _SummonedState extends State<Summoned> {
       currentTime: widget.currentTime,
       notification: widget.notification,
       sender: widget.sender,
-
+      notificationUnread: widget.notificationUnread,
     );
   }
 }

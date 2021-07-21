@@ -52,7 +52,7 @@ class NotificationService {
     ///When the app is background but open (minimmised sorta thing) and user taps
     ///on the notification. used for routing mainly
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print(message.data["type"]);
+      // print(message.data["type"]);
     });
   }
   static void display(RemoteMessage message) async {
@@ -70,7 +70,7 @@ class NotificationService {
           )
       );
 
-
+      
       await _notificationsPlugin.show(
         id,
         message.notification.title,
@@ -81,6 +81,8 @@ class NotificationService {
       print(e);
     }
   }
+
+
 
 
   Future<String> getToken() async {
@@ -139,12 +141,54 @@ class NotificationService {
           .collection('sendMessage')
           .doc(Uuid().v4())
           .set({
-        'token': tokens,
+        'token': tokens.toList(),
         'title': title,
         'body': body,
         'type': type,
       });
     }
+  }
+
+  sendNotification(List<UserModel> sendToUsers,UserModel currentUser, String type) async {
+    String notificationId = Uuid().v4();
+    sendToUsers.forEach((element) async {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(element.id)
+          .collection('notifications')
+          .doc(notificationId).set({
+        "id" : notificationId,
+        "type": type,
+        "sentFrom": currentUser.id,
+        "dateTime": DateTime.now().toString(),
+        "orderBy" : DateTime.now().millisecondsSinceEpoch,
+      });
+    });
+  }
+
+  // ///This is done in a pretty hacky way, stores it in the collection
+  // setNewNotificationStatus(UserModel user, bool status) async {
+  //   await FirebaseFirestore.instance
+  //       .collection('users')
+  //       .doc(user.id)
+  //       .collection('notifications')
+  //       .doc('notificationStatus')
+  //       .set(
+  //       {"newNotification": status,
+  //         "type" : "status",
+  //         "sentFrom" : user.id,
+  //         "dateTime": DateTime.now().toString(),
+  //         "orderBy" : DateTime.now().millisecondsSinceEpoch,
+  //       });
+  // }
+
+  setNotificationRead(String notificationId, UserModel currentUser) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.id)
+        .collection('notifications')
+        .doc(notificationId)
+        .update({'seen' : true});
   }
 
   setToken(String token, String id) async {

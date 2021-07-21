@@ -18,7 +18,6 @@ class UserModel {
   int notificationCount;
   List<String> sentFriendRequests;
   List<String> receivedFriendRequests;
-  List<NotificationModel> notifications;
   NotificationSettingsModel notificationSettings;
   List<UserModel> friendModels;
   Set<String> tokens;
@@ -34,7 +33,6 @@ class UserModel {
       this.friends,
       this.sentFriendRequests,
       this.receivedFriendRequests,
-      this.notifications,
       this.imageURL,
       this.notificationSettings,
       this.friendModels,
@@ -55,7 +53,6 @@ class UserModel {
     BeaconModel beacon;
     int _notificationCount;
     List<dynamic> _data;
-    List<NotificationModel> _notifications = [];
     String _imageURL = '';
     NotificationSettingsModel notificationSettings;
 
@@ -90,12 +87,12 @@ class UserModel {
 
 
 
-    if (doc.data().containsKey('notifications')) {
-      _data = List.from(doc.data()["notifications"]);
-      _data.forEach((element) {
-        _notifications.add(NotificationModel.fromMap(element));
-      });
-    }
+    // if (doc.data().containsKey('notifications')) {
+    //   _data = List.from(doc.data()["notifications"]);
+    //   _data.forEach((element) {
+    //     _notifications.add(NotificationModel.fromMap(element));
+    //   });
+    // }
 
 
     return UserModel(
@@ -110,7 +107,6 @@ class UserModel {
       friends: List.from(doc.data()["friends"] ?? []),
       sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
-      notifications: _notifications,
       imageURL: doc.data()['imageURL'] ?? '',
       notificationSettings: NotificationSettingsModel(
         notificationSummons: doc.data()['notificationSummons'] ?? true,

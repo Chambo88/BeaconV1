@@ -144,14 +144,13 @@ class CustomTheme {
       appBarTheme: AppBarTheme(
           color: Colors.black,
         centerTitle: true,
+        toolbarHeight: 50,
         iconTheme: IconThemeData(
           color: Color(0xFFAD00FF)
         ),
-        textTheme: TextTheme(
-          headline6: TextStyle(
+        titleTextStyle: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: 24,
-          )
+            fontSize: 22,
         ),
         // titleTextStyle: TextStyle(
         //   fontWeight: FontWeight.bold,
