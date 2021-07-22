@@ -60,6 +60,9 @@ class SearchBar extends StatelessWidget {
       ),
       onChanged: (value) {
         onChanged(value);
+        if(value == '') {
+          controller.clear();
+        }
       },
     );
   }
