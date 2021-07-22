@@ -1,5 +1,7 @@
 import 'package:beacon/models/GroupModel.dart';
+import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/UserService.dart';
+import 'package:beacon/widgets/ProfilePicWidget.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:flutter/cupertino.dart';
@@ -78,33 +80,32 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-              height: 50,
-              color: theme.primaryColor,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Display to all?',
-                      style: Theme.of(context).textTheme.headline5,
-                    ),
-                    Switch(
-                      value: _displayToAll,
-                      onChanged: (value) {
-                        setState(() {
-                          _displayToAll = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              )),
+          BeaconFlatButton(
+            arrow: false,
+            icon: Icons.remove_red_eye_outlined,
+            title: 'Display to all?',
+            trailing: Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Switch(
+                  value: _displayToAll,
+                  onChanged: (value) {
+                    setState(() {
+                      _displayToAll = value;
+                    });
+                  },
+              ),
+            ),
+            onTap: () {
+              setState(() {
+                _displayToAll = !_displayToAll;
+              });
+            },
+          ),
           if (!_displayToAll) _leftSubHeader(context, 'Groups'),
           if (!_displayToAll) _groupSelector(),
           if (!_displayToAll) _leftSubHeader(context, 'Friends'),
           if (!_displayToAll) _friendsButton(context),
+          if (!_displayToAll) _leftSubHeader(context, 'Selected friends'),
           if (!_displayToAll)
             Column(
               children: _selectedFriendTiles(context),
@@ -123,14 +124,23 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
     return allFriends;
   }
 
+  UserModel getFriendModelFromId(String id, List<UserModel> friendsModels) {
+    for(UserModel friend in friendsModels) {if(friend.id == id) {
+      return friend;
+    }}
+    return UserModel(firstName: "error", lastName: "");
+  }
+
   List<Widget> _selectedFriendTiles(BuildContext context) {
+    List<UserModel> friendsModels = context.read<UserService>().currentUser.friendModels;
     return _getAllFriendsSelectedAndGroups().map((friend) {
+      UserModel friendModel = getFriendModelFromId(friend, friendsModels);
       return ListTile(
         title: Text(
-          friend,
-          style: Theme.of(context).textTheme.bodyText1,
+          "${friendModel.firstName} ${friendModel.lastName}",
+          style: Theme.of(context).textTheme.headline5,
         ),
-        leading: Icon(Icons.account_circle_rounded, color: Colors.grey),
+        leading: ProfilePicture(user: friendModel, size: 18,),
       );
     }).toList();
   }
@@ -154,7 +164,8 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
 
   Widget _friendsButton(BuildContext context) {
     return BeaconFlatButton(
-      title: 'Friends',
+      icon: Icons.person_add_outlined,
+      title: 'Add friends',
       onTap: () {
         setState(() {
           showModalBottomSheet(
@@ -166,6 +177,10 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
               return FriendSelectorSheet(
                 onContinue: _updateFriendsList,
                 friendsSelected: _friendsList,
+                selectedFromGroups: _groupList
+                    .map((GroupModel g) => g.members)
+                    .expand((friend) => friend)
+                    .toSet()
               );
             },
           );

@@ -14,12 +14,14 @@ import '../SearchBar.dart';
 class FriendSelectorSheet extends StatefulWidget {
   Function onContinue;
   Set<String> friendsSelected = Set();
+  Set<String> selectedFromGroups = Set();
 
 
   FriendSelectorSheet({
     Key key,
     this.onContinue,
     this.friendsSelected,
+    this.selectedFromGroups,
   }) : super(key: key);
 
   @override
@@ -33,13 +35,17 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
   List<UserModel> _filteredFriends = [];
   Set<String> _friendsSelected;
   FigmaColours figmaColours ;
+  Set<String> _friendsSelectedForClose;
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
     _friendsSelected = widget.friendsSelected;
+    _friendsSelectedForClose = {};
+    _friendsSelectedForClose.addAll(_friendsSelected);
     figmaColours =  FigmaColours();
+
   }
 
   @override
@@ -67,6 +73,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
           friend.lastName.toLowerCase().startsWith(filter));
     }).toList();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +103,10 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: CloseButton(
+                    onPressed: () {
+                      widget.onContinue(_friendsSelectedForClose);
+                      Navigator.pop(context);
+                    },
                     color: Color(FigmaColours().greyLight),
                   ),
                 )
@@ -119,13 +130,15 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
               children: _filteredFriends.map((friend) {
                 return GestureDetector(
                   onTap: () {
-                    setState(() {
-                      if (_friendsSelected.contains(friend.id)) {
-                        _friendsSelected.remove(friend.id);
-                      } else {
-                        _friendsSelected.add(friend.id);
-                      }
-                    });
+                    if(!widget.selectedFromGroups.contains(friend.id)) {
+                      setState(() {
+                        if (_friendsSelected.contains(friend.id)) {
+                          _friendsSelected.remove(friend.id);
+                        } else {
+                          _friendsSelected.add(friend.id);
+                        }
+                      });
+                    };
                   },
                   child: ListTile(
                     leading: Padding(
@@ -140,7 +153,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
                     ),
                     trailing: Padding(
                       padding: EdgeInsets.only(right: 10),
-                      child: BeaconCheckBox(toggle: _friendsSelected.contains(friend.id)),
+                      child: BeaconCheckBox(toggle: _friendsSelected.contains(friend.id), isUserInGroups: widget.selectedFromGroups.contains(friend.id)),
                     )
                   ),
                 );
@@ -169,7 +182,8 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
 
 class BeaconCheckBox extends StatelessWidget {
   bool toggle;
-  BeaconCheckBox({@required this.toggle});
+  bool isUserInGroups = false;
+  BeaconCheckBox({@required this.toggle, this.isUserInGroups});
   FigmaColours figmaColours = FigmaColours();
 
   @override
@@ -189,13 +203,13 @@ class BeaconCheckBox extends StatelessWidget {
                 ),
 
             ),
-            (toggle)? Align(
+            (toggle || isUserInGroups)? Align(
               alignment: Alignment.center,
               child: Container(
                 width: 17,
                 height: 17,
                 decoration: new BoxDecoration(
-                  color: Color(figmaColours.greyLight),
+                  color: (isUserInGroups)? Colors.black : Color(figmaColours.greyLight),
                   shape: BoxShape.circle,
                 ),),
             ) : Container(),
