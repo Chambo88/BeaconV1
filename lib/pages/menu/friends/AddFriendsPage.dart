@@ -33,7 +33,6 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
   void filterSearchResults(String query) {
     if (query.isNotEmpty) {
       Query allUsers = FirebaseFirestore.instance.collection("users");
-      //where("userId", isEqualTo: widget.user.id). why cant i add this in here
       Future<QuerySnapshot> userDoc = allUsers
           .where("nameSearch",
               arrayContains: query.toLowerCase().trim().replaceAll(' ', ''))

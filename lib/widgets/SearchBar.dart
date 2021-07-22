@@ -39,8 +39,9 @@ class SearchBar extends StatelessWidget {
         fillColor: Color(figmaColours.greyMedium),
         filled: true,
         focusedBorder: OutlineInputBorder(
-          // borderSide: BorderSide(color: Colors.white),
+          borderSide: BorderSide(color: Colors.white.withOpacity(0)),
           borderRadius: BorderRadius.circular(15),
+
         ),
         enabledBorder: UnderlineInputBorder(
           // borderSide: BorderSide(color: Colors.white),

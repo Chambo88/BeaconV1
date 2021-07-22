@@ -39,6 +39,22 @@ class _UserResultAddableState extends State<UserResultAddable> {
   Widget checkFriendShipAndPendingStatus(UserService userService) {
     //Build cancel button this if friends request is pending
 
+    if(userService.currentUser.friends.contains(widget.anotherUser.id)) {
+      return Container();
+    }
+
+    if(userService.currentUser.receivedFriendRequests.contains(widget.anotherUser.id)) {
+      return SmallGradientButton(
+          child: Text(
+            "accept",
+            style: Theme.of(context).textTheme.headline5,
+          ),
+          onPressed: () async {
+            userService.acceptFriendRequest(widget.anotherUser);
+            setState(() {});
+          });
+    }
+
     if (userService.currentUser.sentFriendRequests
         .contains(widget.anotherUser.id)) {
       return SmallGradientButton(

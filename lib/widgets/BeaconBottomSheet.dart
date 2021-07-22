@@ -5,8 +5,9 @@ import 'package:flutter/widgets.dart';
 class BeaconBottomSheet extends StatelessWidget {
   final Widget child;
   FigmaColours figmaColours = FigmaColours();
+  final bool dark;
 
-  BeaconBottomSheet({this.child});
+  BeaconBottomSheet({this.child, this.dark=false});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +16,7 @@ class BeaconBottomSheet extends StatelessWidget {
       // height: MediaQuery.of(context).size.height * 0.75,
       margin: EdgeInsets.only(top: 70),
       decoration: new BoxDecoration(
-        color: Color(figmaColours.greyMedium),
+        color: (dark == false)? Color(figmaColours.greyMedium) : Color(figmaColours.greyDark),
         borderRadius: new BorderRadius.only(
           topLeft: const Radius.circular(25.0),
           topRight: const Radius.circular(25.0),

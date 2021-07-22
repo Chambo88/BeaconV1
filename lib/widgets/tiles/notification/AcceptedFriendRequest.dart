@@ -1,11 +1,13 @@
 import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/Dialogs/AddToGroupsDialog.dart';
 import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 import 'package:beacon/widgets/buttons/SmallGreyButton.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:beacon/widgets/tiles/notification/NotificationSkeleton.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AcceptedFriendRequest extends StatefulWidget {
 
@@ -51,19 +53,26 @@ class _AcceptedFriendRequestState extends State<AcceptedFriendRequest> {
   }
 
   List<Widget> getTypeButtons(ThemeData theme) {
-    return [Padding(
-      padding: const EdgeInsets.all(6),
-      child: SmallOutlinedButton(
-        child: Text("Groups",
-          style: theme.textTheme.headline4,
+    UserModel currentUser = context
+        .read<UserService>()
+        .currentUser;
+    if (currentUser.friends.contains(widget.sender)) {
+      return [Padding(
+        padding: const EdgeInsets.all(6),
+        child: SmallOutlinedButton(
+          child: Text("Groups",
+            style: theme.textTheme.headline4,
+          ),
+          width: 120,
+          height: 35,
+          onPressed: () {
+            addToGroupsDialog(context);
+          },
         ),
-        width: 120,
-        height: 35,
-        onPressed: () {
-          addToGroupsDialog(context);
-        },
-      ),
-    )];
+      )
+      ];
+    }
+    return [Container()];
   }
 
   @override

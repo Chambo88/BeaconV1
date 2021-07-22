@@ -112,7 +112,7 @@ class NotificationSkeleton extends StatelessWidget {
           Row(
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 93),
+                padding: const EdgeInsets.fromLTRB(28, 8, 0, 8),
                 child:Text(timeDiff),
               ),
               Spacer(),

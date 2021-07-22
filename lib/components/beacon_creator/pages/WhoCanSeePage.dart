@@ -160,6 +160,7 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
           showModalBottomSheet(
             context: context,
             backgroundColor: Colors.transparent,
+            barrierColor: Colors.transparent,
             isScrollControlled: true,
             builder: (context) {
               return FriendSelectorSheet(
