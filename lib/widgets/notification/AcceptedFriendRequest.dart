@@ -5,7 +5,7 @@ import 'package:beacon/widgets/Dialogs/AddToGroupsDialog.dart';
 import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 import 'package:beacon/widgets/buttons/SmallGreyButton.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
-import 'package:beacon/widgets/tiles/notification/NotificationSkeleton.dart';
+import 'package:beacon/widgets/notification/NotificationSkeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

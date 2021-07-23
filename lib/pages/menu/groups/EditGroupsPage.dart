@@ -213,6 +213,7 @@ class _EditGroupPageState extends State<EditGroupPage> {
                           isScrollControlled: true,
                           builder: (context) {
                             return FriendSelectorSheet(
+
                               onContinue: _updateFriendsList,
                               friendsSelected: _group.members.toSet(),
                             );

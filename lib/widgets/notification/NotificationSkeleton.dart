@@ -4,7 +4,9 @@ import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:flutter/material.dart';
 
-import '../../ProfilePicWidget.dart';
+import '../ProfilePicWidget.dart';
+
+
 
 
 //The general notification shape, add extra buttons that end up in the bottom right and a rich text segment for the body

@@ -3,6 +3,7 @@ import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/BeaconBottomSheet.dart';
+import 'package:beacon/widgets/GreyCircleCheckBox.dart';
 import 'package:beacon/widgets/ProfilePicWidget.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/material.dart';
@@ -33,17 +34,19 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
   TextEditingController _searchController;
   final FocusNode _focusNode = FocusNode();
   List<UserModel> _filteredFriends = [];
-  Set<String> _friendsSelected;
+  Set<String> _friendsSelected = {};
   FigmaColours figmaColours ;
-  Set<String> _friendsSelectedForClose;
+  Set<String> _friendsSelectedForClose = {};
+  Set<String> _selectedFromGroups = {};
 
   @override
   void initState() {
     super.initState();
     _searchController = TextEditingController();
-    _friendsSelected = widget.friendsSelected;
+    _friendsSelected = widget.friendsSelected?? {};
     _friendsSelectedForClose = {};
     _friendsSelectedForClose.addAll(_friendsSelected);
+    _selectedFromGroups = widget.selectedFromGroups?? {};
     figmaColours =  FigmaColours();
 
   }
@@ -130,7 +133,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
               children: _filteredFriends.map((friend) {
                 return GestureDetector(
                   onTap: () {
-                    if(!widget.selectedFromGroups.contains(friend.id)) {
+                    if(!_selectedFromGroups.contains(friend.id)) {
                       setState(() {
                         if (_friendsSelected.contains(friend.id)) {
                           _friendsSelected.remove(friend.id);
@@ -153,7 +156,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
                     ),
                     trailing: Padding(
                       padding: EdgeInsets.only(right: 10),
-                      child: BeaconCheckBox(toggle: _friendsSelected.contains(friend.id), isUserInGroups: widget.selectedFromGroups.contains(friend.id)),
+                      child: GreyCircleCheckBox(toggle: _friendsSelected.contains(friend.id), unTogglable: _selectedFromGroups.contains(friend.id)),
                     )
                   ),
                 );
@@ -180,42 +183,5 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
   }
 }
 
-class BeaconCheckBox extends StatelessWidget {
-  bool toggle;
-  bool isUserInGroups = false;
-  BeaconCheckBox({@required this.toggle, this.isUserInGroups});
-  FigmaColours figmaColours = FigmaColours();
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 27,
-      height: 27 ,
-      child: Stack(
-          children: [
-            Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Color(figmaColours.greyLight),
-                      width: 2
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(20))
-                ),
-
-            ),
-            (toggle || isUserInGroups)? Align(
-              alignment: Alignment.center,
-              child: Container(
-                width: 17,
-                height: 17,
-                decoration: new BoxDecoration(
-                  color: (isUserInGroups)? Colors.black : Color(figmaColours.greyLight),
-                  shape: BoxShape.circle,
-                ),),
-            ) : Container(),
-          ]
-      ),
-    );
-  }
-}
 

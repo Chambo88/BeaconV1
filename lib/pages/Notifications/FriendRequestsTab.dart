@@ -4,7 +4,7 @@ import 'package:beacon/services/NotificationService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/progress_widget.dart';
-import 'package:beacon/widgets/tiles/notification/FriendRequest.dart';
+import 'package:beacon/widgets/notification/FriendRequest.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

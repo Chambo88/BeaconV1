@@ -10,6 +10,7 @@ class ProfilePicture extends StatelessWidget {
   final FigmaColours figmaColours = FigmaColours();
   final double size;
   final UserModel user;
+  String url = '';
 
   ProfilePicture({
     this.onClicked,
@@ -19,6 +20,9 @@ class ProfilePicture extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if(user.imageURL != null) {
+      url = user.imageURL;
+    }
     return GestureDetector(
         onTap: onClicked ?? null,
         child: getImage()
@@ -27,7 +31,7 @@ class ProfilePicture extends StatelessWidget {
 
 
   CircleAvatar getImage() {
-    if (user.imageURL == '') {
+    if (url == '') {
 
 
       return CircleAvatar(
@@ -41,10 +45,6 @@ class ProfilePicture extends StatelessWidget {
         backgroundColor: Color(figmaColours.greyLight),
       );
     } else {
-
-      FirebaseStorage storage = FirebaseStorage.instance;
-      Reference ref = storage
-          .ref('images/defaultProfile.png');
 
       return CircleAvatar(
         radius: size,

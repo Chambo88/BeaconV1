@@ -1,13 +1,13 @@
-import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 import 'package:beacon/widgets/buttons/SmallGreyButton.dart';
-import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
-import 'package:beacon/widgets/tiles/notification/NotificationSkeleton.dart';
+import 'package:beacon/widgets/notification/NotificationSkeleton.dart';
 import 'package:flutter/material.dart';
 
-class VenueInvite extends StatefulWidget {
+
+//TODO find a way to merge lots of notifications of people coming to your beacon, probably use a cloud function
+class ComingToBeacon extends StatefulWidget {
 
   UserModel sender;
   NotificationModel notification;
@@ -15,7 +15,7 @@ class VenueInvite extends StatefulWidget {
   Set<String> notificationUnread;
 
 
-  VenueInvite({
+  ComingToBeacon({
     @required this.sender,
     @required this.notification,
     @required this.currentTime,
@@ -23,11 +23,10 @@ class VenueInvite extends StatefulWidget {
   });
 
   @override
-  _VenueInviteState createState() => _VenueInviteState();
+  _ComingToBeaconState createState() => _ComingToBeaconState();
 }
 
-class _VenueInviteState extends State<VenueInvite> {
-
+class _ComingToBeaconState extends State<ComingToBeacon> {
   RichText getBodyText(ThemeData theme) {
     return RichText(
       text: TextSpan(children: [
@@ -35,7 +34,7 @@ class _VenueInviteState extends State<VenueInvite> {
             text: ''''${widget.sender.firstName} ${widget.sender.lastName}''',
             style: theme.textTheme.headline4),
         TextSpan(
-            text: '''' lit a venue beacon: ''',
+            text: '''' is coming to your venue beacon ''',
             style: theme.textTheme.bodyText2),
         TextSpan(
             text: '''${widget.notification.beacon.eventName}''',
@@ -44,32 +43,7 @@ class _VenueInviteState extends State<VenueInvite> {
     );
   }
 
-  List<Widget> getTypeButtons() {
-    return [Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: SmallOutlinedButton(
-        child: Text("Going?",
-          style: TextStyle(color: Colors.white),
-        ),
-        width: 120,
-        height: 35,
-        onPressed: () {
-          //TODO ADD PEOPLE TO BEACON ATTENDIES
-        },
-      ),
-    ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: SmallGradientButton(
-          child: Text("Accept",
-            style: TextStyle(color: Colors.white),
-          ),
-          width: 120,
-          height: 35,
-        ),
-      )
-    ];
-  }
+  List<Widget> getTypeButtons() {}
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +55,6 @@ class _VenueInviteState extends State<VenueInvite> {
       notification: widget.notification,
       sender: widget.sender,
       notificationUnread: widget.notificationUnread,
-
     );
   }
 }

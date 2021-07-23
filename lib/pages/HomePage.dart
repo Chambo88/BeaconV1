@@ -42,6 +42,8 @@ class _BuildHomePageState extends State<BuildHomePage> {
   @override
   Widget build(BuildContext context) {
     final _currentUser = context.read<AuthService>().getUserId;
+    ///TODO the init should probably be in a loading page or have an await or something,
+    ///currenlty things are calling userService before its initialized
     var userFromFireStore = context.read<UserService>().initUser(_currentUser.uid);
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;

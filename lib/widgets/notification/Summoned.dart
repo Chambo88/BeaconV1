@@ -2,7 +2,7 @@ import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 import 'package:beacon/widgets/buttons/SmallGreyButton.dart';
-import 'package:beacon/widgets/tiles/notification/NotificationSkeleton.dart';
+import 'package:beacon/widgets/notification/NotificationSkeleton.dart';
 import 'package:flutter/material.dart';
 
 class Summoned extends StatefulWidget {
