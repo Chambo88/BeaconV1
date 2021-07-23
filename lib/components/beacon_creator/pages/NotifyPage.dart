@@ -67,7 +67,7 @@ class _NotifyPageState extends State<NotifyPage> {
         }
       }
     }).toSet();
-    print(_initFriends);
+    print('ok');
     _notifyFriends = widget.initNotifyFriends;
     _notifyAll = widget.initNotifyAll;
   }
@@ -89,8 +89,8 @@ class _NotifyPageState extends State<NotifyPage> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
           BeaconFlatButton(
             arrow: false,
-            icon: Icons.remove_red_eye_outlined,
-            title: 'Display to all?',
+            icon: Icons.notifications_outlined,
+            title: 'Notify all?',
             trailing: Padding(
               padding: const EdgeInsets.only(right: 10),
               child: Switch(
@@ -172,13 +172,11 @@ class _NotifyPageState extends State<NotifyPage> {
       return GestureDetector(
         onTap: () {
           setState(() {
-            print(_notifyFriends);
             if (_notifyFriends.contains(friend)) {
-              ///todo this isnt rmeoving for some reason
-              bool check = _notifyFriends.remove(friend);
-              print(check);
+              _notifyFriends.remove(friend);
+              print(_notifyFriends);
             }
-            _notifyFriends.add(friend);
+            else {_notifyFriends.add(friend);}
           });
         },
         child: ListTile(
