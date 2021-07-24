@@ -75,7 +75,7 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
       totalPageCount: widget.totalPageCount,
       currentPageIndex: widget.currentPageIndex,
       onContinuePressed: enableButton()
-          ? () { print(_friendsList);
+          ? () {
         return widget.onContinue(_displayToAll, _groupList, _friendsList);
       }
           : null,

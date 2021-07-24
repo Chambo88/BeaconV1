@@ -1,22 +1,10 @@
-import 'package:beacon/components/BeaconSelector.dart';
-import 'package:beacon/models/BeaconModel.dart';
-import 'package:beacon/models/UserLocationModel.dart';
-import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/MapPage.dart';
 import 'package:beacon/pages/menu/MenuPage.dart';
-import 'package:beacon/services/BeaconService.dart';
-import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/NotificationIcon.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
-import '../services/AuthService.dart';
-import 'package:beacon/services/AuthService.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:async/async.dart';
 
 import 'Notifications/NotificationPage.dart';
 
@@ -41,12 +29,6 @@ class _BuildHomePageState extends State<BuildHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final _currentUser = context.read<AuthService>().getUserId;
-    ///TODO the init should probably be in a loading page or have an await or something,
-    ///currenlty things are calling userService before its initialized
-    var userFromFireStore = context.read<UserService>().initUser(_currentUser.uid);
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
     return Scaffold(
       body: pages[_pageIndex],
       bottomNavigationBar: BottomNavigationBar(

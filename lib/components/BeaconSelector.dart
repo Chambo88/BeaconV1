@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:beacon/Assests/Icons.dart';
 import 'package:beacon/components/beacon_creator/CasualBeaconCreator.dart';
 import 'package:beacon/components/beacon_creator/LiveBeaconCreator.dart';
+import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/library/ColorHelper.dart';
@@ -26,6 +27,7 @@ class BeaconSelector extends StatefulWidget {
 
 class _BeaconSelectorState extends State<BeaconSelector> {
   UserService _userService;
+  BeaconService _beaconService = BeaconService();
   var _showBeaconEditor = false;
   BeaconType _beaconTypeSelected;
   BeaconIcons iconStuff = BeaconIcons();
@@ -186,7 +188,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             setState(() {
               _showBeaconEditor = false;
             });
-            _userService.addBeacon(beacon);
+            _beaconService.addBeacon(beacon, _userService.currentUser.id);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -212,7 +214,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             setState(() {
               _showBeaconEditor = false;
             });
-            _userService.addBeacon(beacon);
+            _beaconService.addBeacon(beacon, _userService.currentUser.id);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(

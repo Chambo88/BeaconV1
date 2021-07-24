@@ -7,14 +7,12 @@ import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/NotificationService.dart';
-import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/services/UserService.dart';
-import 'package:beacon/widgets/progress_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 typedef void BeaconCallback(CasualBeacon beacon);
 
@@ -44,11 +42,14 @@ class CasualBeaconCreator extends StatefulWidget {
 class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
   UserService _userService;
   NotificationService _notificationService = NotificationService();
-  CasualBeacon _beacon = CasualBeacon(active: true);
+  CasualBeacon _beacon = CasualBeacon();
   CasualBeaconCreatorStage _stage = CasualBeaconCreatorStage.whoCanSee;
 
-  // Holding here as well as the beacon model in case the user goes back
-  // e.g (initGroup, initFriends)
+  ///TODO this is temporary until the location selected works, currently using current location
+  UserLocationModel _userLocation;
+
+  /// Holding here as well as the beacon model in case the user goes back
+  /// e.g (initGroup, initFriends)
   var _groups = Set<GroupModel>();
   var _friends = Set<String>();
   var _displayToAll = false;
@@ -63,6 +64,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
   @override
   Widget build(BuildContext context) {
     _userService = Provider.of<UserService>(context);
+    _userLocation = Provider.of<UserLocationModel>(context);
     switch (_stage) {
       case CasualBeaconCreatorStage.whoCanSee:
         return WhoCanSeePage(
@@ -77,8 +79,11 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
           onContinue: (displayToAll, groupList, friendList) {
             setState(() {
               if (displayToAll) {
-                _beacon.users = _userService.currentUser.friends;
+                _beacon.usersThatCanSee = _userService.currentUser.friends;
+                _friends = _userService.currentUser.friends.toSet();
+                _displayToAll = displayToAll;
               } else {
+                _displayToAll = displayToAll;
                 _groups = groupList;
                 _friends = friendList;
                 Set<String> allFriends = groupList
@@ -86,7 +91,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
                     .expand((friend) => friend)
                     .toSet();
                 allFriends.addAll(friendList);
-                _beacon.users = allFriends.toList();
+                _beacon.usersThatCanSee = allFriends.toList();
               }
               _stage = CasualBeaconCreatorStage.description;
             });
@@ -146,8 +151,12 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
           onClose: widget.onClose,
           onContinue: (location) {
             setState(() {
-              // print(location);
+              ///Todo need to return the location lat long and Name here
+
               // _beacon.location = location.geometry;
+              _beacon.lat = _userLocation.latitude.toString();
+              _beacon.long = _userLocation.longitude.toString();
+              _beacon.locationName = "53 Centaurus Road / Smash palace";
               _stage = CasualBeaconCreatorStage.invite;
             });
           },
@@ -172,14 +181,23 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
           continueText: 'Light',
           onContinue: (users) {
             setState(() {
-              // UserModel currentUser = _userService.currentUser;
-              // _notificationService.sendNotification(users, _userService.currentUser, 'venueBeaconInvite');
-              // _notificationService.sendPushNotification(users,
-              //     title: "${currentUser.firstName} ${currentUser.lastName} has invited you to ${_beacon.eventName}",
-              //     body: "${_beacon.desc}",
-              //     type: "venueBeaconInvite"
-              // );
-              // widget.onCreated(_beacon);
+              String beaconId = Uuid().v4();
+              _beacon.id = beaconId;
+              UserModel currentUser = _userService.currentUser;
+              _beacon.userId = currentUser.id;
+              _beacon.peopleGoing = [currentUser.id];
+              _notificationService.sendNotification(
+                  users, _userService.currentUser, 'venueBeaconInvite',
+                beaconTitle: _beacon.eventName,
+                beaconDesc: _beacon.desc,
+                beaconId: _beacon.id,
+              );
+              _notificationService.sendPushNotification(users,
+                  title: "${currentUser.firstName} ${currentUser.lastName} has invited you to ${_beacon.eventName}",
+                  body: "${_beacon.desc}",
+                  type: "venueBeaconInvite",
+              );
+              widget.onCreated(_beacon);
             });
           },
         );

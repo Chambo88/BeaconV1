@@ -1,7 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'BeaconModel.dart';
-import 'GroupModel.dart';
-
 
 //Pretty sure some sort of extension/inhertience thing would be better here for the different models
 class NotificationModel {
@@ -11,41 +7,31 @@ class NotificationModel {
   bool seen;
   String id;
   //for beaconNotifications
-  final beacon;
+  String beaconId;
+  String beaconDesc;
+  String beaconTitle;
 
-  NotificationModel({this.type, this.dateTime, this.sentFrom, this.beacon, this.seen = false, this.id});
-
-
-  // Map<String, dynamic> toJson() => {
-  //   'sentFrom': sentFrom,
-  //   'type': type,
-  //   'dateTime': DateTime.now().toString(),
-  //   'beacon': (beacon != null)? beacon.toJson() : '',
-  //   'beaconType' : (beacon != null)? beacon.type.toString() : '',
-  // };
+  NotificationModel({
+    this.type,
+    this.dateTime,
+    this.sentFrom,
+    this.beaconTitle,
+    this.seen = false,
+    this.id,
+    this.beaconDesc,
+    this.beaconId,
+  });
 
 
   factory NotificationModel.fromMap(Map<String, dynamic> map) {
-
-    BeaconModel beacon;
-    String beaconType;
-
-    if (map["beaconType"] != '') {
-      beaconType = map["beaconType"];
-      if (beaconType == 'BeaconType.live') {
-        beacon = LiveBeacon.fromJson(map['beacon']);
-      }
-      ///UnComment when casual from JSon done
-      // if (beaconType == 'BeaconType.Casual') {
-      //   beacon = CasualBeacon.fromJson(map['beacon']);
-      // }
-    }
 
     return NotificationModel(
       sentFrom: map["sentFrom"],
       type: map["type"],
       dateTime: DateTime.tryParse(map["dateTime"]?? ''),
-      beacon: beacon,
+      beaconTitle: map["beaconTitle"]?? 'No title woops',
+      beaconDesc: map["beaconDesc"]?? '',
+      beaconId: map["beaconId"]?? null,
       seen: map["seen"]?? false,
       id: map["id"]?? "I messed up",
     );

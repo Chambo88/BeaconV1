@@ -33,20 +33,6 @@ class UserService {
     List<String> _friends = [];
     Set<String> _tokens = Set.from(doc.data()["tokens"] ?? []);
 
-    // if (doc.data().containsKey('beacon')) {
-    //   beacon = BeaconModel.toJson(doc.data()['beacon']);
-    // } else {
-    beacon = LiveBeacon(
-      id: '0',
-      userId: '0',
-      userName: 'Robbie',
-      active: false,
-      lat: "123",
-      long: "123",
-      desc: "A description",
-    );
-    // }
-
 
     if (doc.data().containsKey('groups')) {
       _data = List.from(doc.data()["groups"]);
@@ -92,7 +78,6 @@ class UserService {
       firstName: doc.data()['firstName'],
       lastName: doc.data()['lastName'],
       notificationCount: doc.data()['notificationCount'] ?? 0,
-      beacon: beacon,
       groups: _groups,
       friends: _friends,
       friendModels: _friendModels,
@@ -100,6 +85,8 @@ class UserService {
       sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       imageURL: doc.data()['imageURL'] ?? '',
+      beaconIds: List.from(doc.data()['beaconIds']?? []),
+      beaconsAttending: List.from(doc.data()["beaconsAttending"]?? []),
       //TODO refactor the way settings are stored into a map
       notificationSettings: NotificationSettingsModel(
         notificationSummons: doc.data()['notificationSummons'] ?? true,
@@ -113,14 +100,6 @@ class UserService {
     return currentUser;
   }
 
-  addBeacon(BeaconModel beacon) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser.id)
-        .update({
-      'beacons': FieldValue.arrayUnion([beacon.toJson()])
-    });
-  }
 
   removeFriend(UserModel friend, {UserModel user}) async {
     currentUser.friends.remove(friend.id);
@@ -171,28 +150,12 @@ class UserService {
         'lat': beacon.lat,
         'long': beacon.long,
         'description': beacon.desc,
-        'users': beacon.users,
+        'users': beacon.usersThatCanSee,
         'userId': currentUser.id,
         'userName': currentUser.firstName + " " + currentUser.lastName,
       }
     }, SetOptions(merge: true));
   }
-  // get Beacons
-
-  // update my beacon
-
-  // setNotificationCount(int x, {UserModel user}) async {
-  //   // If user is null then current user
-  //   if (user == null) {
-  //     currentUser.notificationCount = x;
-  //   }
-  //   String userId = user != null ? user.id : currentUser.id;
-  //   await FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(userId)
-  //       .update({"notificationCount": x});
-  // }
-
 
 
   addGroup(GroupModel group, {UserModel user}) async {

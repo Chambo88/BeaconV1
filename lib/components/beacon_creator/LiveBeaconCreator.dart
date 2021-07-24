@@ -63,7 +63,7 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
           onContinue: (displayToAll, groupList, friendList) {
             setState(() {
               if (displayToAll) {
-                _beacon.users = _userService.currentUser.friends;
+                _beacon.usersThatCanSee = _userService.currentUser.friends;
               } else {
                 _groups = groupList;
                 _friends = friendList;
@@ -72,7 +72,7 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
                     .expand((friend) => friend)
                     .toSet();
                 allFriends.addAll(friendList);
-                _beacon.users = allFriends.toList();
+                _beacon.usersThatCanSee = allFriends.toList();
               }
               _stage = LiveBeaconCreatorStage.description;
             });

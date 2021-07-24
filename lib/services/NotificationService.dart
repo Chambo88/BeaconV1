@@ -1,7 +1,6 @@
 import 'package:beacon/models/NotificationSettingsModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:uuid/uuid.dart';
@@ -129,7 +128,7 @@ class NotificationService {
     user.notificationSettings.notificationSummons = !user.notificationSettings.notificationSummons;
   }
 
-  sendPushNotification(List<UserModel> sendToUsers, {String title, String body, String type}) async {
+  sendPushNotification(List<UserModel> sendToUsers, {String title = '', String body = '', String type = ''}) async {
     Set<String> tokens = {};
     sendToUsers.forEach((element) {
       if (element.tokens.isNotEmpty) {
@@ -149,7 +148,8 @@ class NotificationService {
     }
   }
 
-  sendNotification(List<UserModel> sendToUsers,UserModel currentUser, String type, {String customId}) async {
+  sendNotification(List<UserModel> sendToUsers,UserModel currentUser, String type,
+      {String customId, String beaconTitle, String beaconDesc, String beaconId}) async {
     String notificationId = customId != null? customId: Uuid().v4();
     sendToUsers.forEach((element) async {
       await FirebaseFirestore.instance
@@ -163,25 +163,13 @@ class NotificationService {
         "dateTime": DateTime.now().toString(),
         "orderBy" : DateTime.now().millisecondsSinceEpoch,
         "seen" : false,
+        "beaconTitle" : beaconTitle?? '',
+        "beaconDesc" : beaconDesc?? '',
+        "beaconId" :beaconId?? '',
       });
     });
   }
 
-  // ///This is done in a pretty hacky way, stores it in the collection
-  // setNewNotificationStatus(UserModel user, bool status) async {
-  //   await FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(user.id)
-  //       .collection('notifications')
-  //       .doc('notificationStatus')
-  //       .set(
-  //       {"newNotification": status,
-  //         "type" : "status",
-  //         "sentFrom" : user.id,
-  //         "dateTime": DateTime.now().toString(),
-  //         "orderBy" : DateTime.now().millisecondsSinceEpoch,
-  //       });
-  // }
 
   setNotificationRead(String notificationId, UserModel currentUser) async {
     await FirebaseFirestore.instance

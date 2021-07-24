@@ -11,7 +11,6 @@ class UserModel {
   String email;
   String firstName;
   String lastName;
-  BeaconModel beacon;
   List<GroupModel> groups;
   List<String> friends;
   String imageURL;
@@ -21,6 +20,8 @@ class UserModel {
   NotificationSettingsModel notificationSettings;
   List<UserModel> friendModels;
   Set<String> tokens;
+  List<String> beaconIds;
+  List<String> beaconsAttending;
 
   UserModel({
       this.id,
@@ -28,7 +29,6 @@ class UserModel {
       this.firstName,
       this.lastName,
       this.notificationCount,
-      this.beacon,
       this.groups,
       this.friends,
       this.sentFriendRequests,
@@ -37,6 +37,8 @@ class UserModel {
       this.notificationSettings,
       this.friendModels,
       this.tokens,
+       this.beaconIds,
+      this.beaconsAttending,
   });
 
   get getFirstName => firstName;
@@ -48,33 +50,9 @@ class UserModel {
       print("user is NULL, in UserModelFrom doc");
       return null;
     }
-
     List<GroupModel> _groups = [];
-    BeaconModel beacon;
-    int _notificationCount;
     List<dynamic> _data;
-    String _imageURL = '';
-    NotificationSettingsModel notificationSettings;
 
-    // if (doc.data().containsKey('beacon')) {
-    //   beacon = BeaconModel.toJson(doc.data()['beacon']);
-    // } else {
-    beacon = LiveBeacon(
-      id: '0',
-      userId: '0',
-      userName: 'Robbie',
-      active: false,
-      lat: "123",
-      long: "123",
-      desc: "A description",
-    );
-    // }
-
-    if (doc.data().containsKey('notificationCount')) {
-      _notificationCount = doc.data()['notificationCount'];
-    } else {
-      _notificationCount = 0;
-    }
 
     if (doc.data().containsKey('groups')) {
       _data = List.from(doc.data()["groups"]);
@@ -86,28 +64,20 @@ class UserModel {
     }
 
 
-
-    // if (doc.data().containsKey('notifications')) {
-    //   _data = List.from(doc.data()["notifications"]);
-    //   _data.forEach((element) {
-    //     _notifications.add(NotificationModel.fromMap(element));
-    //   });
-    // }
-
-
     return UserModel(
       id: doc.id,
       email: doc.data()['email'],
       firstName: doc.data()['firstName'],
       lastName: doc.data()['lastName'],
       notificationCount: doc.data()['notificationCount'] ?? 0,
-      beacon: beacon,
       groups: _groups,
       tokens: Set.from(doc.data()["tokens"] ?? []),
       friends: List.from(doc.data()["friends"] ?? []),
       sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       imageURL: doc.data()['imageURL'] ?? '',
+      beaconIds: List.from(doc.data()['beaconIds']?? []),
+      beaconsAttending: List.from(doc.data()["beaconsAttending"]?? []),
       notificationSettings: NotificationSettingsModel(
         notificationSummons: doc.data()['notificationSummons'] ?? true,
         notificationReceivedBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),

@@ -29,7 +29,6 @@ class NotificationSkeleton extends StatelessWidget {
   Set<String> notificationUnread;
 
   NotificationSkeleton({
-    this.currentTime,
     this.notification,
     this.moreOptionsButton = true,
     @required this.sender,
@@ -40,9 +39,7 @@ class NotificationSkeleton extends StatelessWidget {
 
 
   String CalculateTime() {
-    if (notification == null || currentTime == null) {
-      return '';
-    }
+    currentTime = DateTime.now();
     int diff = currentTime.difference(notification.dateTime).inDays;
     String timeType = 'd';
     if(diff == 0) {

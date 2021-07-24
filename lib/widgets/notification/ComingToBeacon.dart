@@ -1,7 +1,5 @@
 import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
-import 'package:beacon/widgets/buttons/SmallGreyButton.dart';
 import 'package:beacon/widgets/notification/NotificationSkeleton.dart';
 import 'package:flutter/material.dart';
 
@@ -11,14 +9,12 @@ class ComingToBeacon extends StatefulWidget {
 
   UserModel sender;
   NotificationModel notification;
-  DateTime currentTime;
   Set<String> notificationUnread;
 
 
   ComingToBeacon({
     @required this.sender,
     @required this.notification,
-    @required this.currentTime,
     @required this.notificationUnread,
   });
 
@@ -31,19 +27,21 @@ class _ComingToBeaconState extends State<ComingToBeacon> {
     return RichText(
       text: TextSpan(children: [
         TextSpan(
-            text: ''''${widget.sender.firstName} ${widget.sender.lastName}''',
+            text: '${widget.sender.firstName} ${widget.sender.lastName}',
             style: theme.textTheme.headline4),
         TextSpan(
-            text: '''' is coming to your venue beacon ''',
+            text: ' is coming to your beacon: ',
             style: theme.textTheme.bodyText2),
         TextSpan(
-            text: '''${widget.notification.beacon.eventName}''',
+            text: '${widget.notification.beaconTitle}',
             style: theme.textTheme.headline4)
       ]),
     );
   }
 
-  List<Widget> getTypeButtons() {}
+  List<Widget> getTypeButtons() {
+    return [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +49,6 @@ class _ComingToBeaconState extends State<ComingToBeacon> {
     return NotificationSkeleton(
       body: getBodyText(theme),
       extraButtons: getTypeButtons(),
-      currentTime: widget.currentTime,
       notification: widget.notification,
       sender: widget.sender,
       notificationUnread: widget.notificationUnread,

@@ -13,13 +13,11 @@ class AcceptedFriendRequest extends StatefulWidget {
 
   UserModel sender;
   NotificationModel notification;
-  DateTime currentTime;
   Set<String> notificationUnread;
 
   AcceptedFriendRequest({
     @required this.sender,
     @required this.notification,
-    @required this.currentTime,
     @required this.notificationUnread,
   });
 
@@ -81,7 +79,6 @@ class _AcceptedFriendRequestState extends State<AcceptedFriendRequest> {
     return NotificationSkeleton(
       body: getBodyText(theme),
       extraButtons: getTypeButtons(theme),
-      currentTime: widget.currentTime,
       notification: widget.notification,
       sender: widget.sender,
       notificationUnread: widget.notificationUnread,

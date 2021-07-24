@@ -22,7 +22,6 @@ class NotificationTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserModel currentUser = context.read<UserService>().currentUser;
-      DateTime _currentTime = DateTime.now();
       return StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection('users')
@@ -57,7 +56,6 @@ class NotificationTab extends StatelessWidget {
               }
               tiles.add(GetNotificationTile(
                   notification: notificationModel,
-                  currentTime: _currentTime,
                   notificationUnread: notificationsTempUnread));
               tiles.add(Divider(
                 color: Color(figmaColours.greyLight),
@@ -76,13 +74,11 @@ class NotificationTab extends StatelessWidget {
 //Gets the sender data and returns the right type of notification
 class GetNotificationTile extends StatelessWidget {
   NotificationModel notification;
-  DateTime currentTime;
   Set<String> notificationUnread;
   bool justFriendRequests;
 
   GetNotificationTile(
       {@required this.notification,
-        this.currentTime,
         this.notificationUnread,});
 
   Widget getTile(UserModel sentFrom) {
@@ -92,7 +88,6 @@ class GetNotificationTile extends StatelessWidget {
           return AcceptedFriendRequest(
             sender: sentFrom,
             notification: notification,
-            currentTime: currentTime,
             notificationUnread: notificationUnread,
           );
         }
@@ -100,7 +95,6 @@ class GetNotificationTile extends StatelessWidget {
         {
           return VenueInvite(
             sender: sentFrom,
-            currentTime: currentTime,
             notification: notification,
             notificationUnread: notificationUnread,
           );
@@ -110,7 +104,6 @@ class GetNotificationTile extends StatelessWidget {
         {
           return ComingToBeacon(
             sender: sentFrom,
-            currentTime: currentTime,
             notification: notification,
             notificationUnread: notificationUnread,
           );
@@ -119,7 +112,6 @@ class GetNotificationTile extends StatelessWidget {
         {
           return Summoned(
             sender: sentFrom,
-            currentTime: currentTime,
             notification: notification,
             notificationUnread: notificationUnread,
           );

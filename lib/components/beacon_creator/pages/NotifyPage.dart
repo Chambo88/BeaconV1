@@ -67,7 +67,6 @@ class _NotifyPageState extends State<NotifyPage> {
         }
       }
     }).toSet();
-    print('ok');
     _notifyFriends = widget.initNotifyFriends;
     _notifyAll = widget.initNotifyAll;
   }
@@ -82,7 +81,12 @@ class _NotifyPageState extends State<NotifyPage> {
         },
         continueText: widget.continueText,
         onContinuePressed: () {
-          widget.onContinue(_notifyFriends.toList());
+          if(_notifyAll) {
+            widget.onContinue(_initFriends.toList());
+          }
+          else {
+            widget.onContinue(_notifyFriends.toList());
+          }
         },
         totalPageCount: widget.totalPageCount,
         currentPageIndex: widget.currentPageIndex,
@@ -132,12 +136,11 @@ class _NotifyPageState extends State<NotifyPage> {
   }
 
   void _handleGroupSelectionChanged(GroupModel group, StateSetter setState) {
-    setState(() {
-      group.members.map((member) {
-        UserModel friend = getFriendModelFromId(member);
-        _notifyFriends.add(friend);
-      });
+    group.members.forEach((member) {
+      UserModel friend = getFriendModelFromId(member);
+      _notifyFriends.add(friend);
     });
+    setState(() {});
   }
 
   Container _groupSelector() {
@@ -174,7 +177,6 @@ class _NotifyPageState extends State<NotifyPage> {
           setState(() {
             if (_notifyFriends.contains(friend)) {
               _notifyFriends.remove(friend);
-              print(_notifyFriends);
             }
             else {_notifyFriends.add(friend);}
           });

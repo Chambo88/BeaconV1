@@ -8,6 +8,7 @@ import 'package:beacon/pages/SignInPage.dart';
 import 'package:beacon/services/RemoteConfigService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
+import 'package:beacon/widgets/progress_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -89,7 +90,16 @@ class AuthenticationWrapper extends StatelessWidget {
     final _currentUser = context.watch<User>();
     if (_currentUser != null) {
       {
-        return BuildHomePage();
+        return FutureBuilder(
+          future: context.read<UserService>().initUser(_currentUser.uid),
+          builder: (context, snapshot) {
+            while(!snapshot.hasData) {
+              ///TODO return a loadingn screem akin to twitter on launch
+              return Center(child: circularProgress(Theme.of(context).accentColor));
+            }
+            return BuildHomePage();
+          },
+        );
       }
     }
     return SignInPage();
