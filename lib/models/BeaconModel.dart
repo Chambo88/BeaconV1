@@ -25,17 +25,6 @@ abstract class BeaconModel {
     this.long = json["long"];
   }
 
-  // get id {
-  //   return id;
-  // }
-  //
-  // get userName {
-  //   return userName;
-  // }
-  //
-  // get type {
-  //   return _type;
-  // }
 
   Map<String, dynamic> toJson();
 }
@@ -66,10 +55,10 @@ class LiveBeacon extends BeaconModel {
         'description': desc,
         'users': usersThatCanSee,
         'userId': userId,
+        'id': id,
       };
 
   LiveBeacon({
-    String id,
     String userId,
     String userName,
     bool active,
@@ -78,7 +67,7 @@ class LiveBeacon extends BeaconModel {
     String desc,
     List<String> users,
   })  :super(
-        id: id,
+        id: userId,
         userId: userId,
         userName: userName,
         type: BeaconType.live,
@@ -95,17 +84,14 @@ class CasualBeacon extends BeaconModel {
   DateTime endTime;
   String lat;
   String long;
-  bool notificationsEnabled;
   String locationName;
   List<String> peopleGoing;
 
   CasualBeacon({
     String id,
     String userId,
-    String userName,
     String type,
     String desc,
-    bool notificationsEnabled,
     String eventName,
     DateTime startTime,
     DateTime endTime,
@@ -120,16 +106,21 @@ class CasualBeacon extends BeaconModel {
         this.lat = lat,
         this.long = long,
         this.locationName = locationName,
-        this.notificationsEnabled = notificationsEnabled,
         this.peopleGoing = peopleGoing,
         super(id: id,
           userId: userId,
-          userName: userName,
-          type: BeaconType.live,
+          type: BeaconType.casual,
           desc: desc,
           lat: lat,
           long: long,
           usersThatCanSee: users);
+
+  @override
+  CasualBeacon.fromJson(Map<String, dynamic> json)
+      : this.startTime = DateTime.tryParse(json["startTime"]),
+        this.endTime = DateTime.tryParse(json['endTime']),
+        this.eventName = json['eventName'],
+        super.fromJson(json);
 
   @override
   Map<String, dynamic> toJson() => {
@@ -140,37 +131,10 @@ class CasualBeacon extends BeaconModel {
     'userId': userId,
     'peopleGoing': peopleGoing,
     'locationName' : locationName,
+    'startTime' : startTime.toString(),
+    'endTime' : endTime.toString(),
+    'id' : id,
+    'lat' : lat,
+    'long' : long,
   };
 }
-
-// class EventBeacon extends BeaconModel {
-//   String eventName;
-//   DateTime startTime;
-//   DateTime endTime;
-//   String location; // Probably some sort of id???
-//   int minAttendance;
-//   int maxAttendance;
-//
-//   EventBeacon(String id, String userId, String userName, String type,
-//       bool active, String desc, String eventName,
-//       {DateTime startTime,
-//       DateTime endTime,
-//       String location = 'ABC',
-//       List<String> users,
-//       int minAttendance = 0,
-//       int maxAttendance = 9999})
-//       : this.eventName = eventName,
-//         this.startTime = startTime,
-//         this.endTime = endTime,
-//         this.location = location,
-//         this.minAttendance = minAttendance,
-//         this.maxAttendance = maxAttendance,
-//         super(id, userId, userName, BeaconType.event, desc,
-//             usersThatCanSee: users);
-//
-//   @override
-//   Map<String, dynamic> toJson() {
-//     // TODO: implement toJson
-//     throw UnimplementedError();
-//   }
-// }

@@ -188,7 +188,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             setState(() {
               _showBeaconEditor = false;
             });
-            _beaconService.addBeacon(beacon, _userService.currentUser.id);
+            _beaconService.addBeacon(beacon, _userService.currentUser);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -214,7 +214,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             setState(() {
               _showBeaconEditor = false;
             });
-            _beaconService.addBeacon(beacon, _userService.currentUser.id);
+            _beaconService.addBeacon(beacon, _userService.currentUser);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(

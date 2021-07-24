@@ -132,9 +132,10 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
             });
           },
           onClose: widget.onClose,
-          onContinue: (startTime, isAllDayEvent, length) {
+          onContinue: (startTime, endTime) {
             setState(() {
               _beacon.startTime = startTime;
+              _beacon.endTime = endTime;
               _stage = CasualBeaconCreatorStage.location;
             });
           },

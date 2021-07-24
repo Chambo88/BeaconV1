@@ -87,6 +87,7 @@ class UserService {
       imageURL: doc.data()['imageURL'] ?? '',
       beaconIds: List.from(doc.data()['beaconIds']?? []),
       beaconsAttending: List.from(doc.data()["beaconsAttending"]?? []),
+      liveBeaconActive: doc.data()['liveBeaconActive']?? false,
       //TODO refactor the way settings are stored into a map
       notificationSettings: NotificationSettingsModel(
         notificationSummons: doc.data()['notificationSummons'] ?? true,
@@ -95,8 +96,6 @@ class UserService {
         notificationVenue: doc.data()['notificationVenue'] ?? true,
       )
     );
-
-
     return currentUser;
   }
 

@@ -7,6 +7,7 @@ import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/CameraLocationService.dart';
 import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/services/UserService.dart';
+import 'package:beacon/widgets/beacon_sheets/CasualBeaconSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/LiveBeaconSheet.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -60,6 +61,45 @@ class _MapState extends State<MapComponent> {
     });
   }
 
+  _updateCasualBeaconMarkers(List<CasualBeacon> beaconList) {
+    BitmapDescriptor beaconIcon;
+    BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(size: Size(12, 12)), 'assets/active_marker.png')
+        .then((onValue) {
+      beaconList.forEach((beacon) {
+        beaconIcon = onValue;
+
+        final Marker marker = Marker(
+            markerId: MarkerId(beacon.id),
+            position: LatLng(
+              double.parse(beacon.lat),
+              double.parse(
+                beacon.long,
+              ),
+            ),
+            icon: beaconIcon,
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.transparent,
+                isScrollControlled: true,
+                builder: (context) {
+                  return CasualBeaconSheet(
+                    beacon: beacon,
+                  );
+                },
+              );
+            });
+        if(this.mounted) {
+        setState(() {
+          // adding a new marker to map
+          _markers[MarkerId(beacon.id)] = marker;
+        });
+        }
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -77,6 +117,7 @@ class _MapState extends State<MapComponent> {
     var cameraLocationService = Provider.of<CameraLocationService>(context);
     context.read<BeaconService>().loadAllBeacons(userId);
     final liveBeacons = context.watch<BeaconService>().allLiveBeacons;
+    final casualBeacons = context.watch<BeaconService>().allCasualBeacons;
 
     return userLocationModel != null
         ? GoogleMap(
@@ -94,6 +135,9 @@ class _MapState extends State<MapComponent> {
                 await controller.animateCamera(
                   CameraUpdate.newCameraPosition(event),
                 );
+              });
+              casualBeacons.listen((event) {
+                _updateCasualBeaconMarkers(event);
               });
               liveBeacons.listen((event) {
                 _updateLiveBeaconMarkers(event);

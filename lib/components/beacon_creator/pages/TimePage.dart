@@ -7,9 +7,8 @@ import 'package:intl/date_symbol_data_local.dart'; //for date locale
 import 'CreatorPage.dart';
 
 typedef void TimeCallback(
-  DateTime dateTimeRange,
-  bool isAllDayEvent,
-  double duration,
+  DateTime startDateTime,
+  DateTime endDateTime,
 );
 
 class TimePage extends StatefulWidget {
@@ -20,7 +19,6 @@ class TimePage extends StatefulWidget {
   final int totalPageCount;
   final int currentPageIndex;
   final DateTime initStartDateTime;
-  final bool initIsAllDayEvent;
   final double initDuration;
 
   TimePage({
@@ -30,7 +28,6 @@ class TimePage extends StatefulWidget {
     @required this.totalPageCount,
     @required this.currentPageIndex,
     this.initStartDateTime,
-    this.initIsAllDayEvent,
     this.initDuration,
     this.continueText = 'Next',
   });
@@ -42,7 +39,6 @@ class TimePage extends StatefulWidget {
 class _TimePageState extends State<TimePage> {
   DateTime _startDateTime = new DateTime.now();
   DateTime _endDateTime = new DateTime.now();
-  var _isAllDayEvent = false;
   double _duration = .5;
 
   @override
@@ -51,7 +47,6 @@ class _TimePageState extends State<TimePage> {
     if (widget.initStartDateTime != null) {
       _startDateTime = widget.initStartDateTime;
     }
-    _isAllDayEvent = widget.initIsAllDayEvent;
     if (widget.initDuration != null) {
       _duration = widget.initDuration;
     }
@@ -97,29 +92,10 @@ class _TimePageState extends State<TimePage> {
       currentPageIndex: widget.currentPageIndex,
       onContinuePressed: () => widget.onContinue(
         _startDateTime,
-        _isAllDayEvent,
-        1,
+        _endDateTime,
       ),
       child: Column(
         children: [
-          ListTile(
-            leading: Icon(
-              Icons.access_time,
-              color: Colors.grey,
-            ),
-            title: Text(
-              'All day',
-              style: theme.textTheme.bodyText2,
-            ),
-            trailing: Switch(
-              value: _isAllDayEvent,
-              onChanged: (value) {
-                setState(() {
-                  _isAllDayEvent = value;
-                });
-              },
-            ),
-          ),
           _date(
             context,
             date: _startDateTime,
