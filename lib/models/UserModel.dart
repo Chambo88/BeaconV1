@@ -14,7 +14,6 @@ class UserModel {
   List<GroupModel> groups;
   List<String> friends;
   String imageURL;
-  int notificationCount;
   List<String> sentFriendRequests;
   List<String> receivedFriendRequests;
   NotificationSettingsModel notificationSettings;
@@ -29,7 +28,6 @@ class UserModel {
       this.email,
       this.firstName,
       this.lastName,
-      this.notificationCount,
       this.groups,
       this.friends,
       this.sentFriendRequests,
@@ -46,6 +44,29 @@ class UserModel {
   get getFirstName => firstName;
   get getLastName => lastName;
   get getId => id;
+
+  factory UserModel.dummy() {
+    return UserModel(
+        id: "shiet",
+        email: 'ass',
+        firstName: "dummy",
+        lastName: "probs error",
+        groups: [],
+        tokens: {},
+        friends: [],
+        sentFriendRequests: [],
+        receivedFriendRequests: [],
+        imageURL: '',
+        beaconIds: [],
+        beaconsAttending: [],
+        notificationSettings: NotificationSettingsModel(
+          notificationSummons: true,
+          notificationReceivedBlocked: [],
+          notificationSendBlocked: [],
+          notificationVenue: true,
+        )
+    );
+  }
 
   factory UserModel.fromDocument(DocumentSnapshot doc) {
     if (doc == null) {
@@ -71,7 +92,6 @@ class UserModel {
       email: doc.data()['email'],
       firstName: doc.data()['firstName'],
       lastName: doc.data()['lastName'],
-      notificationCount: doc.data()['notificationCount'] ?? 0,
       groups: _groups,
       tokens: Set.from(doc.data()["tokens"] ?? []),
       friends: List.from(doc.data()["friends"] ?? []),

@@ -120,6 +120,7 @@ class CasualBeacon extends BeaconModel {
       : this.startTime = DateTime.tryParse(json["startTime"]),
         this.endTime = DateTime.tryParse(json['endTime']),
         this.eventName = json['eventName'],
+        this.peopleGoing = List.from(json['peopleGoing']),
         super.fromJson(json);
 
   @override

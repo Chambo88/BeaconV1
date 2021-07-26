@@ -41,7 +41,7 @@ class FriendRequestsTab extends StatelessWidget {
           print(snapshot.error);
         }
         while (!snapshot.hasData) {
-          return circularProgress(Color(FigmaColours().highlight));
+          return circularProgress();
         }
         if (snapshot.connectionState == ConnectionState.done) {}
         snapshot.data.forEach((NotificationModel notificationModel) {

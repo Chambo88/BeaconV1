@@ -1,21 +1,11 @@
-import 'package:beacon/models/NotificationModel.dart';
+
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/Notifications/NotificationTab.dart';
 import 'package:beacon/pages/menu/notificationsSettingsPage.dart';
-import 'package:beacon/services/NotificationService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
-import 'package:beacon/widgets/ProfilePicWidget.dart';
-import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
-import 'package:beacon/widgets/buttons/SmallGreyButton.dart';
-import 'package:beacon/widgets/progress_widget.dart';
-import 'package:beacon/widgets/notification/AcceptedFriendRequest.dart';
-import 'package:beacon/widgets/notification/ComingToBeacon.dart';
-import 'package:beacon/widgets/notification/FriendRequest.dart';
-import 'package:beacon/widgets/notification/Summoned.dart';
-import 'package:beacon/widgets/notification/VenueInvite.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

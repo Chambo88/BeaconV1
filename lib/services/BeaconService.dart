@@ -94,7 +94,7 @@ class BeaconService {
   loadAllBeacons(userId) {
     allLiveBeacons = _fireStoreDataBase
         .collection('liveBeacons')
-        .where('peopleGoing', arrayContains: userId)
+        .where('users', arrayContains: userId)
         // .where('type', isEqualTo: 'BeaconType.Live')
         .snapshots()
         ?.map((snapShot) => snapShot.docs.map((document) {
@@ -103,7 +103,7 @@ class BeaconService {
 
     allCasualBeacons = _fireStoreDataBase
         .collection('casualBeacons')
-        .where('peopleGoing', arrayContains: userId)
+        .where('users', arrayContains: userId)
         // .where('type', isEqualTo: 'BeaconType.Casual')
         .snapshots()
         ?.map((snapShot) => snapShot.docs.map((document) {

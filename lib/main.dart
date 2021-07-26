@@ -95,7 +95,7 @@ class AuthenticationWrapper extends StatelessWidget {
           builder: (context, snapshot) {
             while(!snapshot.hasData) {
               ///TODO return a loadingn screem akin to twitter on launch
-              return Center(child: circularProgress(Theme.of(context).accentColor));
+              return Center(child: circularProgress());
             }
             return BuildHomePage();
           },

@@ -23,7 +23,6 @@ class ViewFriendsFriendsPage extends StatefulWidget {
 class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
 
   TextEditingController searchTextEditingController;
-  bool searchReady = false;
   List<String> userNames = [];
   List<UserModel> userModelsResult = [];
   List<UserResultAddable> userResultsTiles = [];
@@ -72,7 +71,7 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
         future: friendsFromFB,
         builder: (context, dataSnapshot) {
           while (!dataSnapshot.hasData) {
-            return circularProgress(Theme.of(context).accentColor);
+            return circularProgress();
           }
 
           if(firstTime == true) {
@@ -97,7 +96,6 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
   }
 
   Widget doesUserHaveFriendsLol() {
-    UserService userService = context.read<UserService>();
     if (widget.friend.friends.isNotEmpty) {
       return displayFriends();
     } else {

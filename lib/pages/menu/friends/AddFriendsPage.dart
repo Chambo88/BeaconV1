@@ -68,7 +68,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
       future: futureSearchResults,
       builder: (context, dataSnapshot) {
         while (!dataSnapshot.hasData) {
-          return circularProgress(Theme.of(context).accentColor);
+          return circularProgress();
         }
 
         List<UserResultAddable> searchUsersResult = [];

@@ -92,7 +92,7 @@ class _LocationPageState extends State<LocationPage> {
                           ),
                           builder: (context, snapshot) {
                             while (!snapshot.hasData) {
-                              return circularProgress(Theme.of(context).accentColor);
+                              return circularProgress();
                             }
                             return ListTile(
                               leading: Icon(
@@ -132,7 +132,7 @@ class _LocationPageState extends State<LocationPage> {
                 ),
               ],
             )
-          : circularProgress(Theme.of(context).accentColor),
+          : circularProgress(),
     );
   }
 }

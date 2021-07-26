@@ -7,6 +7,7 @@ import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/CameraLocationService.dart';
 import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/services/UserService.dart';
+import 'package:beacon/util/mapTheme.dart';
 import 'package:beacon/widgets/beacon_sheets/CasualBeaconSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/LiveBeaconSheet.dart';
 import 'package:beacon/widgets/progress_widget.dart';
@@ -21,7 +22,8 @@ class MapComponent extends StatefulWidget {
 }
 
 class _MapState extends State<MapComponent> {
-  Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
+  Map<MarkerId, Marker> _liveMarkers = <MarkerId, Marker>{};
+  Map<MarkerId, Marker> _casualMarkers = <MarkerId, Marker>{};
 
   _updateLiveBeaconMarkers(List<LiveBeacon> beaconList) {
     BitmapDescriptor beaconIcon;
@@ -55,16 +57,38 @@ class _MapState extends State<MapComponent> {
 
         setState(() {
           // adding a new marker to map
-          _markers[MarkerId(beacon.id)] = marker;
+          _liveMarkers[MarkerId(beacon.id)] = marker;
         });
       });
     });
   }
 
-  _updateCasualBeaconMarkers(List<CasualBeacon> beaconList) {
+  _activeOrUpcoming(List<CasualBeacon> beaconList) {
+    _casualMarkers.clear();
+    List<CasualBeacon> active = [];
+    List<CasualBeacon> upcoming = [];
+    DateTime currentTime = DateTime.now();
+    beaconList.forEach((beacon) {
+      ///if the beacon has ended dont load
+      if(beacon.endTime.isAfter(currentTime)) {
+        ///is beacon currerntly going?
+        if(beacon.startTime.isBefore(currentTime)) {
+          upcoming.add(beacon);
+        } else {
+          active.add(beacon);
+        }
+      }
+    });
+    _updateCasualBeaconMarkers(active, true);
+    _updateCasualBeaconMarkers(upcoming, true);
+  }
+
+
+  _updateCasualBeaconMarkers(List<CasualBeacon> beaconList, bool active) {
     BitmapDescriptor beaconIcon;
     BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(size: Size(12, 12)), 'assets/active_marker.png')
+      ///todo replace images with new ones, make size relative to mutual friends
+        ImageConfiguration(size: Size(12, 12)), active? 'assets/active_marker.png' : 'assets/active_marker.png')
         .then((onValue) {
       beaconList.forEach((beacon) {
         beaconIcon = onValue;
@@ -93,7 +117,7 @@ class _MapState extends State<MapComponent> {
         if(this.mounted) {
         setState(() {
           // adding a new marker to map
-          _markers[MarkerId(beacon.id)] = marker;
+          _liveMarkers[MarkerId(beacon.id)] = marker;
         });
         }
       });
@@ -118,6 +142,9 @@ class _MapState extends State<MapComponent> {
     context.read<BeaconService>().loadAllBeacons(userId);
     final liveBeacons = context.watch<BeaconService>().allLiveBeacons;
     final casualBeacons = context.watch<BeaconService>().allCasualBeacons;
+    Set<Marker> _allMarkers = {};
+    _allMarkers.addAll(Set<Marker>.of(_casualMarkers.values));
+    _allMarkers.addAll(Set<Marker>.of(_liveMarkers.values));
 
     return userLocationModel != null
         ? GoogleMap(
@@ -128,7 +155,7 @@ class _MapState extends State<MapComponent> {
               ),
               zoom: 12.0,
             ),
-            markers: Set<Marker>.of(_markers.values),
+            markers: _allMarkers,
             onMapCreated: (controller) {
               controller.setMapStyle(Utils.mapStyle);
               cameraLocationService.cameraLocationStream.listen((event) async {
@@ -137,7 +164,7 @@ class _MapState extends State<MapComponent> {
                 );
               });
               casualBeacons.listen((event) {
-                _updateCasualBeaconMarkers(event);
+                _activeOrUpcoming(event);
               });
               liveBeacons.listen((event) {
                 _updateLiveBeaconMarkers(event);
@@ -149,270 +176,10 @@ class _MapState extends State<MapComponent> {
             myLocationButtonEnabled: true,
             padding: const EdgeInsets.only(top: 20),
           )
-        : circularProgress(Theme.of(context).accentColor);
+        : circularProgress();
   }
 }
 
-class Utils {
-  static String mapStyle = '''
-[
-  {
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "color": "#202231"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text",
-    "stylers": [
-      {
-        "color": "#dedede"
-      }
-    ]
-  },
-  {
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.country",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "administrative.land_parcel",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "visibility": "on"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.man_made",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.man_made",
-    "elementType": "geometry",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.man_made",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.natural",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.natural.landcover",
-    "stylers": [
-      {
-        "visibility": "on"
-      }
-    ]
-  },
-  {
-    "featureType": "landscape.natural.terrain",
-    "stylers": [
-      {
-        "visibility": "on"
-      }
-    ]
-  },
-  {
-    "featureType": "poi",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "stylers": [
-      {
-        "color": "#282a3e"
-      }
-    ]
-  },
-  {
-    "featureType": "road",
-    "elementType": "labels.icon",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "color": "#2c3044"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "color": "#817e8b"
-      }
-    ]
-  },
-  {
-    "featureType": "road.arterial",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "color": "#2c3044"
-      },
-      {
-        "visibility": "on"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "geometry.stroke",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road.highway",
-    "elementType": "labels.text",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "road.local",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "color": "#8484a9"
-      },
-      {
-        "weight": 1
-      }
-    ]
-  },
-  {
-    "featureType": "road.local",
-    "elementType": "labels.text.stroke",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "transit",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "geometry.fill",
-    "stylers": [
-      {
-        "color": "#151723"
-      }
-    ]
-  },
-  {
-    "featureType": "water",
-    "elementType": "labels",
-    "stylers": [
-      {
-        "visibility": "off"
-      }
-    ]
-  }
-]
-  ''';
-}
+
+
+

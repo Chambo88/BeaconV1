@@ -77,7 +77,6 @@ class UserService {
       email: doc.data()['email'],
       firstName: doc.data()['firstName'],
       lastName: doc.data()['lastName'],
-      notificationCount: doc.data()['notificationCount'] ?? 0,
       groups: _groups,
       friends: _friends,
       friendModels: _friendModels,

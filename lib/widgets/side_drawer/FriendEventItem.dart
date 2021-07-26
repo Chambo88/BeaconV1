@@ -1,6 +1,6 @@
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/widgets/BeaconBottomSheet.dart';
-import 'package:beacon/widgets/beacon_sheets/EventBeaconSheet.dart';
+// import 'package:beacon/widgets/beacon_sheets/EventBeaconSheet.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:flutter/material.dart';
 

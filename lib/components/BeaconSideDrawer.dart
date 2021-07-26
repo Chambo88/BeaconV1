@@ -55,7 +55,7 @@ class BeaconSideDrawer extends StatelessWidget {
                       stream: beaconService.allLiveBeacons,
                       builder: (context, snapshot) {
                         while (!snapshot.hasData) {
-                          return circularProgress(theme.accentColor);
+                          return circularProgress();
                         }
                         List<FriendLiveItem> beacons = [];
                         snapshot.data.forEach((LiveBeacon beacon) {

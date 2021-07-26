@@ -88,7 +88,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
 
     // Pop up Friend selector
     return BeaconBottomSheet(
-      dark: true,
+      color: Color(figmaColours.greyDark),
       child: Column(
         children: [
           Padding(
@@ -129,7 +129,10 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
             ),
           ),
           Expanded(
-            child: Column(
+            child: ListView(
+              physics: BouncingScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
               children: _filteredFriends.map((friend) {
                 return GestureDetector(
                   onTap: () {
