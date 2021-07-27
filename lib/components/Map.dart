@@ -175,6 +175,8 @@ class _MapState extends State<MapComponent> {
             zoomControlsEnabled: false,
             myLocationEnabled: true,
             myLocationButtonEnabled: true,
+            buildingsEnabled: false,
+            mapToolbarEnabled: false,
             padding: const EdgeInsets.only(top: 20),
           )
         : circularProgress();
