@@ -35,7 +35,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
       Query allUsers = FirebaseFirestore.instance.collection("users");
       Future<QuerySnapshot> userDoc = allUsers
           .where("nameSearch",
-              arrayContains: query.toLowerCase().trim().replaceAll(' ', ''))
+              arrayContains: query.toLowerCase().trim().replaceAll(' ', '')).limit(5)
           .get();
       setState(() {
         futureSearchResults = userDoc;

@@ -1,13 +1,15 @@
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/beacon_sheets/BeaconSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/ViewAttendiesSheet.dart';
+import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
+import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-
 import '../BeaconBottomSheet.dart';
 import '../ProfilePicWidget.dart';
 
@@ -33,7 +35,7 @@ class CasualBeaconSheet extends BeaconSheet {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Divider(
-        color: Color(figmaColours.greyMedium),
+        color: Color(figmaColours.greyLight),
         height: 1,
       ),
     );
@@ -55,8 +57,8 @@ class CasualBeaconSheet extends BeaconSheet {
     return profPics;
   }
 
-  Widget attendingTile(
-      UserModel currentUser, CasualBeacon _beacon, ThemeData theme, BuildContext context) {
+  Widget attendingTile(UserModel currentUser, CasualBeacon _beacon,
+      ThemeData theme, BuildContext context) {
     String numPeopleGoing = _beacon.peopleGoing.length.toString();
     friendsAttending.clear();
     for (UserModel friend in currentUser.friendModels) {
@@ -66,7 +68,7 @@ class CasualBeaconSheet extends BeaconSheet {
     }
     String numFriendsGoing = friendsAttending.length.toString();
 
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         showModalBottomSheet(
           context: context,
@@ -74,8 +76,9 @@ class CasualBeaconSheet extends BeaconSheet {
           isScrollControlled: true,
           builder: (context) {
             return ViewAttendiesSheet(
-              onContinue: () {Navigator.of(context).pop();},
-              friendsAttending: friendsAttending,
+              onContinue: () {
+                Navigator.of(context).pop();
+              },
               attendiesIds: _beacon.peopleGoing,
             );
           },
@@ -95,42 +98,16 @@ class CasualBeaconSheet extends BeaconSheet {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  friendsAttending.isNotEmpty? Stack(
-                    children: getProfilePicStack(),
-                  ): Container(),
+                  friendsAttending.isNotEmpty
+                      ? Stack(
+                          children: getProfilePicStack(),
+                        )
+                      : Container(),
                   Padding(
-                    padding: EdgeInsets.only(top: (friendsAttending.isNotEmpty)? 6 : 0),
-                    child: RichText(
-                      text: TextSpan(children: [
-                        TextSpan(
-                          text: '$numPeopleGoing ',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 16),
-                        ),
-                        TextSpan(
-                            text: 'going',
-                            style: theme.textTheme.headline5,
-                            children: (numFriendsGoing == '0')
-                                ? []
-                                : [
-                                    TextSpan(
-                                        text: ', including ',
-                                        style: theme.textTheme.headline5),
-                                    TextSpan(
-                                      text: '$numFriendsGoing ',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                          fontSize: 16),
-                                    ),
-                                    TextSpan(
-                                        text: 'friends',
-                                        style: theme.textTheme.headline5),
-                                  ])
-                      ]),
-                    ),
+                    padding: EdgeInsets.only(
+                        top: (friendsAttending.isNotEmpty) ? 6 : 0),
+                    child: getTextForPeopleGoing(
+                        numPeopleGoing, theme, numFriendsGoing),
                   )
                 ],
               ),
@@ -152,6 +129,36 @@ class CasualBeaconSheet extends BeaconSheet {
     );
   }
 
+  RichText getTextForPeopleGoing(
+      String numPeopleGoing, ThemeData theme, String numFriendsGoing) {
+    return RichText(
+      text: TextSpan(children: [
+        TextSpan(
+          text: '$numPeopleGoing ',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16),
+        ),
+        TextSpan(
+            text: 'going',
+            style: theme.textTheme.headline5,
+            children: (numFriendsGoing == '0')
+                ? []
+                : [
+                    TextSpan(
+                        text: ', including ', style: theme.textTheme.headline5),
+                    TextSpan(
+                      text: '$numFriendsGoing ',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          fontSize: 16),
+                    ),
+                    TextSpan(text: 'friends', style: theme.textTheme.headline5),
+                  ])
+      ]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     CasualBeacon _beacon = beacon;
@@ -162,7 +169,7 @@ class CasualBeaconSheet extends BeaconSheet {
     return Wrap(children: [
       Container(
         child: BeaconBottomSheet(
-            color: Colors.black,
+            color: Color(figmaColours.greyDark),
             child: Container(
               child: Stack(
                 children: [
@@ -180,72 +187,12 @@ class CasualBeaconSheet extends BeaconSheet {
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            ProfilePicture(
-                              user: host,
-                              size: 30,
-                            ),
-                            Flexible(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: Column(
-                                  children: [
-                                    Container(height: 8),
-                                    Row(
-                                      children: [
-                                        Flexible(
-                                          child: Text(
-                                            _beacon.eventName,
-                                            style: theme.textTheme.headline3,
-                                            // textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 6),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            '${DateFormat('E').format(_beacon.startTime)}, ${_beacon.startTime.hour}:${_beacon.startTime.minute} - ${_beacon.endTime.hour}:${_beacon.endTime.minute}',
-                                            style: TextStyle(
-                                              color:
-                                                  Color(figmaColours.highlight),
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: 20,
-                            )
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Host - ',
-                                style: theme.textTheme.body1,
-                              ),
-                              Text(
-                                '${host.firstName} ${host.lastName}',
-                                style: theme.textTheme.headline4,
-                              ),
-                              Spacer(),
-                            ],
-                          ),
-                        ),
+                        Header(
+                            host: host,
+                            beacon: _beacon,
+                            theme: theme,
+                            figmaColours: figmaColours),
+                        hostRow(theme, host),
                         Row(
                           children: [
                             Flexible(
@@ -257,7 +204,20 @@ class CasualBeaconSheet extends BeaconSheet {
                           ],
                         ),
                         beaconDivider(),
-                        attendingTile(currentUser, _beacon, theme, context)
+                        attendingTile(currentUser, _beacon, theme, context),
+                        beaconDivider(),
+                        getLocationRow(_beacon, theme),
+                        Row(
+                          children: [
+                            Spacer(),
+                            GetGoingButton(
+                              currentUser: currentUser,
+                              beacon: _beacon,
+                              theme: theme,
+                              host: host,
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -266,5 +226,190 @@ class CasualBeaconSheet extends BeaconSheet {
             )),
       ),
     ]);
+  }
+
+  Row getLocationRow(CasualBeacon _beacon, ThemeData theme) {
+    return Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.location_on_outlined, size: 30),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _beacon.locationName,
+                                    style: theme.textTheme.headline4,
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 6),
+                                    child: Text(_beacon.address,
+                                        style: TextStyle(
+                                          color:
+                                              Color(figmaColours.greyLight),
+                                          fontSize: 16,
+                                        )),
+                                  )
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+  }
+
+  Padding hostRow(ThemeData theme, UserModel host) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 15),
+      child: Row(
+        children: [
+          Text(
+            'Host - ',
+            style: theme.textTheme.body1,
+          ),
+          Text(
+            '${host.firstName} ${host.lastName}',
+            style: theme.textTheme.headline4,
+          ),
+          Spacer(),
+        ],
+      ),
+    );
+  }
+}
+
+class GetGoingButton extends StatefulWidget {
+  const GetGoingButton({
+    Key key,
+    @required this.currentUser,
+    @required CasualBeacon beacon,
+    @required this.theme,
+    @required this.host,
+  })  : _beacon = beacon,
+        super(key: key);
+
+  final UserModel currentUser;
+  final CasualBeacon _beacon;
+  final ThemeData theme;
+  final UserModel host;
+
+  @override
+  State<GetGoingButton> createState() => _GetGoingButtonState();
+}
+
+class _GetGoingButtonState extends State<GetGoingButton> {
+  BeaconService _beaconService = BeaconService();
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.currentUser.beaconsAttending.contains(widget._beacon.id)) {
+      return Padding(
+        padding: const EdgeInsets.all(6),
+        child: SmallOutlinedButton(
+          child: Text(
+            "Going?",
+            style: widget.theme.textTheme.headline4,
+          ),
+          width: 150,
+          height: 42,
+          onPressed: () {
+            setState(() {
+              _beaconService.changeGoingToCasualBeacon(widget.currentUser,
+                  widget._beacon.id, widget._beacon.eventName, widget.host);
+            });
+          },
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.all(6),
+        child: SmallGradientButton(
+          child: Text(
+            "Going",
+            style: widget.theme.textTheme.headline4,
+          ),
+          width: 150,
+          height: 42,
+          onPressed: () {
+            setState(() {
+              _beaconService.changeGoingToCasualBeacon(widget.currentUser,
+                  widget._beacon.id, widget._beacon.eventName, widget.host);
+            });
+          },
+        ),
+      );
+    }
+  }
+}
+
+class Header extends StatelessWidget {
+  const Header({
+    Key key,
+    @required this.host,
+    @required CasualBeacon beacon,
+    @required this.theme,
+    @required this.figmaColours,
+  })  : _beacon = beacon,
+        super(key: key);
+
+  final UserModel host;
+  final CasualBeacon _beacon;
+  final ThemeData theme;
+  final FigmaColours figmaColours;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        ProfilePicture(
+          user: host,
+          size: 30,
+        ),
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                Container(height: 8),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        _beacon.eventName,
+                        style: theme.textTheme.headline3,
+                        // textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Row(
+                    children: [
+                      Text(
+                        '${DateFormat('E').format(_beacon.startTime)}, ${_beacon.startTime.hour}:${_beacon.startTime.minute} - ${_beacon.endTime.hour}:${_beacon.endTime.minute}',
+                        style: TextStyle(
+                          color: Color(figmaColours.highlight),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Container(
+          width: 20,
+        )
+      ],
+    );
   }
 }

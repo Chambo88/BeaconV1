@@ -85,6 +85,7 @@ class CasualBeacon extends BeaconModel {
   String lat;
   String long;
   String locationName;
+  String address;
   List<String> peopleGoing;
 
   CasualBeacon({
@@ -97,6 +98,7 @@ class CasualBeacon extends BeaconModel {
     DateTime endTime,
     List<String> users,
     String locationName,
+    String address,
     String lat,
     String long,
     List<String> peopleGoing,
@@ -106,6 +108,7 @@ class CasualBeacon extends BeaconModel {
         this.lat = lat,
         this.long = long,
         this.locationName = locationName,
+        this.address = address,
         this.peopleGoing = peopleGoing,
         super(id: id,
           userId: userId,
@@ -121,6 +124,8 @@ class CasualBeacon extends BeaconModel {
         this.endTime = DateTime.tryParse(json['endTime']),
         this.eventName = json['eventName'],
         this.peopleGoing = List.from(json['peopleGoing']),
+        this.locationName = json['locationName'],
+        this.address = json['address'],
         super.fromJson(json);
 
   @override
@@ -132,6 +137,7 @@ class CasualBeacon extends BeaconModel {
     'userId': userId,
     'peopleGoing': peopleGoing,
     'locationName' : locationName,
+    'address' : address,
     'startTime' : startTime.toString(),
     'endTime' : endTime.toString(),
     'id' : id,

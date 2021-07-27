@@ -67,7 +67,7 @@ class _VenueInviteState extends State<VenueInvite> {
           height: 35,
           onPressed: () {
             setState(() {
-              _beaconService.changeGoingToBeacon(
+              _beaconService.changeGoingToCasualBeacon(
                   currentUser, widget.notification.beaconId, widget.notification.beaconTitle,
                   widget.sender);
             });
@@ -86,7 +86,7 @@ class _VenueInviteState extends State<VenueInvite> {
           height: 35,
           onPressed: () {
             setState(() {
-              _beaconService.changeGoingToBeacon(
+              _beaconService.changeGoingToCasualBeacon(
                   currentUser, widget.notification.beaconId, widget.notification.beaconTitle,
                   widget.sender);
             });

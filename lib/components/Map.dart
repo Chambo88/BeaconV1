@@ -106,6 +106,7 @@ class _MapState extends State<MapComponent> {
               showModalBottomSheet(
                 context: context,
                 backgroundColor: Colors.transparent,
+                barrierColor: Colors.transparent,
                 isScrollControlled: true,
                 builder: (context) {
                   return CasualBeaconSheet(

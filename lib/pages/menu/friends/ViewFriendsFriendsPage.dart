@@ -1,15 +1,10 @@
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/services/UserService.dart';
-import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/SearchBar.dart';
-import 'package:beacon/widgets/beacon_sheets/FriendSettingsSheet.dart';
-import 'package:beacon/widgets/beacon_sheets/IconPickerSheet.dart';
 import 'package:beacon/widgets/progress_widget.dart';
-import 'package:beacon/widgets/tiles/userListTile.dart';
 import 'package:beacon/widgets/tiles/userTileAddable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 
 class ViewFriendsFriendsPage extends StatefulWidget {
 
@@ -26,7 +21,7 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
   List<String> userNames = [];
   List<UserModel> userModelsResult = [];
   List<UserResultAddable> userResultsTiles = [];
-  Future<QuerySnapshot> friendsFromFB;
+  List<Future<QuerySnapshot>> friendsFromFB;
   bool firstTime;
 
   @override
@@ -34,13 +29,26 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
     searchTextEditingController = TextEditingController();
     firstTime = true;
     if (widget.friend.friends.isNotEmpty) {
-      friendsFromFB = FirebaseFirestore.instance
-          .collection('users')
-          .where('userId',
-          whereIn: widget.friend.friends).orderBy('firstName')
-          .get();
+      friendsFromFB = getSnapshots(widget.friend.friends);
     }
     super.initState();
+  }
+
+  List<Future<QuerySnapshot>> getSnapshots(List<String> attendiesIds) {
+    var chunks = [];
+    for (var i = 0; i < attendiesIds.length; i += 10) {
+      chunks.add(attendiesIds.sublist(i, i + 10 > attendiesIds.length ? attendiesIds.length : i + 10));
+    } //break a list of whatever size into chunks of 10. cos of firebase limit
+
+    List<Future<QuerySnapshot>> combine = [];
+    for (var i = 1; i < chunks.length; i++) {
+      final result = FirebaseFirestore.instance
+          .collection('users')
+          .where('userId', whereIn: chunks[i])
+          .get();
+      combine.add(result);
+    }
+    return combine;//get a list of the Future, which will have 10 each.
   }
 
   @override
@@ -68,7 +76,7 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
 
   FutureBuilder displayFriends() {
     return FutureBuilder(
-        future: friendsFromFB,
+        future: Future.wait(friendsFromFB),
         builder: (context, dataSnapshot) {
           while (!dataSnapshot.hasData) {
             return circularProgress();

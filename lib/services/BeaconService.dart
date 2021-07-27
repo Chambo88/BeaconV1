@@ -42,11 +42,11 @@ class BeaconService {
   }
 
   
-  changeGoingToBeacon(UserModel currentUser, beaconId, beaconTitle, UserModel host) async {
+  changeGoingToCasualBeacon(UserModel currentUser, beaconId, beaconTitle, UserModel host) async {
     if(currentUser.beaconsAttending.contains(beaconId)) {
       currentUser.beaconsAttending.remove(beaconId);
 
-      await _fireStoreDataBase.collection('beacons')
+      await _fireStoreDataBase.collection('casualBeacons')
           .doc(beaconId)
           .update({'peopleGoing': FieldValue.arrayRemove([currentUser.id])});
 
@@ -81,7 +81,7 @@ class BeaconService {
     } else {
       currentUser.beaconsAttending.add(beaconId);
 
-      await _fireStoreDataBase.collection('beacons')
+      await _fireStoreDataBase.collection('casualBeacons')
           .doc(beaconId)
           .update({'peopleGoing': FieldValue.arrayUnion([currentUser.id])});
 

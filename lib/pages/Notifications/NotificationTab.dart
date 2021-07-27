@@ -144,7 +144,7 @@ class GetNotificationTile extends StatelessWidget {
             .get(),
         builder: (context, sentFrom) {
           while (!sentFrom.hasData) {
-            return Container();
+            return Container(height: 70);
           }
           UserModel sender = UserModel.fromDocument(sentFrom.data);
           return getTile(sender);
