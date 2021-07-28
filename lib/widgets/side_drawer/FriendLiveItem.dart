@@ -1,7 +1,5 @@
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/services/CameraLocationService.dart';
-import 'package:beacon/services/UserLoactionService.dart';
-import 'package:beacon/widgets/BeaconBottomSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/LiveBeaconSheet.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:flutter/material.dart';

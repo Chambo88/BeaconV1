@@ -3,10 +3,7 @@ import 'package:beacon/components/beacon_creator/pages/WhoCanSeePage.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
-import 'package:beacon/services/BeaconService.dart';
-import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/services/UserService.dart';
-import 'package:beacon/widgets/progress_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,6 +32,9 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
   LiveBeacon _beacon = LiveBeacon(active: true);
   LiveBeaconCreatorStage _stage = LiveBeaconCreatorStage.invite;
 
+  ///TODO this is temporary until the location selected works, currently using current location
+  UserLocationModel _userLocation;
+
   // Holding here as well as the beacon model in case the user goes back
   // e.g (initGroup, initFriends)
   var _groups = Set<GroupModel>();
@@ -49,6 +49,9 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
   @override
   Widget build(BuildContext context) {
     _userService = Provider.of<UserService>(context);
+
+    ///Temp use current location for live beacon
+    _userLocation = Provider.of<UserLocationModel>(context);
 
     switch (_stage) {
       case LiveBeaconCreatorStage.invite:
@@ -90,7 +93,11 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
           onClose: widget.onClose,
           onContinue: (title, desc) {
             setState(() {
+              _beacon.lat = _userLocation.latitude.toString();
+              _beacon.long = _userLocation.longitude.toString();
               _beacon.desc = desc;
+              _beacon.active = true;
+              _beacon.id = _userService.currentUser.id;
               _beacon.userId = _userService.currentUser.id;
               widget.onCreated(_beacon);
             });

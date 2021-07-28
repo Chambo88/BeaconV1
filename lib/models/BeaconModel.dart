@@ -11,14 +11,13 @@ abstract class BeaconModel {
   String desc;
 
   BeaconModel(
-      {this.id, this.userId, this.userName, this.type, this.desc, this.lat, this.long,
+      {this.id, this.userId, this.type, this.desc, this.lat, this.long,
       this.usersThatCanSee = const []});
 
   BeaconModel.fromJson(Map<String, dynamic> json) {
     this.desc = json["description"];
     this.type =
         BeaconType.values.firstWhere((e) => e.toString() == json["type"]);
-    this.userName = json["userName"];
     this.userId = json["userId"];
     this.id = json["id"];
     this.lat = json["lat"];
@@ -60,7 +59,6 @@ class LiveBeacon extends BeaconModel {
 
   LiveBeacon({
     String userId,
-    String userName,
     bool active,
     String lat,
     String long,
@@ -69,7 +67,6 @@ class LiveBeacon extends BeaconModel {
   })  :super(
         id: userId,
         userId: userId,
-        userName: userName,
         type: BeaconType.live,
         desc: desc,
         lat: lat,

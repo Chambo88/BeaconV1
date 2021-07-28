@@ -230,36 +230,36 @@ class CasualBeaconSheet extends BeaconSheet {
 
   Row getLocationRow(CasualBeacon _beacon, ThemeData theme) {
     return Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(Icons.location_on_outlined, size: 30),
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _beacon.locationName,
-                                    style: theme.textTheme.headline4,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 6),
-                                    child: Text(_beacon.address,
-                                        style: TextStyle(
-                                          color:
-                                              Color(figmaColours.greyLight),
-                                          fontSize: 16,
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      );
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(Icons.location_on_outlined, size: 30),
+        Expanded(
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _beacon.locationName,
+                  style: theme.textTheme.headline4,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 6),
+                  child: Text(_beacon.address,
+                      style: TextStyle(
+                        color:
+                            Color(figmaColours.greyLight),
+                        fontSize: 16,
+                      )),
+                )
+              ],
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   Padding hostRow(ThemeData theme, UserModel host) {
@@ -315,7 +315,7 @@ class _GetGoingButtonState extends State<GetGoingButton> {
             style: widget.theme.textTheme.headline4,
           ),
           width: 150,
-          height: 42,
+          height: 35,
           onPressed: () {
             setState(() {
               _beaconService.changeGoingToCasualBeacon(widget.currentUser,
@@ -333,7 +333,7 @@ class _GetGoingButtonState extends State<GetGoingButton> {
             style: widget.theme.textTheme.headline4,
           ),
           width: 150,
-          height: 42,
+          height: 35,
           onPressed: () {
             setState(() {
               _beaconService.changeGoingToCasualBeacon(widget.currentUser,
