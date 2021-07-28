@@ -117,7 +117,7 @@ class CasualBeaconSheet extends BeaconSheet {
             padding: const EdgeInsets.only(right: 8),
             child: Text(
               'See all',
-              style: theme.textTheme.body2,
+              style: theme.textTheme.bodyText2,
             ),
           ),
           Icon(
@@ -230,36 +230,33 @@ class CasualBeaconSheet extends BeaconSheet {
 
   Row getLocationRow(CasualBeacon _beacon, ThemeData theme) {
     return Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(Icons.location_on_outlined, size: 30),
-                          Expanded(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _beacon.locationName,
-                                    style: theme.textTheme.headline4,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 6),
-                                    child: Text(_beacon.address,
-                                        style: TextStyle(
-                                          color:
-                                              Color(figmaColours.greyLight),
-                                          fontSize: 16,
-                                        )),
-                                  )
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      );
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(Icons.location_on_outlined, size: 30),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _beacon.locationName,
+                  style: theme.textTheme.headline4,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Text(_beacon.address,
+                      style: TextStyle(
+                        color: Color(figmaColours.greyLight),
+                        fontSize: 16,
+                      )),
+                )
+              ],
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   Padding hostRow(ThemeData theme, UserModel host) {
@@ -269,7 +266,7 @@ class CasualBeaconSheet extends BeaconSheet {
         children: [
           Text(
             'Host - ',
-            style: theme.textTheme.body1,
+            style: theme.textTheme.bodyText1,
           ),
           Text(
             '${host.firstName} ${host.lastName}',

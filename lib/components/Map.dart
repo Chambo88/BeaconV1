@@ -70,9 +70,9 @@ class _MapState extends State<MapComponent> {
     DateTime currentTime = DateTime.now();
     beaconList.forEach((beacon) {
       ///if the beacon has ended dont load
-      if(beacon.endTime.isAfter(currentTime)) {
+      if (beacon.endTime.isAfter(currentTime)) {
         ///is beacon currerntly going?
-        if(beacon.startTime.isBefore(currentTime)) {
+        if (beacon.startTime.isBefore(currentTime)) {
           upcoming.add(beacon);
         } else {
           active.add(beacon);
@@ -83,12 +83,13 @@ class _MapState extends State<MapComponent> {
     _updateCasualBeaconMarkers(upcoming, true);
   }
 
-
   _updateCasualBeaconMarkers(List<CasualBeacon> beaconList, bool active) {
     BitmapDescriptor beaconIcon;
     BitmapDescriptor.fromAssetImage(
-      ///todo replace images with new ones, make size relative to mutual friends
-        ImageConfiguration(size: Size(12, 12)), active? 'assets/active_marker.png' : 'assets/active_marker.png')
+
+            ///todo replace images with new ones, make size relative to mutual friends
+            ImageConfiguration(size: Size(12, 12)),
+            active ? 'assets/casual_marker.png' : 'assets/casual_marker.png')
         .then((onValue) {
       beaconList.forEach((beacon) {
         beaconIcon = onValue;
@@ -115,11 +116,11 @@ class _MapState extends State<MapComponent> {
                 },
               );
             });
-        if(this.mounted) {
-        setState(() {
-          // adding a new marker to map
-          _liveMarkers[MarkerId(beacon.id)] = marker;
-        });
+        if (this.mounted) {
+          setState(() {
+            // adding a new marker to map
+            _liveMarkers[MarkerId(beacon.id)] = marker;
+          });
         }
       });
     });
@@ -182,7 +183,3 @@ class _MapState extends State<MapComponent> {
         : circularProgress();
   }
 }
-
-
-
-
