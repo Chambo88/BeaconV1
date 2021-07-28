@@ -312,7 +312,7 @@ class _GetGoingButtonState extends State<GetGoingButton> {
             style: widget.theme.textTheme.headline4,
           ),
           width: 150,
-          height: 42,
+          height: 35,
           onPressed: () {
             setState(() {
               _beaconService.changeGoingToCasualBeacon(widget.currentUser,
@@ -330,7 +330,7 @@ class _GetGoingButtonState extends State<GetGoingButton> {
             style: widget.theme.textTheme.headline4,
           ),
           width: 150,
-          height: 42,
+          height: 35,
           onPressed: () {
             setState(() {
               _beaconService.changeGoingToCasualBeacon(widget.currentUser,

@@ -47,6 +47,7 @@ class UserService {
       ok.forEach((listOfDocs) {
                 listOfDocs.docs.forEach((document) {
                   UserModel user = UserModel.fromDocument(document);
+                  print(user.firstName);
                   _friendModels.add(user);
                 });
               });
