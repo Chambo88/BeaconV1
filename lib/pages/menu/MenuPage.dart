@@ -29,6 +29,7 @@ class _MenuPageState extends State<MenuPage> {
         context: context,
         builder: (BuildContext) {
           return TwoButtonDialog(
+            title: "Sign out",
             bodyText: "Are you sure you want to sign out?",
             onPressedGrey: () => Navigator.pop(context, false),
             onPressedHighlight: () => Navigator.pop(context, true),
@@ -143,7 +144,7 @@ class _MenuPageState extends State<MenuPage> {
           ),
           BeaconFlatButton(
             icon: Icons.logout_outlined,
-            title: 'Log Out',
+            title: 'Sign out',
             onTap: () async {
               signOutDialog(context).then((value) async {
                 if (value)  {

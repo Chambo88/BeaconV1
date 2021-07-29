@@ -9,9 +9,12 @@ import 'package:beacon/services/NotificationService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+import 'BeaconService.dart';
+
 class UserService {
   FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
   NotificationService _notificationService = NotificationService();
+  BeaconService _beaconService = BeaconService();
 
   UserModel currentUser;
 
@@ -88,11 +91,23 @@ class UserService {
     return currentUser;
   }
 
-  UserModel getAFriendModelFromId(String id,) {
+  summonUser(UserModel friend, {UserModel user}) {
+    _notificationService.sendPushNotification([friend],
+        title: '${friend.firstName} ${friend.lastName} has summoned you to join them!',
+        body: '',
+        type: 'summon'
+    );
+    _notificationService.sendNotification([friend], currentUser, 'summon');
+  }
+
+  UserModel getAFriendModelFromId(String id,{UserModel user}) {
     for (UserModel friend in currentUser.friendModels) {
       if (friend.id == id) {
         return friend;
       }
+    }
+    if(currentUser.id == id) {
+      return currentUser;
     }
     return UserModel.dummy();
   }
@@ -123,6 +138,11 @@ class UserService {
         );
       }
     }
+    
+    ///remove from otherUsersBeacons
+    _beaconService.removeUserFromAllAnotherUsersBeacons(currentUser, friend);
+    _beaconService.removeUserFromAllAnotherUsersBeacons(friend, currentUser);
+
 
     await FirebaseFirestore.instance
         .collection('users')

@@ -31,41 +31,41 @@ class _GoingButtonState extends State<GoingButton> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    if(widget._beacon.userId == widget.currentUser.id) {
+      return Container(
+        width: widget.small? 97 : 150,
+        height: widget.small? 28 : 35,
+      );
+    }
     if (!widget.currentUser.beaconsAttending.contains(widget._beacon.id)) {
-      return Padding(
-        padding: const EdgeInsets.all(6),
-        child: SmallOutlinedButton(
-          child: Text(
-            "Going?",
-            style: widget.small? theme.textTheme.headline5 : theme.textTheme.headline4,
-          ),
-          width: widget.small? 90: 150,
-          height: widget.small? 25 : 35,
-          onPressed: () {
-            setState(() {
-              _beaconService.changeGoingToCasualBeacon(widget.currentUser,
-                  widget._beacon.id, widget._beacon.eventName, widget.host);
-            });
-          },
+      return SmallOutlinedButton(
+        child: Text(
+          "Going?",
+          style: widget.small? theme.textTheme.headline5 : theme.textTheme.headline4,
         ),
+        width: widget.small? 97: 150,
+        height: widget.small? 28 : 35,
+        onPressed: () {
+          setState(() {
+            _beaconService.changeGoingToCasualBeacon(widget.currentUser,
+                widget._beacon.id, widget._beacon.eventName, widget.host);
+          });
+        },
       );
     } else {
-      return Padding(
-        padding: const EdgeInsets.all(6),
-        child: SmallGradientButton(
-          child: Text(
-            "Going",
-            style: widget.small? theme.textTheme.headline5 : theme.textTheme.headline4,
-          ),
-          width: widget.small? 90: 150,
-          height: widget.small? 25 : 35,
-          onPressed: () {
-            setState(() {
-              _beaconService.changeGoingToCasualBeacon(widget.currentUser,
-                  widget._beacon.id, widget._beacon.eventName, widget.host);
-            });
-          },
+      return SmallGradientButton(
+        child: Text(
+          "Going",
+          style: widget.small? theme.textTheme.headline5 : theme.textTheme.headline4,
         ),
+        width: widget.small? 97: 150,
+        height: widget.small? 25 : 35,
+        onPressed: () {
+          setState(() {
+            _beaconService.changeGoingToCasualBeacon(widget.currentUser,
+                widget._beacon.id, widget._beacon.eventName, widget.host);
+          });
+        },
       );
     }
   }

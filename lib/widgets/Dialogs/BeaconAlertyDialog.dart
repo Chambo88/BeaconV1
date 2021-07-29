@@ -3,21 +3,13 @@ import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/material.dart';
 
-class TwoButtonDialog extends StatelessWidget {
-  TwoButtonDialog(
+class BeaconAlertDialog extends StatelessWidget {
+  BeaconAlertDialog(
       {@required this.bodyText,
-      @required this.onPressedGrey,
-      @required this.onPressedHighlight,
-      @required this.buttonGreyText,
-      @required this.buttonHighlightText,
         this.title,
       });
 
-  String bodyText;
-  final VoidCallback onPressedGrey;
-  final VoidCallback onPressedHighlight;
-  final String buttonGreyText;
-  final String buttonHighlightText;
+  final String bodyText;
   final String title;
   FigmaColours figmaColours = FigmaColours();
 
@@ -68,38 +60,12 @@ class TwoButtonDialog extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.4 - 24,
-                    child: Container(
-                      width: double.infinity,
-                      height: 40,
-                      decoration: ShapeDecoration(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        color: Color(figmaColours.greyMedium),
-                      ),
-                      child: MaterialButton(
-                        elevation: 15,
-                        child: Text(
-                          buttonGreyText,
-                          style: Theme.of(context).textTheme.headline5,
-                        ),
-                        onPressed: onPressedGrey,
-                      ),
-                    ),
-
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.4 - 24,
-                      child: GradientButton(
-                          child: Text(buttonHighlightText,
-                              style: Theme.of(context).textTheme.headline5),
-                          onPressed: onPressedHighlight,
-                          // onPressed: () => Navigator.pop(context, true),
-                          gradient: ColorHelper.getBeaconGradient()),
-                    ),
+                    width: MediaQuery.of(context).size.width * 0.8 - 32,
+                    child: GradientButton(
+                        child: Text('close',
+                            style: Theme.of(context).textTheme.headline5),
+                        onPressed: () => Navigator.pop(context, true),
+                        gradient: ColorHelper.getBeaconGradient()),
                   )
                 ],
               )

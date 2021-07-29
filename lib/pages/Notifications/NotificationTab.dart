@@ -108,7 +108,7 @@ class GetNotificationTile extends StatelessWidget {
             notificationUnread: notificationUnread,
           );
         }
-      case "summoned":
+      case "summon":
         {
           return Summoned(
             sender: sentFrom,

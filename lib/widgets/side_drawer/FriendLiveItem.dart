@@ -5,6 +5,7 @@ import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/beacon_sheets/LiveBeaconSheet.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
+import 'package:beacon/widgets/buttons/SummonButton.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -25,8 +26,12 @@ class FriendLiveItem extends StatelessWidget {
 
     UserModel user = userService.getAFriendModelFromId(beacon.userId);
 
+    if(beacon.userId == userService.currentUser.id) {
+      return Container();
+    }
+
     return BeaconItem(
-      height: 120,
+      height: 125,
       onTap: () {
         locationService.setCameraPosition(
           cameraPosition: CameraPosition(
@@ -63,7 +68,7 @@ class FriendLiveItem extends StatelessWidget {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.only(left: 8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -89,10 +94,11 @@ class FriendLiveItem extends StatelessWidget {
                          children: [
                            Padding(
                              padding: const EdgeInsets.only(top: 8),
-                             child: SmallOutlinedButton(
-                                title: 'Summon',
-                                onPressed: () {}, // TODO
-                              ),
+                             child: SummonButton(
+                               currentUser: userService.currentUser,
+                               friend: user,
+                               small: true,
+                             ),
                            ),
                          ],
                        ),

@@ -55,74 +55,90 @@ class FriendCasualItem extends StatelessWidget {
             child: Column(
               children: [
                 getHeader(user),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "${user.firstName} ${user.lastName}",
-                        style: theme.textTheme.headline5,
-                      ),
-                      Text(
-                        '${DateFormat('E').format(beacon.startTime)}, ${DateFormat('Hm').format(beacon.startTime)} - '
-                            '${DateFormat('Hm').format(beacon.endTime)}',
-                        style: TextStyle(
-                            color: Color(figmaColours.highlight),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    beacon.desc,
-                    style: theme.textTheme.bodyText1,
-                    textAlign: TextAlign.left,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
+                getNameAndTime(user, theme),
+                getBody(theme),
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: 'Mutual ',
-                    style: Theme.of(context).textTheme.bodyText1,
-                    children: [
-                      TextSpan(
-                        text: mutualFriends(beacon, userService.currentUser),
-                        style: TextStyle(
-                          color: Color(figmaColours.highlight),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16
-                        )
-                      )
-                    ]
-                  )
-
-                ),
-                GoingButton(
-                  beacon: beacon,
-                  currentUser: userService.currentUser,
-                  host: user,
-                  small: true,
-                )
-              ],
-            ),
-          ),
+          getMutualAndButton(context, userService, user),
+          Divider(
+            height: 1,
+            color: Color(figmaColours.greyMedium),
+          )
         ],
       ),
     );
+  }
+
+  Container getBody(ThemeData theme) {
+    return Container(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  beacon.desc,
+                  style: theme.textTheme.bodyText1,
+                  textAlign: TextAlign.left,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+  }
+
+  Padding getNameAndTime(UserModel user, ThemeData theme) {
+    return Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "${user.firstName} ${user.lastName}",
+                      style: theme.textTheme.headline5,
+                    ),
+                    Text(
+                      '${DateFormat('E').format(beacon.startTime)}, ${DateFormat('Hm').format(beacon.startTime)} - '
+                          '${DateFormat('Hm').format(beacon.endTime)}',
+                      style: TextStyle(
+                          color: Color(figmaColours.highlight),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16
+                      ),
+                    ),
+                  ],
+                ),
+              );
+  }
+
+  Padding getMutualAndButton(BuildContext context, UserService userService, UserModel user) {
+    return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              RichText(
+                text: TextSpan(
+                  text: 'Mutual ',
+                  style: Theme.of(context).textTheme.bodyText1,
+                  children: [
+                    TextSpan(
+                      text: mutualFriends(beacon, userService.currentUser),
+                      style: TextStyle(
+                        color: Color(figmaColours.highlight),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16
+                      )
+                    )
+                  ]
+                )
+
+              ),
+              GoingButton(
+                beacon: beacon,
+                currentUser: userService.currentUser,
+                host: user,
+                small: true,
+              )
+            ],
+          ),
+        );
   }
 
   Padding getHeader(UserModel user) {

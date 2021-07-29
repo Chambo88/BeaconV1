@@ -110,4 +110,20 @@ class BeaconService {
     }).toList());
   }
 
+  removeUserFromAllAnotherUsersBeacons(UserModel userToRemove, UserModel user) async {
+    await FirebaseFirestore.instance.collection('casualBeacons').where('userId', isEqualTo: user.id).get()
+    .then((snapshot) {
+      snapshot.docs.forEach((document) {
+        List<String> temp = List.from(document.data()['users']);
+        temp.remove(userToRemove.id);
+        document
+          .reference
+          .update({'users': temp});
+          });
+      });
+    await FirebaseFirestore.instance.collection('liveBeacons').doc(user.id).update(
+        {'users': FieldValue.arrayRemove([userToRemove.id])}
+        );
+  }
+
 }

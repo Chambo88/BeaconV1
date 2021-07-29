@@ -26,17 +26,20 @@ class _SummonedState extends State<Summoned> {
     return RichText(
       text: TextSpan(children: [
         TextSpan(
-            text: ''''${widget.sender.firstName} ${widget.sender.lastName}''',
+            text: '''${widget.sender.firstName} ${widget.sender.lastName}''',
             style: theme.textTheme.headline4),
         TextSpan(
-            text: '''' summoned you to join them! ''',
+            text: ''' summoned you to join them! ''',
             style: theme.textTheme.bodyText2),
         ])
 
     );
   }
 
-  List<Widget> getTypeButtons() {}
+  List<Widget> getTypeButtons() {
+    //TODO go to map and search for thier live beacon if its still active and animate to it
+    return [];
+  }
 
   @override
   Widget build(BuildContext context) {

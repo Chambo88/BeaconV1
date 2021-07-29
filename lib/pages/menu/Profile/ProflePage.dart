@@ -1,18 +1,13 @@
 import 'dart:io';
-
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/menu/Profile/EditNamePage.dart';
-import 'package:beacon/pages/menu/Profile/EditPasswordPage.dart';
 import 'package:beacon/pages/menu/Profile/EditProfilePicturePage.dart';
 import 'package:beacon/services/AuthService.dart';
 import 'package:beacon/services/UserService.dart';
-import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/ProfilePicWidget.dart';
 import 'package:beacon/widgets/tiles/SubTitleText.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:beacon/models/UserModel.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';

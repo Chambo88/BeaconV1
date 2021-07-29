@@ -180,6 +180,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             setState(() {
               _showBeaconEditor = false;
             });
+            beacon.usersThatCanSee.add(_userService.currentUser.id);
             _beaconService.addBeacon(beacon, _userService.currentUser);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -206,6 +207,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             setState(() {
               _showBeaconEditor = false;
             });
+            beacon.usersThatCanSee.add(_userService.currentUser.id);
             _beaconService.addBeacon(beacon, _userService.currentUser);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

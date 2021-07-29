@@ -22,6 +22,7 @@ class UserModel {
   List<String> beaconIds;
   List<String> beaconsAttending;
   bool liveBeaconActive;
+  Map<String, DateTime> recentlySummoned = {};
 
   UserModel({
       this.id,
@@ -38,7 +39,7 @@ class UserModel {
       this.tokens,
        this.beaconIds,
       this.beaconsAttending,
-    this.liveBeaconActive,
+      this.liveBeaconActive,
   });
 
   get getFirstName => firstName;
