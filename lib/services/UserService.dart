@@ -47,7 +47,6 @@ class UserService {
       ok.forEach((listOfDocs) {
                 listOfDocs.docs.forEach((document) {
                   UserModel user = UserModel.fromDocument(document);
-                  print(user.firstName);
                   _friendModels.add(user);
                 });
               });
@@ -89,6 +88,15 @@ class UserService {
     return currentUser;
   }
 
+  UserModel getAFriendModelFromId(String id,) {
+    for (UserModel friend in currentUser.friendModels) {
+      if (friend.id == id) {
+        return friend;
+      }
+    }
+    return UserModel.dummy();
+  }
+
   removeFriend(UserModel friend, {UserModel user}) async {
     currentUser.friends.remove(friend.id);
     currentUser.friendModels.remove(friend);
@@ -98,9 +106,6 @@ class UserService {
       if (group.members.contains(currentUser.id)) {
         GroupModel temp = GroupModel.clone(group);
         temp.members.remove(currentUser.id);
-        for (String friend in temp.members) {
-          print(friend);
-        }
         removeGroup(group, user: friend);
         addGroup(temp, user: friend);
       }

@@ -104,7 +104,7 @@ class CustomTheme {
         ),
         bodyText1: TextStyle(
           color: Color(0xFF868A8C),
-          fontSize: 14.0,
+          fontSize: 16.0,
         ),
         bodyText2: TextStyle(
           color: Color(0xFF868A8C),

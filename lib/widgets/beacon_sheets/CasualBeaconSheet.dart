@@ -5,6 +5,7 @@ import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/beacon_sheets/BeaconSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/ViewAttendiesSheet.dart';
+import 'package:beacon/widgets/buttons/GoingButton.dart';
 import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:flutter/material.dart';
@@ -210,11 +211,11 @@ class CasualBeaconSheet extends BeaconSheet {
                         Row(
                           children: [
                             Spacer(),
-                            GetGoingButton(
+                            GoingButton(
                               currentUser: currentUser,
                               beacon: _beacon,
-                              theme: theme,
                               host: host,
+                              small: false,
                             ),
                           ],
                         ),
@@ -282,70 +283,6 @@ class CasualBeaconSheet extends BeaconSheet {
   }
 }
 
-class GetGoingButton extends StatefulWidget {
-  const GetGoingButton({
-    Key key,
-    @required this.currentUser,
-    @required CasualBeacon beacon,
-    @required this.theme,
-    @required this.host,
-  })  : _beacon = beacon,
-        super(key: key);
-
-  final UserModel currentUser;
-  final CasualBeacon _beacon;
-  final ThemeData theme;
-  final UserModel host;
-
-  @override
-  State<GetGoingButton> createState() => _GetGoingButtonState();
-}
-
-class _GetGoingButtonState extends State<GetGoingButton> {
-  BeaconService _beaconService = BeaconService();
-
-  @override
-  Widget build(BuildContext context) {
-    if (!widget.currentUser.beaconsAttending.contains(widget._beacon.id)) {
-      return Padding(
-        padding: const EdgeInsets.all(6),
-        child: SmallOutlinedButton(
-          child: Text(
-            "Going?",
-            style: widget.theme.textTheme.headline4,
-          ),
-          width: 150,
-          height: 35,
-          onPressed: () {
-            setState(() {
-              _beaconService.changeGoingToCasualBeacon(widget.currentUser,
-                  widget._beacon.id, widget._beacon.eventName, widget.host);
-            });
-          },
-        ),
-      );
-    } else {
-      return Padding(
-        padding: const EdgeInsets.all(6),
-        child: SmallGradientButton(
-          child: Text(
-            "Going",
-            style: widget.theme.textTheme.headline4,
-          ),
-          width: 150,
-          height: 35,
-          onPressed: () {
-            setState(() {
-              _beaconService.changeGoingToCasualBeacon(widget.currentUser,
-                  widget._beacon.id, widget._beacon.eventName, widget.host);
-            });
-          },
-        ),
-      );
-    }
-  }
-}
-
 class Header extends StatelessWidget {
   const Header({
     Key key,
@@ -382,7 +319,11 @@ class Header extends StatelessWidget {
                     Flexible(
                       child: Text(
                         _beacon.eventName,
-                        style: theme.textTheme.headline3,
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                         // textAlign: TextAlign.center,
                       ),
                     ),
@@ -393,10 +334,12 @@ class Header extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        '${DateFormat('E').format(_beacon.startTime)}, ${_beacon.startTime.hour}:${_beacon.startTime.minute} - ${_beacon.endTime.hour}:${_beacon.endTime.minute}',
+                        '${DateFormat('E').format(_beacon.startTime)}, ${DateFormat('Hm').format(_beacon.startTime)} - '
+                            '${DateFormat('Hm').format(_beacon.endTime)}',
                         style: TextStyle(
                           color: Color(figmaColours.highlight),
                           fontWeight: FontWeight.bold,
+                          fontSize: 18
                         ),
                       ),
                     ],

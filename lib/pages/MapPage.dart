@@ -26,6 +26,7 @@ class _MapPageState extends State<MapPage> {
     return Scaffold(
       key: _scaffoldKey,
       drawer: BeaconSideDrawer(),
+      drawerScrimColor: Colors.transparent,
       body: Stack(
         children: [
           MapComponent(),

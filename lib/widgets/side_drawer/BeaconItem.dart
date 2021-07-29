@@ -19,10 +19,7 @@ class BeaconItem extends StatelessWidget {
       width: double.infinity,
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: child,
-        ),
+        child: child,
       ),
     );
   }

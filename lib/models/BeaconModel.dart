@@ -136,9 +136,11 @@ class CasualBeacon extends BeaconModel {
     'locationName' : locationName,
     'address' : address,
     'startTime' : startTime.toString(),
+    'startTimeMili' : startTime.millisecondsSinceEpoch,
     'endTime' : endTime.toString(),
     'id' : id,
     'lat' : lat,
     'long' : long,
+
   };
 }

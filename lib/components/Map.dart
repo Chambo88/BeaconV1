@@ -56,10 +56,12 @@ class _MapState extends State<MapComponent> {
               );
             });
 
-        setState(() {
-          // adding a new marker to map
-          _liveMarkers[MarkerId(beacon.id)] = marker;
-        });
+        if(this.mounted) {
+          setState(() {
+            // adding a new marker to map
+            _liveMarkers[MarkerId(beacon.id)] = marker;
+          });
+        }
       });
     });
   }

@@ -59,7 +59,6 @@ class LiveBeaconSheet extends BeaconSheet {
                       children: [
                         Header(
                             host: host,
-                            beacon: beacon,
                             theme: theme,
                             figmaColours: figmaColours),
                         Padding(
@@ -101,14 +100,11 @@ class Header extends StatelessWidget {
   const Header({
     Key key,
     @required this.host,
-    @required LiveBeacon beacon,
     @required this.theme,
     @required this.figmaColours,
-  })  : _beacon = beacon,
-        super(key: key);
+  })  :  super(key: key);
 
   final UserModel host;
-  final LiveBeacon _beacon;
   final ThemeData theme;
   final FigmaColours figmaColours;
 
@@ -133,7 +129,11 @@ class Header extends StatelessWidget {
                     Flexible(
                       child: Text(
                         '${host.firstName} ${host.lastName}',
-                        style: theme.textTheme.headline3,
+                        style: TextStyle(
+                          fontSize: 22,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                         // textAlign: TextAlign.center,
                       ),
                     ),

@@ -73,7 +73,7 @@ class BeaconService {
             beaconId: beaconId, beaconTitle: beaconTitle);
         _notificationService.sendPushNotification(
             [host],
-            title: '${currentUser.id} is coming to ${beaconTitle}',
+            title: '${currentUser.firstName} ${currentUser.lastName} is coming to your beacon : ${beaconTitle}',
             type: 'comingToBeacon'
         );
       }
@@ -95,7 +95,6 @@ class BeaconService {
     allLiveBeacons = _fireStoreDataBase
         .collection('liveBeacons')
         .where('users', arrayContains: userId)
-        // .where('type', isEqualTo: 'BeaconType.Live')
         .snapshots()
         ?.map((snapShot) => snapShot.docs.map((document) {
           return LiveBeacon.fromJson(document.data());
@@ -104,7 +103,7 @@ class BeaconService {
     allCasualBeacons = _fireStoreDataBase
         .collection('casualBeacons')
         .where('users', arrayContains: userId)
-        // .where('type', isEqualTo: 'BeaconType.Casual')
+        .orderBy('startTimeMili', descending: true)
         .snapshots()
         ?.map((snapShot) => snapShot.docs.map((document) {
           return CasualBeacon.fromJson(document.data());

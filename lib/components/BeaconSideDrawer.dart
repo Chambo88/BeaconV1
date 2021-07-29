@@ -19,64 +19,82 @@ class BeaconSideDrawer extends StatelessWidget {
     final beaconService = Provider.of<BeaconService>(context);
     beaconService.loadAllBeacons(userService.currentUser.id);
 
-    return Drawer(
-      child: DefaultTabController(
-        initialIndex: 0,
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 60,
-            automaticallyImplyLeading: false,
-            bottom: TabBar(
-              labelColor: theme.accentColor,
-              unselectedLabelColor: Colors.white,
-              labelStyle: theme.textTheme.headline3,
-              tabs: [
-                Tab(
-                  text: 'Friends',
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.825,
+      child: Drawer(
+        child: DefaultTabController(
+          initialIndex: 0,
+          length: 2,
+          child: Scaffold(
+            appBar: AppBar(
+              // title: Text("Today's Beacons"),
+              toolbarHeight: 0,
+              automaticallyImplyLeading: false,
+              bottom: TabBar(
+                labelColor: theme.accentColor,
+                unselectedLabelColor: Colors.white,
+                labelStyle: theme.textTheme.headline3,
+                tabs: [
+                  Tab(
+                    text: 'Friends',
+                  ),
+                  Tab(
+                    text: 'Live Events',
+                  ),
+                ],
+              ),
+            ),
+            body: TabBarView(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _divider(context: context, text: "Venue"),
+                      StreamBuilder<List<CasualBeacon>>(
+                          stream: beaconService.allCasualBeacons,
+                          builder: (context, snapshot) {
+                            while (!snapshot.hasData) {
+                              return circularProgress();
+                            }
+                            List<FriendCasualItem> beacons = [];
+                            snapshot.data.forEach((CasualBeacon beacon) {
+                              beacons.add(FriendCasualItem(
+                                  beacon: beacon
+                              ));
+                            });
+                            return Column(
+                              children: beacons,
+                            );
+                          }
+                      ),
+                      _divider(context: context, text: "Live"),
+                      StreamBuilder<List<LiveBeacon>>(
+                        stream: beaconService.allLiveBeacons,
+                        builder: (context, snapshot) {
+                          while (!snapshot.hasData) {
+                            return circularProgress();
+                          }
+                          List<FriendLiveItem> beacons = [];
+                          snapshot.data.forEach((LiveBeacon beacon) {
+                            beacons.add(FriendLiveItem(
+                              beacon: beacon
+                            ));
+                          });
+                          return Column(
+                            children: beacons,
+                          );
+                        }
+                      ),
+                    ],
+                  ),
                 ),
-                Tab(
-                  text: 'Live Events',
+                Column(
+                  children: [
+                    Text("Events Placeholder.."),
+                  ],
                 ),
               ],
             ),
-          ),
-          body: TabBarView(
-            children: [
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _divider(context: context, text: "Friends Events"),
-                    Text("Place holder for Friend Event Beacons...."),
-                    _divider(context: context, text: "Casual"),
-                    Text("Place holder for Friend Casual Beacons...."),
-                    _divider(context: context, text: "Live"),
-                    StreamBuilder<List<LiveBeacon>>(
-                      stream: beaconService.allLiveBeacons,
-                      builder: (context, snapshot) {
-                        while (!snapshot.hasData) {
-                          return circularProgress();
-                        }
-                        List<FriendLiveItem> beacons = [];
-                        snapshot.data.forEach((LiveBeacon beacon) {
-                          beacons.add(FriendLiveItem(
-                            beacon: beacon
-                          ));
-                        });
-                        return Column(
-                          children: beacons,
-                        );
-                      }
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                children: [
-                  Text("Events Placeholder.."),
-                ],
-              ),
-            ],
           ),
         ),
       ),
@@ -93,6 +111,7 @@ class BeaconSideDrawer extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         text,
+        style: Theme.of(context).textTheme.bodyText1,
       ),
     );
   }
