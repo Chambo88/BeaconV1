@@ -1,14 +1,15 @@
-import 'package:beacon/Assests/Icons.dart';
+
 import 'package:beacon/library/ColorHelper.dart';
 import 'package:beacon/models/GroupModel.dart';
-import 'package:beacon/services/UserService.dart';
-import 'package:beacon/widgets/BeaconBottomSheet.dart';
-import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/services/UserService.dart';
+import 'package:beacon/util/theme.dart';
+import 'package:beacon/widgets/ProfilePicWidget.dart';
+import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/IconPickerSheet.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:beacon/widgets/tiles/SubTitleText.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -21,13 +22,16 @@ class CreateGroupPage extends StatefulWidget {
 class _CreateGroupPageState extends State<CreateGroupPage> {
   final _formKey = GlobalKey<FormState>();
   bool _enableButton = false;
-  GroupModel _group = GroupModel(members: [], icon: null, name: null);
+  GroupModel _group;
   TextEditingController _groupNameTextController;
+  FigmaColours figmaColours;
 
   @override
   void initState() {
     super.initState();
     _groupNameTextController = TextEditingController();
+    figmaColours = FigmaColours();
+    _group = GroupModel(members: [], icon: Icons.local_fire_department_outlined, name: null);
   }
 
   @override
@@ -39,7 +43,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   void setEnabledButton() {
     setState(() {
       _enableButton =
-          _formKey.currentState.validate() && _group.members.isNotEmpty;
+          _formKey.currentState.validate() && _group.members.isNotEmpty && _groupNameTextController.text.isNotEmpty;
     });
   }
 
@@ -60,146 +64,173 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   Widget build(BuildContext context) {
     var userService = Provider.of<UserService>(context);
     final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            Navigator.pop(context, false);
-          },
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.pop(context, false);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leadingWidth: 70,
+          leading: TextButton(
+            child: Text("Cancel",
+                style: TextStyle(
+                    color: theme.accentColor,
+                    fontWeight: FontWeight.bold
+                ),
+            ),
+            onPressed: () {
+              Navigator.pop(context, false);
+            },
+          ),
+          title: Text("Create Group"),
+          actions: [
+            _enableButton ? TextButton(
+              child: Text("Save",
+                style: TextStyle(
+                    color: theme.accentColor,
+                    fontWeight: FontWeight.bold
+                ),
+              ),
+              onPressed: () {
+                _group.name = _groupNameTextController.value.text;
+                userService.addGroup(_group);
+                Navigator.pop(context);
+              },
+            ) :
+            TextButton(
+              child: Text("Save",
+                style: TextStyle(
+                color: Color(figmaColours.greyLight),
+                fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: null
+            )
+          ],
         ),
-        title: Text("Create Group"),
-      ),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              onChanged: setEnabledButton,
-              child: Column(
-                children: [
-                  section(
-                    theme: theme,
-                    title: "Name",
-                    child: TextFormField(
-                      controller: _groupNameTextController,
-                      autovalidateMode: AutovalidateMode.always,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Group name can not be empty.';
-                        }
-                        if (userService.currentUser.groups
-                            .map((GroupModel group) => group.name)
-                            .contains(value)) {
-                          return 'You already have a group with that name.';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  section(
-                    theme: theme,
-                    title: 'Customization',
-                    child: Container(
-                      height: 50,
-                      color: theme.primaryColor,
-                      child: InkWell(
-                        onTap: () {
-                          showModalBottomSheet(
-                            context: context,
-                            backgroundColor: Colors.transparent,
-                            isScrollControlled: true,
-                            builder: (context) {
-                              return IconPickerSheet(
-                                onSelected: (icon) => setIcon(icon),
-                              );
-                            },
-                          );
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                onChanged: setEnabledButton,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 30),
+                      child: TextFormField(
+                        style: TextStyle(
+                            color: theme.accentColor,
+                          fontSize: 18
+                        ),
+                        decoration: new InputDecoration(
+                          prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
+                          // isDense: true,
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                            child: Text("Name",
+                                style: theme.textTheme.headline4),
+                          ),
+                          hintText: "Add a group name",
+                        ),
+                        autovalidateMode: AutovalidateMode.always,
+                        controller: _groupNameTextController,
+                        onChanged: (value) {
+                          setEnabledButton();
                         },
-                        child: _group.icon != null
-                            ? Row(children: [
-                                Text(
-                                  'Icon:',
-                                ),
-                                Icon(
-                                  _group.icon,
-                                ),
-                              ])
-                            : null,
+                        validator: (value) {
+                          if(value != null) {
+                            if(value.length >= 20) {
+                              return "Group names can't be more than 20 characters";
+                            }
+                          }
+                          if (userService.currentUser.groups
+                              .map((GroupModel group) => group.name)
+                              .contains(value)) {
+                            return 'You already have a group with that name.';
+                          }
+                          return null;
+                        },
                       ),
                     ),
-                  ),
-                  section(
-                    theme: theme,
-                    title: 'Members',
-                    child: Column(
+              Padding(
+                padding: const EdgeInsets.only(top: 3.0),
+                child: InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: Colors.transparent,
+                      isScrollControlled: true,
+                      builder: (context) {
+                        return IconPickerSheet(
+                          onSelected: (icon) => setIcon(icon),
+                        );
+                      },
+                    );
+                  },
+                  child: Container(
+                    color: theme.primaryColor,
+                    height: 50,
+                    child: Row(
                       children: [
-                        BeaconFlatButton(
-                          title: 'Add Members',
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              backgroundColor: Colors.transparent,
-                              isScrollControlled: true,
-                              builder: (context) {
-                                return FriendSelectorSheet(
-
-                                  onContinue: _updateFriendsList,
-                                  friendsSelected: _group.members.toSet(),
-                                );
-                              },
-                            );
-                          },
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(28, 0, 16, 0),
+                          child: Text("Icon",
+                              style: theme.textTheme.headline4),
+                        ),
+                        Icon(_group.icon,
+                          color: Color(figmaColours.highlight),
                         ),
                       ],
                     ),
                   ),
-                  if (_group.members != null)
-                    Column(
-                      children: _group.members.map((friend) {
-                        return SelectedFriend(
-                            friend: friend,
-                            onRemove: () {
-                              setState(() {
-                                _group.members.remove(friend);
-                              });
-                              setEnabledButton();
-                            });
-                      }).toList(),
-                    ),
-                ],
-              ),
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: GradientButton(
-                  child: Text(
-                    'Create',
-                  ),
-                  onPressed: _enableButton
-                      ? () {
-                          _group.name = _groupNameTextController.value.text;
-                          userService.addGroup(_group);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Group created',
-                              ),
-                            ),
-                          );
-                          Navigator.pop(context);
-                        }
-                      : null,
-                  gradient: ColorHelper.getBeaconGradient(),
                 ),
               ),
-            ],
-          )
-        ],
+                    section(
+                      theme: theme,
+                      title: 'Members',
+                      child: Column(
+                        children: [
+                          BeaconFlatButton(
+                            icon: Icons.group_add_outlined,
+                            title: 'Add Members',
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                backgroundColor: Colors.transparent,
+                                isScrollControlled: true,
+                                builder: (context) {
+                                  return FriendSelectorSheet(
+
+                                    onContinue: _updateFriendsList,
+                                    friendsSelected: _group.members.toSet(),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (_group.members != null)
+                      Column(
+                        children: _group.members.map((friend) {
+                          return SelectedFriend(
+                              friend: friend,
+                              onRemove: () {
+                                setState(() {
+                                  _group.members.remove(friend);
+                                });
+                                setEnabledButton();
+                              });
+                        }).toList(),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -209,27 +240,20 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
     @required String title,
     @required Widget child,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0, bottom: 2),
-            child: Text(
-              title,
-              style: theme.textTheme.bodyText2,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SubTitleText(
+          text: title
+        ),
+        Container(
+          color: theme.primaryColor,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: child,
           ),
-          Container(
-            color: theme.primaryColor,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: child,
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 }
@@ -237,6 +261,8 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 class SelectedFriend extends StatelessWidget {
   final String friend;
   final VoidCallback onRemove;
+  UserModel friendModel;
+  final figmaColours = FigmaColours();
 
   SelectedFriend({
     @required this.friend,
@@ -245,22 +271,37 @@ class SelectedFriend extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(
-        Icons.circle,
-        size: 50,
-        color: Colors.grey,
-      ),
-      title: Text(
-        friend,
-        style: Theme.of(context).textTheme.bodyText1,
-      ),
-      trailing: IconButton(
-          icon: const Icon(
-            Icons.close,
+    final _userService = Provider.of<UserService>(context);
+    friendModel = _userService.getAFriendModelFromId(friend);
+    return Padding(
+      padding: const EdgeInsets.only(top: 4.0),
+      child: Column(
+        children: [
+          Container(
+            height: 50,
+            child: ListTile(
+              leading: ProfilePicture(
+                user: friendModel,
+                size: 20,
+              ),
+              title: Text(
+                "${friendModel.firstName} ${friendModel.lastName}",
+                style: Theme.of(context).textTheme.headline4,
+              ),
+              trailing: IconButton(
+                  icon: const Icon(
+                    Icons.close,
+                  ),
+                  color: Color(figmaColours.greyLight),
+                  onPressed: onRemove),
+            ),
           ),
-          color: Colors.white,
-          onPressed: onRemove),
+          Divider(
+            thickness: 1,
+            color: Color(figmaColours.greyMedium),
+          )
+        ],
+      ),
     );
   }
 }

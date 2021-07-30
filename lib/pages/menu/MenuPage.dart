@@ -1,3 +1,4 @@
+import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/menu/Profile/ProflePage.dart';
 import 'package:beacon/pages/menu/notificationsSettingsPage.dart';
@@ -111,8 +112,14 @@ class _MenuPageState extends State<MenuPage> {
             icon: CommunityMaterialIcons.account_group_outline,
             title: 'Groups',
             onTap: () {
+              List<GroupModel> originalOrder = List.from(user.groups);
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => GroupSettings()));
+                  MaterialPageRoute(builder: (context) => GroupSettings())
+              ).then((value) {
+                if(value == false) {
+                  user.groups = originalOrder;
+                }
+              });
             },
           ),
           BeaconFlatButton(

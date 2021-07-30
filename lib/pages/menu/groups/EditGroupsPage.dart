@@ -1,14 +1,9 @@
-import 'package:beacon/Assests/Icons.dart';
-import 'package:beacon/library/ColorHelper.dart';
+
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/services/UserService.dart';
-import 'package:beacon/widgets/BeaconBottomSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
-import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/widgets/beacon_sheets/IconPickerSheet.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
-import 'package:beacon/widgets/buttons/GradientButton.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -106,9 +101,7 @@ class _EditGroupPageState extends State<EditGroupPage> {
                 },
               ).then(
                 (value) {
-                  if (value) {
-                    Navigator.of(context).pop();
-                  }
+
                 },
               );
             } else {

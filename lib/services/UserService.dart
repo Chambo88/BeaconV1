@@ -200,6 +200,17 @@ class UserService {
     }, SetOptions(merge: true));
   }
 
+  updateGroups() async {
+    List<Map<String, dynamic>> updatedGroups = [];
+    currentUser.groups.forEach((element) {
+      updatedGroups.add(element.toJson());
+    });
+    await FirebaseFirestore.instance.collection('users')
+        .doc(currentUser.id)
+        .update(
+        {"groups": updatedGroups});
+  }
+
   addGroup(GroupModel group, {UserModel user}) async {
     // If user is null then current user
     if (user == null) {
