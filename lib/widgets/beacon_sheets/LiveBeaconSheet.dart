@@ -1,11 +1,9 @@
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/beacon_sheets/BeaconSheet.dart';
-import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
-import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
+import 'package:beacon/widgets/buttons/SummonButton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -77,11 +75,10 @@ class LiveBeaconSheet extends BeaconSheet {
                         Row(
                           children: [
                             Spacer(),
-                            GetSummonButton(
+                            SummonButton(
                               currentUser: currentUser,
-                              beacon: beacon,
-                              theme: theme,
-                              host: host,
+                              small: false,
+                              friend: host,
                             ),
                           ],
                         ),
@@ -151,67 +148,67 @@ class Header extends StatelessWidget {
   }
 }
 
-class GetSummonButton extends StatefulWidget {
-  const GetSummonButton({
-    Key key,
-    @required this.currentUser,
-    @required LiveBeacon beacon,
-    @required this.theme,
-    @required this.host,
-  })  : _beacon = beacon,
-        super(key: key);
-
-  final UserModel currentUser;
-  final LiveBeacon _beacon;
-  final ThemeData theme;
-  final UserModel host;
-
-  @override
-  State<GetSummonButton> createState() => _GetSummonButtonState();
-}
-
-class _GetSummonButtonState extends State<GetSummonButton> {
-  BeaconService _beaconService = BeaconService();
-
-  @override
-  Widget build(BuildContext context) {
-    if (!widget.currentUser.beaconsAttending.contains(widget._beacon.id)) {
-      return Padding(
-        padding: const EdgeInsets.all(6),
-        child: SmallOutlinedButton(
-          child: Text(
-            "Summon",
-            style: widget.theme.textTheme.headline4,
-          ),
-          width: 150,
-          height: 35,
-          onPressed: () {
-            setState(() {
-              ///ToDO
-
-            });
-          },
-        ),
-      );
-    } else {
-      return Padding(
-        padding: const EdgeInsets.all(6),
-        child: SmallGradientButton(
-          child: Text(
-            "Summoned",
-            style: widget.theme.textTheme.headline4,
-          ),
-          width: 150,
-          height: 35,
-          onPressed: () {
-            setState(() {
-              ///Todo
-
-            });
-          },
-        ),
-      );
-    }
-  }
-}
+// class GetSummonButton extends StatefulWidget {
+//   const GetSummonButton({
+//     Key key,
+//     @required this.currentUser,
+//     @required LiveBeacon beacon,
+//     @required this.theme,
+//     @required this.host,
+//   })  : _beacon = beacon,
+//         super(key: key);
+//
+//   final UserModel currentUser;
+//   final LiveBeacon _beacon;
+//   final ThemeData theme;
+//   final UserModel host;
+//
+//   @override
+//   State<GetSummonButton> createState() => _GetSummonButtonState();
+// }
+//
+// class _GetSummonButtonState extends State<GetSummonButton> {
+//   BeaconService _beaconService = BeaconService();
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     if (!widget.currentUser.beaconsAttending.contains(widget._beacon.id)) {
+//       return Padding(
+//         padding: const EdgeInsets.all(6),
+//         child: SmallOutlinedButton(
+//           child: Text(
+//             "Summon",
+//             style: widget.theme.textTheme.headline4,
+//           ),
+//           width: 150,
+//           height: 35,
+//           onPressed: () {
+//             setState(() {
+//               ///ToDO
+//
+//             });
+//           },
+//         ),
+//       );
+//     } else {
+//       return Padding(
+//         padding: const EdgeInsets.all(6),
+//         child: SmallGradientButton(
+//           child: Text(
+//             "Summoned",
+//             style: widget.theme.textTheme.headline4,
+//           ),
+//           width: 150,
+//           height: 35,
+//           onPressed: () {
+//             setState(() {
+//               ///Todo
+//
+//             });
+//           },
+//         ),
+//       );
+//     }
+//   }
+// }
 
