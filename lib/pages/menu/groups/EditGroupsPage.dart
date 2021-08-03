@@ -1,6 +1,10 @@
 
 import 'package:beacon/models/GroupModel.dart';
+import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/UserService.dart';
+import 'package:beacon/util/theme.dart';
+import 'package:beacon/widgets/Dialogs/TwoButtonDialog.dart';
+import 'package:beacon/widgets/ProfilePicWidget.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/IconPickerSheet.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
@@ -40,7 +44,6 @@ class _EditGroupPageState extends State<EditGroupPage> {
   void setEnabledButton() {
     setState(() {
       _enableButton = _formKey.currentState.validate() &&
-          _group.members.isNotEmpty &&
           _group != widget.originalGroup;
     });
   }
@@ -59,49 +62,43 @@ class _EditGroupPageState extends State<EditGroupPage> {
     setEnabledButton();
   }
 
+  Future<dynamic> cancelDialog(BuildContext context,) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext) {
+          return TwoButtonDialog(
+            title: "Cancel",
+            bodyText: "Discard changes to group?",
+            onPressedGrey: () => Navigator.pop(context, false),
+            onPressedHighlight: () => Navigator.pop(context, true),
+            buttonGreyText: "No",
+            buttonHighlightText: "Yes",
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     var userService = Provider.of<UserService>(context);
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.close),
+        leadingWidth: 70,
+        leading: TextButton(
+          child: Text("Cancel",
+            style: TextStyle(
+                color: theme.accentColor,
+                fontWeight: FontWeight.bold
+            ),
+          ),
           onPressed: () {
             // Only show dialog if changes have occurred
             if (_enableButton) {
-              showDialog<bool>(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Cancel'),
-                    content: SingleChildScrollView(
-                      child: ListBody(
-                        children: const <Widget>[
-                          Text('Discard changes to group?'),
-                        ],
-                      ),
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: const Text('No'),
-                        onPressed: () {
-                          Navigator.of(context).pop(false);
-                        },
-                      ),
-                      TextButton(
-                        child: const Text('Yes'),
-                        onPressed: () {
-                          Navigator.of(context).pop(true);
-                        },
-                      )
-                    ],
-                  );
-                },
-              ).then(
+                  cancelDialog(context).then(
                 (value) {
-
+                  if(value) {
+                    Navigator.pop(context, false);
+                  }
                 },
               );
             } else {
@@ -131,73 +128,153 @@ class _EditGroupPageState extends State<EditGroupPage> {
           )
         ],
       ),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          onChanged: setEnabledButton,
-          child: Column(
+      body: Column(
+        children: [
+          ListView(
             children: [
-              section(
-                theme: theme,
-                title: "Name",
-                child: TextFormField(
-                  controller: _groupNameTextController,
-                  autovalidateMode: AutovalidateMode.always,
-                  onChanged: (value) {
-                    _group.name = value;
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Group name can not be empty.';
-                    }
-                    else if (userService.currentUser.groups
-                            .map((GroupModel group) => group.name)
-                            .contains(value) &&
-                        _group.name != widget.originalGroup.name) {
-                      return 'You already have a group with that name.';
-                    }
-                    return null;
-                  },
+              Form(
+                key: _formKey,
+                onChanged: setEnabledButton,
+                child: Column(
+                  children: [
+                    getNameTile(theme, userService),
+                    getIconTile(context, theme),
+                    getAddMembersTile(theme, context),
+                    if (_group.members != null)
+                      Column(
+                        children: _group.members.map((friend) {
+                          return SelectedFriend(
+                              friend: friend,
+                              onRemove: () {
+                                setState(() {
+                                  _group.members.remove(friend);
+                                });
+                                setEnabledButton();
+                              });
+                        }).toList(),
+                      ),
+                    if (_group.members != null)
+                      Column(
+                        children: _group.members.map((friend) {
+                          return SelectedFriend(
+                              friend: friend,
+                              onRemove: () {
+                                setState(() {
+                                  _group.members.remove(friend);
+                                });
+                                setEnabledButton();
+                              });
+                        }).toList(),
+                      ),
+                    if (_group.members != null)
+                      Column(
+                        children: _group.members.map((friend) {
+                          return SelectedFriend(
+                              friend: friend,
+                              onRemove: () {
+                                setState(() {
+                                  _group.members.remove(friend);
+                                });
+                                setEnabledButton();
+                              });
+                        }).toList(),
+                      ),
+                    if (_group.members != null)
+                      Column(
+                        children: _group.members.map((friend) {
+                          return SelectedFriend(
+                              friend: friend,
+                              onRemove: () {
+                                setState(() {
+                                  _group.members.remove(friend);
+                                });
+                                setEnabledButton();
+                              });
+                        }).toList(),
+                      ),
+                    if (_group.members != null)
+                      Column(
+                        children: _group.members.map((friend) {
+                          return SelectedFriend(
+                              friend: friend,
+                              onRemove: () {
+                                setState(() {
+                                  _group.members.remove(friend);
+                                });
+                                setEnabledButton();
+                              });
+                        }).toList(),
+                      ),
+                  ],
                 ),
               ),
-              section(
-                theme: theme,
-                title: 'Customization',
-                child: Container(
-                  height: 50,
-                  color: theme.primaryColor,
-                  child: InkWell(
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        backgroundColor: Colors.transparent,
-                        isScrollControlled: true,
-                        builder: (context) {
-                          return IconPickerSheet(
-                            onSelected: (icon) => setIcon(icon),
-                          );
+            ],
+          ),
+          BeaconFlatButton(
+            title: 'Delete Group',
+            onTap: () {
+              showDialog<bool>(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Delete Group'),
+                    content: SingleChildScrollView(
+                      child: ListBody(
+                        children: const <Widget>[
+                          Text(
+                              'Are you sure you would like to delete this group?'),
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Cancel'),
+                        onPressed: () {
+                          Navigator.of(context).pop(false);
                         },
-                      );
-                    },
-                    child: _group.icon != null
-                        ? Row(children: [
-                            Text(
-                              'Icon:',
-                            ),
-                            Icon(
-                              _group.icon,
-                            ),
-                          ])
-                        : null,
-                  ),
-                ),
-              ),
-              section(
+                      ),
+                      TextButton(
+                        child: const Text('Yes'),
+                        onPressed: () {
+                          Navigator.of(context).pop(true);
+                        },
+                      )
+                    ],
+                  );
+                },
+              ).then(
+                    (value) {
+                  if (value) {
+                    userService.removeGroup(widget.originalGroup);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Group deleted',
+                        ),
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  }
+                },
+              );
+            },
+            arrow: false,
+            icon: Icons.delete,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getAddMembersTile(ThemeData theme, BuildContext context) {
+    return section(
                 theme: theme,
                 title: 'Members',
                 child: Column(
                   children: [
                     BeaconFlatButton(
+                      icon: Icons.group_add_outlined,
                       title: 'Add Members',
                       onTap: () {
                         showModalBottomSheet(
@@ -216,81 +293,84 @@ class _EditGroupPageState extends State<EditGroupPage> {
                     ),
                   ],
                 ),
-              ),
-              if (_group.members != null)
-                Column(
-                  children: _group.members.map((friend) {
-                    return SelectedFriend(
-                        friend: friend,
-                        onRemove: () {
-                          setState(() {
-                            _group.members.remove(friend);
-                          });
-                          setEnabledButton();
-                        });
-                  }).toList(),
+              );
+  }
+
+  Padding getNameTile(ThemeData theme, UserService userService) {
+    return Padding(
+              padding: const EdgeInsets.only(top: 30),
+              child: TextFormField(
+                style: TextStyle(
+                    color: theme.accentColor,
+                    fontSize: 18
                 ),
-              section(
-                theme: theme,
-                title: 'More Actions',
-                child: BeaconFlatButton(
-                  title: 'Delete Group',
-                  onTap: () {
-                    showDialog<bool>(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Delete Group'),
-                          content: SingleChildScrollView(
-                            child: ListBody(
-                              children: const <Widget>[
-                                Text(
-                                    'Are you sure you would like to delete this group?'),
-                              ],
-                            ),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              child: const Text('Cancel'),
-                              onPressed: () {
-                                Navigator.of(context).pop(false);
-                              },
-                            ),
-                            TextButton(
-                              child: const Text('Yes'),
-                              onPressed: () {
-                                Navigator.of(context).pop(true);
-                              },
-                            )
-                          ],
-                        );
-                      },
-                    ).then(
-                      (value) {
-                        if (value) {
-                          userService.removeGroup(widget.originalGroup);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Group deleted',
-                              ),
-                            ),
-                          );
-                          Navigator.of(context).pop();
-                        }
-                      },
-                    );
-                  },
-                  arrow: false,
-                  icon: Icons.delete,
+                decoration: new InputDecoration(
+                  prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
+                  // isDense: true,
+                  prefixIcon: Padding(
+                    padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                    child: Text("Name",
+                        style: theme.textTheme.headline4),
+                  ),
+                  hintText: "Add a group name",
+                ),
+                autovalidateMode: AutovalidateMode.always,
+                controller: _groupNameTextController,
+                onChanged: (value) {
+                  setEnabledButton();
+                },
+                validator: (value) {
+                  if(value != null) {
+                    if(value.length >= 20) {
+                      return "Group names can't be more than 20 characters";
+                    }
+                  }
+                  if (userService.currentUser.groups
+                      .map((GroupModel group) => group.name )
+                      .contains(value) &&
+                      _group.name != widget.originalGroup.name) {
+                    return 'You already have a group with that name.';
+                  }
+                  return null;
+                },
+              ),
+            );
+  }
+
+  Padding getIconTile(BuildContext context, ThemeData theme) {
+    return Padding(
+              padding: const EdgeInsets.only(top: 3.0),
+              child: InkWell(
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return IconPickerSheet(
+                        onSelected: (icon) => setIcon(icon),
+                      );
+                    },
+                  );
+                },
+                child: Container(
+                  color: theme.primaryColor,
+                  height: 50,
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(28, 0, 16, 0),
+                        child: Text("Icon",
+                            style: theme.textTheme.headline4),
+                      ),
+                      Icon(_group.icon,
+                        color: theme.accentColor,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
+            );
   }
 
   Widget section({
@@ -326,6 +406,8 @@ class _EditGroupPageState extends State<EditGroupPage> {
 class SelectedFriend extends StatelessWidget {
   final String friend;
   final VoidCallback onRemove;
+  UserModel friendModel;
+  final figmaColours = FigmaColours();
 
   SelectedFriend({
     @required this.friend,
@@ -334,22 +416,37 @@ class SelectedFriend extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(
-        Icons.circle,
-        size: 50,
-        color: Colors.grey,
-      ),
-      title: Text(
-        friend,
-        style: Theme.of(context).textTheme.bodyText1,
-      ),
-      trailing: IconButton(
-          icon: const Icon(
-            Icons.close,
+    final _userService = Provider.of<UserService>(context);
+    friendModel = _userService.getAFriendModelFromId(friend);
+    return Padding(
+      padding: const EdgeInsets.only(top: 4.0),
+      child: Column(
+        children: [
+          Container(
+            height: 50,
+            child: ListTile(
+              leading: ProfilePicture(
+                user: friendModel,
+                size: 20,
+              ),
+              title: Text(
+                "${friendModel.firstName} ${friendModel.lastName}",
+                style: Theme.of(context).textTheme.headline4,
+              ),
+              trailing: IconButton(
+                  icon: const Icon(
+                    Icons.close,
+                  ),
+                  color: Color(figmaColours.greyLight),
+                  onPressed: onRemove),
+            ),
           ),
-          color: Colors.white,
-          onPressed: onRemove),
+          Divider(
+            thickness: 1,
+            color: Color(figmaColours.greyMedium),
+          )
+        ],
+      ),
     );
   }
 }

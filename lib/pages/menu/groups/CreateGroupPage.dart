@@ -43,7 +43,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   void setEnabledButton() {
     setState(() {
       _enableButton =
-          _formKey.currentState.validate() && _group.members.isNotEmpty && _groupNameTextController.text.isNotEmpty;
+          _formKey.currentState.validate() && _groupNameTextController.text.isNotEmpty;
     });
   }
 
@@ -108,128 +108,124 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
             )
           ],
         ),
-        body: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                onChanged: setEnabledButton,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 30),
-                      child: TextFormField(
-                        style: TextStyle(
-                            color: theme.accentColor,
-                          fontSize: 18
-                        ),
-                        decoration: new InputDecoration(
-                          prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
-                          // isDense: true,
-                          prefixIcon: Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-                            child: Text("Name",
-                                style: theme.textTheme.headline4),
-                          ),
-                          hintText: "Add a group name",
-                        ),
-                        autovalidateMode: AutovalidateMode.always,
-                        controller: _groupNameTextController,
-                        onChanged: (value) {
-                          setEnabledButton();
-                        },
-                        validator: (value) {
-                          if(value != null) {
-                            if(value.length >= 20) {
-                              return "Group names can't be more than 20 characters";
-                            }
-                          }
-                          if (userService.currentUser.groups
-                              .map((GroupModel group) => group.name)
-                              .contains(value)) {
-                            return 'You already have a group with that name.';
-                          }
-                          return null;
-                        },
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            onChanged: setEnabledButton,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 30),
+                  child: TextFormField(
+                    style: TextStyle(
+                        color: theme.accentColor,
+                      fontSize: 18
+                    ),
+                    decoration: new InputDecoration(
+                      prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
+                      // isDense: true,
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        child: Text("Name",
+                            style: theme.textTheme.headline4),
                       ),
+                      hintText: "Add a group name",
                     ),
-              Padding(
-                padding: const EdgeInsets.only(top: 3.0),
-                child: InkWell(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      backgroundColor: Colors.transparent,
-                      isScrollControlled: true,
-                      builder: (context) {
-                        return IconPickerSheet(
-                          onSelected: (icon) => setIcon(icon),
-                        );
-                      },
-                    );
-                  },
-                  child: Container(
-                    color: theme.primaryColor,
-                    height: 50,
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(28, 0, 16, 0),
-                          child: Text("Icon",
-                              style: theme.textTheme.headline4),
-                        ),
-                        Icon(_group.icon,
-                          color: Color(figmaColours.highlight),
-                        ),
-                      ],
-                    ),
+                    autovalidateMode: AutovalidateMode.always,
+                    controller: _groupNameTextController,
+                    onChanged: (value) {
+                      setEnabledButton();
+                    },
+                    validator: (value) {
+                      if(value != null) {
+                        if(value.length >= 20) {
+                          return "Group names can't be more than 20 characters";
+                        }
+                      }
+                      if (userService.currentUser.groups
+                          .map((GroupModel group) => group.name)
+                          .contains(value)) {
+                        return 'You already have a group with that name.';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-              ),
-                    section(
-                      theme: theme,
-                      title: 'Members',
-                      child: Column(
-                        children: [
-                          BeaconFlatButton(
-                            icon: Icons.group_add_outlined,
-                            title: 'Add Members',
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                backgroundColor: Colors.transparent,
-                                isScrollControlled: true,
-                                builder: (context) {
-                                  return FriendSelectorSheet(
-
-                                    onContinue: _updateFriendsList,
-                                    friendsSelected: _group.members.toSet(),
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+          Padding(
+            padding: const EdgeInsets.only(top: 3.0),
+            child: InkWell(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.transparent,
+                  isScrollControlled: true,
+                  builder: (context) {
+                    return IconPickerSheet(
+                      onSelected: (icon) => setIcon(icon),
+                    );
+                  },
+                );
+              },
+              child: Container(
+                color: theme.primaryColor,
+                height: 50,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(28, 0, 16, 0),
+                      child: Text("Icon",
+                          style: theme.textTheme.headline4),
                     ),
-                    if (_group.members != null)
-                      Column(
-                        children: _group.members.map((friend) {
-                          return SelectedFriend(
-                              friend: friend,
-                              onRemove: () {
-                                setState(() {
-                                  _group.members.remove(friend);
-                                });
-                                setEnabledButton();
-                              });
-                        }).toList(),
-                      ),
+                    Icon(_group.icon,
+                      color: Color(figmaColours.highlight),
+                    ),
                   ],
                 ),
               ),
             ),
-          ],
+          ),
+                section(
+                  theme: theme,
+                  title: 'Members',
+                  child: Column(
+                    children: [
+                      BeaconFlatButton(
+                        icon: Icons.group_add_outlined,
+                        title: 'Add Members',
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            backgroundColor: Colors.transparent,
+                            isScrollControlled: true,
+                            builder: (context) {
+                              return FriendSelectorSheet(
+
+                                onContinue: _updateFriendsList,
+                                friendsSelected: _group.members.toSet(),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                if (_group.members != null)
+                  Column(
+                    children: _group.members.map((friend) {
+                      return SelectedFriend(
+                          friend: friend,
+                          onRemove: () {
+                            setState(() {
+                              _group.members.remove(friend);
+                            });
+                            setEnabledButton();
+                          });
+                    }).toList(),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
