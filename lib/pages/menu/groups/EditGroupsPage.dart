@@ -8,6 +8,7 @@ import 'package:beacon/widgets/ProfilePicWidget.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/IconPickerSheet.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
+import 'package:beacon/widgets/tiles/SubTitleText.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -77,6 +78,21 @@ class _EditGroupPageState extends State<EditGroupPage> {
         });
   }
 
+  Future<dynamic> deleteDialog(BuildContext context,) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext) {
+          return TwoButtonDialog(
+            title: "Delete Group",
+            bodyText: "Are you sure you want to delete this group?",
+            onPressedGrey: () => Navigator.pop(context, false),
+            onPressedHighlight: () => Navigator.pop(context, true),
+            buttonGreyText: "Cancel",
+            buttonHighlightText: "Yes",
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     var userService = Provider.of<UserService>(context);
@@ -130,120 +146,70 @@ class _EditGroupPageState extends State<EditGroupPage> {
       ),
       body: Column(
         children: [
-          ListView(
-            children: [
-              Form(
-                key: _formKey,
-                onChanged: setEnabledButton,
-                child: Column(
-                  children: [
-                    getNameTile(theme, userService),
-                    getIconTile(context, theme),
-                    getAddMembersTile(theme, context),
-                    if (_group.members != null)
-                      Column(
-                        children: _group.members.map((friend) {
-                          return SelectedFriend(
-                              friend: friend,
-                              onRemove: () {
-                                setState(() {
-                                  _group.members.remove(friend);
-                                });
-                                setEnabledButton();
-                              });
-                        }).toList(),
-                      ),
-                    if (_group.members != null)
-                      Column(
-                        children: _group.members.map((friend) {
-                          return SelectedFriend(
-                              friend: friend,
-                              onRemove: () {
-                                setState(() {
-                                  _group.members.remove(friend);
-                                });
-                                setEnabledButton();
-                              });
-                        }).toList(),
-                      ),
-                    if (_group.members != null)
-                      Column(
-                        children: _group.members.map((friend) {
-                          return SelectedFriend(
-                              friend: friend,
-                              onRemove: () {
-                                setState(() {
-                                  _group.members.remove(friend);
-                                });
-                                setEnabledButton();
-                              });
-                        }).toList(),
-                      ),
-                    if (_group.members != null)
-                      Column(
-                        children: _group.members.map((friend) {
-                          return SelectedFriend(
-                              friend: friend,
-                              onRemove: () {
-                                setState(() {
-                                  _group.members.remove(friend);
-                                });
-                                setEnabledButton();
-                              });
-                        }).toList(),
-                      ),
-                    if (_group.members != null)
-                      Column(
-                        children: _group.members.map((friend) {
-                          return SelectedFriend(
-                              friend: friend,
-                              onRemove: () {
-                                setState(() {
-                                  _group.members.remove(friend);
-                                });
-                                setEnabledButton();
-                              });
-                        }).toList(),
-                      ),
-                  ],
-                ),
+          Expanded(
+            child: Form(
+              key: _formKey,
+              onChanged: setEnabledButton,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: (_group.members != null)? _group.members.length + 3: 3,
+                itemBuilder: (BuildContext context,int index) {
+                  if(index == 0) {
+                    return getNameTile(theme, userService);
+                  }
+                  if(index == 1) {
+                    return getIconTile(context, theme);
+                  }
+                  if(index == 2) {
+                    return getAddMembersTile(theme, context);
+                  }
+                  return SelectedFriend(
+                    friend: _group.members[index - 3],
+                      onRemove: () {
+                        setState(() {
+                          _group.members.removeAt(index - 3);
+                        });
+                        setEnabledButton();
+                      });
+                },
               ),
-            ],
+            ),
           ),
           BeaconFlatButton(
             title: 'Delete Group',
             onTap: () {
-              showDialog<bool>(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Delete Group'),
-                    content: SingleChildScrollView(
-                      child: ListBody(
-                        children: const <Widget>[
-                          Text(
-                              'Are you sure you would like to delete this group?'),
-                        ],
-                      ),
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                        child: const Text('Cancel'),
-                        onPressed: () {
-                          Navigator.of(context).pop(false);
-                        },
-                      ),
-                      TextButton(
-                        child: const Text('Yes'),
-                        onPressed: () {
-                          Navigator.of(context).pop(true);
-                        },
-                      )
-                    ],
-                  );
-                },
-              ).then(
+              // showDialog<bool>(
+              //   context: context,
+              //   barrierDismissible: false,
+              //   builder: (BuildContext context) {
+              //     return AlertDialog(
+              //       title: const Text('Delete Group'),
+              //       content: SingleChildScrollView(
+              //         child: ListBody(
+              //           children: const <Widget>[
+              //             Text(
+              //                 'Are you sure you would like to delete this group?'),
+              //           ],
+              //         ),
+              //       ),
+              //       actions: <Widget>[
+              //         TextButton(
+              //           child: const Text('Cancel'),
+              //           onPressed: () {
+              //             Navigator.of(context).pop(false);
+              //           },
+              //         ),
+              //         TextButton(
+              //           child: const Text('Yes'),
+              //           onPressed: () {
+              //             Navigator.of(context).pop(true);
+              //           },
+              //         )
+              //       ],
+              //     );
+              //   },
+              // )
+                  deleteDialog(context).then(
                     (value) {
                   if (value) {
                     userService.removeGroup(widget.originalGroup);
@@ -373,32 +339,24 @@ class _EditGroupPageState extends State<EditGroupPage> {
             );
   }
 
+
   Widget section({
     @required ThemeData theme,
     @required String title,
     @required Widget child,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0, bottom: 2),
-            child: Text(
-              title,
-              style: theme.textTheme.bodyText2,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SubTitleText(text: title),
+        Container(
+          color: theme.primaryColor,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: child,
           ),
-          Container(
-            color: theme.primaryColor,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: child,
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 }
