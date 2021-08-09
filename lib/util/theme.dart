@@ -62,7 +62,7 @@ class CustomTheme {
       inputDecorationTheme: InputDecorationTheme(
           counterStyle: TextStyle(color: Colors.white),
           labelStyle: TextStyle(
-            color: Color(0xFF868A8C),
+            color: Colors.white,
           ),
           fillColor: Color(0xFF111111),
           filled: true,
