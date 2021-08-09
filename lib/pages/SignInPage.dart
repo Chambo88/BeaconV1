@@ -114,7 +114,7 @@ class _SignInPageState extends State<SignInPage> {
             ),
             Padding(
               padding:
-                  const EdgeInsets.fromLTRB(40, 20, 40, 40),
+                  const EdgeInsets.fromLTRB(35, 15, 35, 35),
               child: SizedBox(
                 width: double.infinity,
                 child: GradientButton(
@@ -136,34 +136,70 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Widget _signIn(BuildContext context) {
-    return Column(
-        key: ValueKey("signIn"),
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(30.0, 20, 0, 0),
-            child: Text(
-              "Email",
-              style: Theme.of(context).textTheme.headline2,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: widthPadding),
+      child: Column(
+          mainAxisSize: MainAxisSize.max,
+          key: ValueKey("signIn"),
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                "Log in",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24
+                ),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0),
-            child: TextField(
-              focusNode: signInEmailFocus,
-              controller: signInEmailController,
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "Email",
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(30.0, 20, 0, 0),
-            child:
-                Text("Password", style: Theme.of(context).textTheme.headline2),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0),
-            child: TextField(
+            TextField(
               decoration: InputDecoration(
+                contentPadding: EdgeInsets.only(top: 10), // add padding to adjust text
+                fillColor: Colors.black,
+              ),
+              autofocus: true,
+              controller: signInEmailController,
+              style: Theme.of(context).textTheme.headline3,
+              autocorrect: false,
+              enableSuggestions: false,
+              keyboardType: TextInputType.emailAddress,
+            ),
+            Divider(
+              color: Color(figmaColours.greyLight),
+              thickness: 1,
+              height: 1,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "Password",
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ],
+              ),
+            ),
+            TextField(
+              decoration: InputDecoration(
+                  contentPadding: EdgeInsets.only(top: 16), // add padding to adjust text
+                  isDense: true,
+                  fillColor: Colors.black,
                   suffixIcon: IconButton(
                       color: Color(figmaColours.greyLight),
                       icon: Icon((_obscureText)
@@ -176,43 +212,90 @@ class _SignInPageState extends State<SignInPage> {
                       })),
               obscureText: _obscureText,
               controller: signInPasswordController,
+              enableSuggestions: false,
+              style: Theme.of(context).textTheme.headline3,
             ),
-          ),
-          // error == ""
-          //     ? Container()
-          //     : Padding(
-          //         padding: const EdgeInsets.fromLTRB(30, 20, 0, 0),
-          //         child: Text(
-          //           error,
-          //           style: TextStyle(color: Colors.red),
-          //         ),
-          //       ),
-          Padding(
-            padding: const EdgeInsets.only(top: 30.0),
-            child: Center(
-              child: SizedBox(
-                  width: 220,
-                  child: GradientButton(
-                    onPressed: () async {
-                      var text = await context.read<AuthService>().signIn(
-                            email: signInEmailController.text.trim(),
-                            password: signInPasswordController.text.trim(),
-                          );
-                      if (text != "") {
-                        setState(() {
-                          error = text;
-                        });
-                      }
-                    },
+            Divider(
+              color: Color(figmaColours.greyLight),
+              thickness: 1,
+              height: 1,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top : 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
                     child: Text(
-                      'Sign In',
-                      style: Theme.of(context).textTheme.headline4,
+                      "Forgot your password?",
+                      style: TextStyle(
+                        color: Color(figmaColours.highlight),
+                        fontSize: 16
+                      ),
                     ),
-                    gradient: ColorHelper.getBeaconGradient(),
-                  )),
+                    ///Todo forgot password
+                    onPressed: () {},
+                  )
+                ],
+              ),
             ),
-          )
-        ]);
+            (error != '')? Padding(
+              padding: const EdgeInsets.only(top : 15),
+              child: Text(
+                error,
+                style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 16
+                ),
+              ),
+            ) : Container(),
+            Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  child: Text(
+                    "Don't have an account yet? Sign up",
+                    style: TextStyle(
+                        color: Color(figmaColours.highlight),
+                        fontSize: 16
+                    ),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _pageState = PageState.SignUpName;
+                    });
+                  },
+                )
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Center(
+                child: SizedBox(
+                    width: double.infinity,
+                    child: GradientButton(
+                      onPressed: () async {
+                        var text = await context.read<AuthService>().signIn(
+                          email: signInEmailController.text.trim(),
+                          password: signInPasswordController.text.trim(),
+                        );
+                        if (text != "") {
+                          setState(() {
+                            error = text;
+                          });
+                        }
+                      },
+                      child: Text(
+                        'Log In',
+                        style: Theme.of(context).textTheme.headline4,
+                      ),
+                      gradient: ColorHelper.getBeaconGradient(),
+                    )),
+              ),
+            ),
+          ]),
+    );
   }
 
   Widget _signUpEmail(BuildContext context) {
@@ -370,6 +453,7 @@ class _SignInPageState extends State<SignInPage> {
               obscureText: _obscureText,
               focusNode: signUpPasswordFocus,
               controller: signUpPasswordController,
+              enableSuggestions: false,
               onChanged: (value) {
                 setState(() {
                   if(value.length >= 6) {
@@ -649,6 +733,7 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+
           leading: _pageState == PageState.InitialSelector
               ? null
               : IconButton(
