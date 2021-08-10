@@ -4,6 +4,7 @@ import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/ProfilePicWidget.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
+import 'package:beacon/widgets/tiles/BeaconCreatorSubTitle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -191,16 +192,8 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
     );
   }
 
-  Container _leftSubHeader(BuildContext context, String text) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(left: 16, top: 7, bottom: 7),
-      child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyText1,
-        textAlign: TextAlign.start,
-      ),
-    );
+  Widget _leftSubHeader(BuildContext context, String text) {
+    return BeaconCreatorSubTitle(text);
   }
 
   Container _groupSelector() {

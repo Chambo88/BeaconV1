@@ -1,6 +1,9 @@
+import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
+import 'package:beacon/widgets/tiles/BeaconCreatorSubTitle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:intl/intl.dart'; //for date format
 import 'package:intl/date_symbol_data_local.dart'; //for date locale
 
@@ -40,6 +43,7 @@ class _TimePageState extends State<TimePage> {
   DateTime _startDateTime = new DateTime.now();
   DateTime _endDateTime = new DateTime.now();
   double _duration = .5;
+  FigmaColours figmaColours = FigmaColours();
 
   @override
   void initState() {
@@ -56,23 +60,31 @@ class _TimePageState extends State<TimePage> {
       {DateTime date, VoidCallback onTimeTap, VoidCallback onDateTap}) {
     initializeDateFormatting();
     String languageCode = Localizations.localeOf(context).languageCode;
-    String format = 'EEEE, d MMMM';
+    String format = 'd MMMM';
     return Container(
-      color: Color(0xFF131313),
-      child: ListTile(
-        title: InkWell(
-          child: Text(
-            '${new DateFormat(format, languageCode).format(date)}',
-            style: Theme.of(context).textTheme.headline5,
-          ),
-          onTap: onDateTap,
-        ),
-        trailing: InkWell(
-          child: Text(
-            new DateFormat.jm(languageCode).format(date),
-            style: Theme.of(context).textTheme.headline5,
-          ),
-          onTap: onTimeTap,
+      height: 50,
+      color: Color(figmaColours.greyDark),
+      // color: Colors.black,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14.0),
+        child: Row(
+          children: [
+            Text(
+              '${new DateFormat(format, languageCode).format(date)} ',
+              style: Theme.of(context).textTheme.headline4,
+            ),
+            Spacer(),
+            Text(
+                '${new DateFormat.jm(languageCode).format(date)} - '
+                    '${new DateFormat.jm(languageCode).format(_endDateTime)}',
+                style: Theme.of(context).textTheme.headline4,
+                // TextStyle(
+                //     fontSize: 16,
+                //     color: Theme.of(context).accentColor,
+                //     fontWeight: FontWeight.bold
+                // )
+            )
+          ]
         ),
       ),
     );
@@ -96,30 +108,20 @@ class _TimePageState extends State<TimePage> {
       ),
       child: Column(
         children: [
+          // BeaconCreatorSubTitle('Selected'),
           _date(
             context,
             date: _startDateTime,
             onDateTap: () {},
             onTimeTap: () async {},
           ),
-          Container(
-            padding: const EdgeInsets.only(left: 15, top: 10, bottom: 5),
-            width: double.infinity,
-            child: Text(
-              'Start',
-              style: theme.textTheme.bodyText2,
-              textAlign: TextAlign.start,
-            ),
-          ),
+          BeaconCreatorSubTitle('Start time'),
           SizedBox(
-            height: 130,
+            height: 150,
             child: CupertinoTheme(
               data: CupertinoThemeData(
                 textTheme: CupertinoTextThemeData(
-                  dateTimePickerTextStyle: TextStyle(
-                    color: Color(0xFF868A8C),
-                    fontSize: 18,
-                  ),
+                  dateTimePickerTextStyle: theme.textTheme.headline4
                 ),
               ),
               child: CupertinoDatePicker(
@@ -140,15 +142,7 @@ class _TimePageState extends State<TimePage> {
               ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.only(left: 15, top: 10),
-            width: double.infinity,
-            child: Text(
-              'Duration (Hours)',
-              style: theme.textTheme.bodyText2,
-              textAlign: TextAlign.start,
-            ),
-          ),
+          BeaconCreatorSubTitle('Duration - $_duration Hours'),
           Slider(
             value: _duration,
             min: 0,
@@ -163,21 +157,13 @@ class _TimePageState extends State<TimePage> {
               });
             },
           ),
-          Container(
-            padding: const EdgeInsets.only(left: 15, top: 10, bottom: 5),
-            width: double.infinity,
-            child: Text(
-              'Finish',
-              style: theme.textTheme.bodyText2,
-              textAlign: TextAlign.start,
-            ),
-          ),
-          _date(
-            context,
-            date: _endDateTime,
-            onDateTap: () {},
-            onTimeTap: () async {},
-          ),
+          // BeaconCreatorSubTitle('Finish'),
+          // _date(
+          //   context,
+          //   date: _endDateTime,
+          //   onDateTap: () {},
+          //   onTimeTap: () async {},
+          // ),
         ],
       ),
     );

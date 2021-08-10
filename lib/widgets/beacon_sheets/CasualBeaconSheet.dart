@@ -20,16 +20,9 @@ class CasualBeaconSheet extends BeaconSheet {
   FigmaColours figmaColours = FigmaColours();
   List<UserModel> friendsAttending = [];
 
-  UserModel _getHostUserModel(
-    String id,
-    UserModel currentUser,
-  ) {
-    for (UserModel friend in currentUser.friendModels) {
-      if (friend.id == id) {
-        return friend;
-      }
-    }
-    return UserModel.dummy();
+  UserModel _getHostUserModel(String id, BuildContext context) {
+    UserService userService = Provider.of<UserService>(context);
+    return userService.getAFriendModelFromId(id);
   }
 
   Widget beaconDivider() {
@@ -114,13 +107,13 @@ class CasualBeaconSheet extends BeaconSheet {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Text(
-              'See all',
-              style: theme.textTheme.bodyText2,
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(right: 8),
+          //   child: Text(
+          //     'See all',
+          //     style: theme.textTheme.bodyText2,
+          //   ),
+          // ),
           Icon(
             Icons.arrow_forward_ios,
             color: Colors.white,
@@ -137,24 +130,24 @@ class CasualBeaconSheet extends BeaconSheet {
         TextSpan(
           text: '$numPeopleGoing ',
           style: TextStyle(
-              fontWeight: FontWeight.bold, color: Colors.white, fontSize: 16),
+              fontWeight: FontWeight.bold, color: Color(figmaColours.highlight), fontSize: 18),
         ),
         TextSpan(
             text: 'going',
-            style: theme.textTheme.headline5,
+            style: theme.textTheme.headline4,
             children: (numFriendsGoing == '0')
                 ? []
                 : [
                     TextSpan(
-                        text: ', including ', style: theme.textTheme.headline5),
+                        text: ', including ', style: theme.textTheme.headline4),
                     TextSpan(
                       text: '$numFriendsGoing ',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 16),
+                          color: Color(figmaColours.highlight),
+                          fontSize: 18),
                     ),
-                    TextSpan(text: 'friends', style: theme.textTheme.headline5),
+                    TextSpan(text: 'friends', style: theme.textTheme.headline4),
                   ])
       ]),
     );
@@ -165,7 +158,7 @@ class CasualBeaconSheet extends BeaconSheet {
     CasualBeacon _beacon = beacon;
     UserService userService = Provider.of<UserService>(context);
     UserModel currentUser = userService.currentUser;
-    UserModel host = _getHostUserModel(beacon.userId, currentUser);
+    UserModel host = _getHostUserModel(beacon.userId, context);
     final theme = Theme.of(context);
     return Wrap(children: [
       Container(
@@ -331,7 +324,7 @@ class Header extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        '${DateFormat('E').format(_beacon.startTime)}, ${DateFormat('Hm').format(_beacon.startTime)} - '
+                        '${DateFormat('E, MMM d').format(_beacon.startTime)}, ${DateFormat('Hm').format(_beacon.startTime)} - '
                             '${DateFormat('Hm').format(_beacon.endTime)}',
                         style: TextStyle(
                           color: Color(figmaColours.highlight),

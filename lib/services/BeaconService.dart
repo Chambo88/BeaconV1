@@ -126,4 +126,22 @@ class BeaconService {
         );
   }
 
+  Future<List<DocumentSnapshot>> getUserUpcomingCasualBeacons(UserModel currentUser) {
+    // var chunks = [];
+    // for (var i = 0; i < currentUser.beaconIds.length; i += 10) {
+    //   chunks.add(currentUser.beaconIds.sublist(i, i + 10 > currentUser.beaconIds.length ? currentUser.beaconIds.length : i + 10));
+    // } //break a list of whatever size into chunks of 10. cos of firebase limit
+    List<Future<DocumentSnapshot>> combine = [];
+    for (var i = 0; i < currentUser.beaconIds.length; i++) {
+      final result = FirebaseFirestore.instance
+          .collection('casualBeacons').
+          doc(currentUser.beaconIds[i])
+          .get();
+      combine.add(result);
+    }
+
+    return Future.wait(combine);
+
+  }
+
 }

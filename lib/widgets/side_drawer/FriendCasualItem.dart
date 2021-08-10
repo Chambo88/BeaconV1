@@ -73,12 +73,16 @@ class FriendCasualItem extends StatelessWidget {
   Container getBody(ThemeData theme) {
     return Container(
                 padding: const EdgeInsets.all(8),
-                child: Text(
-                  beacon.desc,
-                  style: theme.textTheme.bodyText1,
-                  textAlign: TextAlign.left,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  children: [
+                    Text(
+                      beacon.desc,
+                      style: theme.textTheme.bodyText1,
+                      textAlign: TextAlign.left,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               );
   }
@@ -94,7 +98,7 @@ class FriendCasualItem extends StatelessWidget {
                       style: theme.textTheme.headline5,
                     ),
                     Text(
-                      '${DateFormat('E').format(beacon.startTime)}, ${DateFormat('Hm').format(beacon.startTime)} - '
+                      '${DateFormat('E d').format(beacon.startTime)}, ${DateFormat('Hm').format(beacon.startTime)} - '
                           '${DateFormat('Hm').format(beacon.endTime)}',
                       style: TextStyle(
                           color: Color(figmaColours.highlight),
