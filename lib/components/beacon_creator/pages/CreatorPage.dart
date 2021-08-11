@@ -1,13 +1,10 @@
 import 'package:beacon/library/ColorHelper.dart';
-import 'package:beacon/models/BeaconModel.dart';
-import 'package:beacon/models/BeaconType.dart';
-import 'package:beacon/services/UserLoactionService.dart';
-import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 
-class CreatorPage extends StatelessWidget {
+class CreatorPage extends StatefulWidget {
   final String title;
   final VoidCallback onBackClick;
   final VoidCallback onClose;
@@ -23,60 +20,106 @@ class CreatorPage extends StatelessWidget {
     @required this.onClose,
     @required this.onContinuePressed,
     @required this.child,
-    @required this.totalPageCount,
-    @required this.currentPageIndex,
-    this.continueText = 'Next',
+    this.totalPageCount,
+    this.currentPageIndex,
+    this.continueText = 'Continue',
   });
+
+  @override
+  State<CreatorPage> createState() => _CreatorPageState();
+}
+
+class _CreatorPageState extends State<CreatorPage> {
+
+  bool isKeyboardVisible = false;
+
+  @override
+  void initState() {
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) {
+        changeThingy(visible);
+      },
+    );
+    super.initState();
+  }
+
+  void changeThingy(bool active) {
+    setState(() {
+      isKeyboardVisible = active;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Container(
-          height: 70,
-          width: double.infinity,
-          child: ListTile(
-            leading: onBackClick != null
-                ? IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.grey,
-                    ),
-                    onPressed: onBackClick,
-                  )
-                : Text(''),
-            title: Text(
-              title,
-              style: Theme.of(context).textTheme.headline2,
-              textAlign: TextAlign.center,
+    return Stack(children: [
+      Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(
+            height: 70,
+            width: double.infinity,
+            child: ListTile(
+              leading: widget.onBackClick != null
+                  ? IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.grey,
+                      ),
+                      onPressed: widget.onBackClick,
+                    )
+                  : Text(''),
+              title: Text(
+                widget.title,
+                style: Theme.of(context).textTheme.headline2,
+                textAlign: TextAlign.center,
+              ),
+              trailing: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.grey),
+                  onPressed: widget.onClose),
             ),
-            trailing: IconButton(
-                icon: const Icon(Icons.close, color: Colors.grey),
-                onPressed: onClose),
           ),
-        ),
-        Expanded(child: SingleChildScrollView(child: child)),
-        ProgressBar(
-          pageCount: totalPageCount,
-          currentPageIndex: currentPageIndex,
-        ),
-        Container(
+          Expanded(child: SingleChildScrollView(child: widget.child)),
+          (widget.totalPageCount != null && widget.currentPageIndex != null)
+              ? ProgressBar(
+                  pageCount: widget.totalPageCount,
+                  currentPageIndex: widget.currentPageIndex,
+                )
+              : Container(),
+          isKeyboardVisible? Container() : Container(
+            width: double.infinity,
+            padding: EdgeInsets.fromLTRB(18,18,18,18),
+            child: GradientButton(
+              child: Text(
+                widget.continueText,
+                style: theme.textTheme.headline4,
+              ),
+              gradient: ColorHelper.getBeaconGradient(),
+              onPressed: widget.onContinuePressed,
+            ),
+          ),
+        ],
+      ),
+      isKeyboardVisible? AnimatedPositioned(
+        duration: Duration(milliseconds: 1000),
+        bottom: 80,
+        left: 0,
+        right: 0,
+        child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(10),
+          padding: EdgeInsets.fromLTRB(18,18,18,18),
           child: GradientButton(
             child: Text(
-              continueText,
+              widget.continueText,
               style: theme.textTheme.headline4,
             ),
             gradient: ColorHelper.getBeaconGradient(),
-            onPressed: onContinuePressed,
+            onPressed: widget.onContinuePressed,
           ),
         ),
-      ],
-    );
+      ) : Container(),
+    ]);
   }
 }
 

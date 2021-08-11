@@ -13,7 +13,7 @@ class BeaconService {
 
   addBeacon(BeaconModel beacon, UserModel currentUser) async {
     if(beacon.type == BeaconType.casual) {
-      currentUser.beaconIds.add(beacon.id);
+      currentUser.casualBeacons.add(beacon);
       await FirebaseFirestore.instance
           .collection('casualBeacons')
           .doc(beacon.id)
@@ -126,22 +126,25 @@ class BeaconService {
         );
   }
 
-  Future<List<DocumentSnapshot>> getUserUpcomingCasualBeacons(UserModel currentUser) {
-    // var chunks = [];
-    // for (var i = 0; i < currentUser.beaconIds.length; i += 10) {
-    //   chunks.add(currentUser.beaconIds.sublist(i, i + 10 > currentUser.beaconIds.length ? currentUser.beaconIds.length : i + 10));
-    // } //break a list of whatever size into chunks of 10. cos of firebase limit
-    List<Future<DocumentSnapshot>> combine = [];
-    for (var i = 0; i < currentUser.beaconIds.length; i++) {
-      final result = FirebaseFirestore.instance
+  Future<QuerySnapshot> getUserUpcomingCasualBeacons(String userId) {
+    final result = FirebaseFirestore.instance
           .collection('casualBeacons').
-          doc(currentUser.beaconIds[i])
+          where('userId', isEqualTo: userId)
           .get();
-      combine.add(result);
-    }
+    return result;
+  }
 
-    return Future.wait(combine);
+  archiveCasualBeacon(BeaconModel beacon) async {
+    FirebaseFirestore.instance.collection('casualBeacons').doc(beacon.id).delete();
+    FirebaseFirestore.instance.collection('archiveCasualBeacons').doc(beacon.id).set(beacon.toJson());
+  }
 
+  updateCasualTitleAndDesc(CasualBeacon beacon, String title, String desc, UserModel currentUser) async {
+    await FirebaseFirestore.instance.collection('casualBeacons').doc(beacon.id).update(
+        {"eventName" : title, "description" : desc});
+    beacon.eventName = title;
+    beacon.desc = desc;
+    return;
   }
 
 }

@@ -30,6 +30,7 @@ class _BuildHomePageState extends State<BuildHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: pages[_pageIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _pageIndex,

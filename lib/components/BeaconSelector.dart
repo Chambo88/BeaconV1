@@ -1,21 +1,19 @@
 import 'dart:ui';
-
 import 'package:beacon/Assests/Icons.dart';
 import 'package:beacon/components/beacon_creator/CasualBeaconCreator.dart';
 import 'package:beacon/components/beacon_creator/LiveBeaconCreator.dart';
+import 'package:beacon/components/beacon_creator/pages/CasualBeaconEdit.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/tiles/BeaconCreatorSubTitle.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
-import 'beacon_creator/pages/CasualBeaconEdit.dart';
 
 class BeaconSelector extends StatefulWidget {
   @override
@@ -38,11 +36,11 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   Widget build(BuildContext context) {
     _userService = Provider.of<UserService>(context);
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        if (_showBeaconEditor) _beaconEditor(context),
-        _beaconButton()
-      ],
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          if (_showBeaconEditor) _beaconEditor(context),
+          _beaconButton()
+        ],
     );
   }
 
@@ -152,6 +150,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
               'Beacon',
               style: Theme.of(context).textTheme.headline2,
               textAlign: TextAlign.center,
+
             ),
           ),
         ),
@@ -171,32 +170,24 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Widget getUserCasualBeacons() {
-    return FutureBuilder(
-      future: _beaconService.getUserUpcomingCasualBeacons(_userService.currentUser),
-      builder: (context,  AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
-        while(!snapshot.hasData) {
-          return Container();
-        }
-
-        List<Widget> tiles = [BeaconCreatorSubTitle('Your beacons'),
+    if(_userService.currentUser.casualBeacons.isEmpty) {
+      return Container();
+    }
+    List<Widget> tiles = [BeaconCreatorSubTitle('Your beacons'),
+      Divider(
+        color: Color(figmaColours.greyMedium),
+        height: 1,
+      )];
+    _userService.currentUser.casualBeacons.forEach((CasualBeacon beacon) {
+      tiles.add(casualBeaconSelectorTile(beacon));
+      tiles.add(
           Divider(
-          color: Color(figmaColours.greyMedium),
-          height: 1,
-        )];
-        snapshot.data.forEach((DocumentSnapshot element) {
-          tiles.add(casualBeaconSelectorTile(CasualBeacon.fromJson(element.data())));
-          tiles.add(
-              Divider(
             color: Color(figmaColours.greyMedium),
             height: 1,
           ));
-        });
-
-        return Column(
-          children: tiles,
-        );
-      },
-
+    });
+    return Column(
+      children: tiles,
     );
   }
 
@@ -264,7 +255,11 @@ class _BeaconSelectorState extends State<BeaconSelector> {
               _beaconTypeSelected = null;
             });
           },
-
+          onClose: () {
+            setState(() {
+              _showBeaconEditor = false;
+            });
+          },
         );
       default:
         return _beaconTypeSelector(context);

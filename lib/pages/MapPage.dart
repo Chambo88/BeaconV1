@@ -1,16 +1,9 @@
-import 'dart:async';
-
 import 'package:beacon/components/BeaconSelector.dart';
 import 'package:beacon/components/BeaconSideDrawer.dart';
 import 'package:beacon/components/Map.dart';
-import 'package:beacon/models/BeaconModel.dart';
-import 'package:beacon/models/UserLocationModel.dart';
-import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/services/UserLoactionService.dart';
-import 'package:beacon/services/UserService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 
 class MapPage extends StatefulWidget {
   @override
@@ -24,6 +17,7 @@ class _MapPageState extends State<MapPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       key: _scaffoldKey,
       drawer: BeaconSideDrawer(),
       drawerScrimColor: Colors.transparent,

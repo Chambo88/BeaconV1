@@ -14,7 +14,7 @@ extension BeaconTypeEx on BeaconType {
       case BeaconType.live:
         return 'Live';
       case BeaconType.casual:
-        return 'Casual';
+        return 'Host';
       case BeaconType.event:
         return 'Event';
       default:

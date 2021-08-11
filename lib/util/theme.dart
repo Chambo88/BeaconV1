@@ -85,6 +85,7 @@ class CustomTheme {
         headline2: TextStyle(
           color: Colors.white,
           fontSize: 22.0,
+          fontWeight: FontWeight.bold
         ),
         headline3: TextStyle(
           color: Colors.white,

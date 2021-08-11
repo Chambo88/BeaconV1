@@ -19,7 +19,8 @@ class UserModel {
   NotificationSettingsModel notificationSettings;
   List<UserModel> friendModels;
   Set<String> tokens;
-  List<String> beaconIds;
+  List<CasualBeacon> casualBeacons;
+  // List<String> beaconIds;
   List<String> beaconsAttending;
   bool liveBeaconActive;
   Map<String, DateTime> recentlySummoned = {};
@@ -37,7 +38,7 @@ class UserModel {
       this.notificationSettings,
       this.friendModels,
       this.tokens,
-       this.beaconIds,
+      this.casualBeacons,
       this.beaconsAttending,
       this.liveBeaconActive,
   });
@@ -58,7 +59,7 @@ class UserModel {
         sentFriendRequests: [],
         receivedFriendRequests: [],
         imageURL: '',
-        beaconIds: [],
+        casualBeacons: [],
         beaconsAttending: [],
         notificationSettings: NotificationSettingsModel(
           notificationSummons: true,
@@ -99,7 +100,7 @@ class UserModel {
       sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       imageURL: doc.data()['imageURL'] ?? '',
-      beaconIds: List.from(doc.data()['beaconIds']?? []),
+      // beaconIds: List.from(doc.data()['beaconIds']?? []),
       beaconsAttending: List.from(doc.data()["beaconsAttending"]?? []),
       notificationSettings: NotificationSettingsModel(
         notificationSummons: doc.data()['notificationSummons'] ?? true,

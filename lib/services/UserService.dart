@@ -15,7 +15,6 @@ class UserService {
   FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
   NotificationService _notificationService = NotificationService();
   BeaconService _beaconService = BeaconService();
-
   UserModel currentUser;
 
   Future<UserModel> initUser(String userId) async {
@@ -31,6 +30,7 @@ class UserService {
     List<UserModel> _friendModels = [];
     List<String> _friends = [];
     Set<String> _tokens = Set.from(doc.data()["tokens"] ?? []);
+    List<CasualBeacon> casualBeacons = [];
 
     if (doc.data().containsKey('groups')) {
       _data = List.from(doc.data()["groups"]);
@@ -46,13 +46,29 @@ class UserService {
     }
 
     if (_friends.isNotEmpty) {
-      List<QuerySnapshot> ok = await getSnapshotsFromListOfIds(List.from(doc.data()["friends"]));
+      List<QuerySnapshot> ok =
+          await getSnapshotsFromListOfIds(List.from(doc.data()["friends"]));
       ok.forEach((listOfDocs) {
-                listOfDocs.docs.forEach((document) {
-                  UserModel user = UserModel.fromDocument(document);
-                  _friendModels.add(user);
-                });
-              });
+        listOfDocs.docs.forEach((document) {
+          UserModel user = UserModel.fromDocument(document);
+          _friendModels.add(user);
+        });
+      });
+    }
+
+    ///Get users casual beacons
+    QuerySnapshot casualBeaconsData =
+        await _beaconService.getUserUpcomingCasualBeacons(userId);
+    if (casualBeaconsData != null) {
+      casualBeaconsData.docs.forEach((element) {
+        CasualBeacon beacon = CasualBeacon.fromJson(element.data());
+        ///check when it starts, move to archive if its already been
+        if (beacon.endTime.isBefore(DateTime.now())) {
+          _beaconService.archiveCasualBeacon(beacon);
+        } else {
+          casualBeacons.add(beacon);
+        }
+      });
     }
 
     if (Platform.isAndroid) {
@@ -76,7 +92,8 @@ class UserService {
         receivedFriendRequests:
             List.from(doc.data()["receivedFriendRequests"] ?? []),
         imageURL: doc.data()['imageURL'] ?? '',
-        beaconIds: List.from(doc.data()['beaconIds'] ?? []),
+        casualBeacons: casualBeacons,
+        // beaconIds: List.from(doc.data()['beaconIds'] ?? []),
         beaconsAttending: List.from(doc.data()["beaconsAttending"] ?? []),
         liveBeaconActive: doc.data()['liveBeaconActive'] ?? false,
         //TODO refactor the way settings are stored into a map
@@ -93,20 +110,20 @@ class UserService {
 
   summonUser(UserModel friend, {UserModel user}) {
     _notificationService.sendPushNotification([friend],
-        title: '${friend.firstName} ${friend.lastName} has summoned you to join them!',
+        title:
+            '${friend.firstName} ${friend.lastName} has summoned you to join them!',
         body: '',
-        type: 'summon'
-    );
+        type: 'summon');
     _notificationService.sendNotification([friend], currentUser, 'summon');
   }
 
-  UserModel getAFriendModelFromId(String id,{UserModel user}) {
+  UserModel getAFriendModelFromId(String id, {UserModel user}) {
     for (UserModel friend in currentUser.friendModels) {
       if (friend.id == id) {
         return friend;
       }
     }
-    if(currentUser.id == id) {
+    if (currentUser.id == id) {
       return currentUser;
     }
     return UserModel.dummy();
@@ -138,11 +155,10 @@ class UserService {
         );
       }
     }
-    
+
     ///remove from otherUsersBeacons
     _beaconService.removeUserFromAllAnotherUsersBeacons(currentUser, friend);
     _beaconService.removeUserFromAllAnotherUsersBeacons(friend, currentUser);
-
 
     await FirebaseFirestore.instance
         .collection('users')
@@ -179,7 +195,8 @@ class UserService {
       combine.add(result);
     }
 
-    return Future.wait(combine); //get a list of the Future, which will have 10 each.
+    return Future.wait(
+        combine); //get a list of the Future, which will have 10 each.
   }
 
   updateBeacon(LiveBeacon beacon) async {
@@ -205,10 +222,10 @@ class UserService {
     currentUser.groups.forEach((element) {
       updatedGroups.add(element.toJson());
     });
-    await FirebaseFirestore.instance.collection('users')
+    await FirebaseFirestore.instance
+        .collection('users')
         .doc(currentUser.id)
-        .update(
-        {"groups": updatedGroups});
+        .update({"groups": updatedGroups});
   }
 
   addGroup(GroupModel group, {UserModel user}) async {
