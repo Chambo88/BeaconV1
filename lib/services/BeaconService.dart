@@ -2,6 +2,7 @@ import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/NotificationService.dart';
+import 'package:beacon/services/UserService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class BeaconService {
@@ -146,5 +147,53 @@ class BeaconService {
     beacon.desc = desc;
     return;
   }
+
+  updateCasualUsersThatCanSee(
+      {CasualBeacon beacon,
+      Set<String> newDisplay,
+      bool notifyNewUsers,
+      UserService userService,
+      UserModel currentUser}) {
+
+
+    List<UserModel> newUsers = beacon.usersThatCanSee.toSet()
+        .difference(newDisplay)
+        .map((userId) => userService.getAFriendModelFromId(userId)).toList();
+
+    Set<String> removedUsers = newDisplay.difference(beacon.usersThatCanSee.toSet());
+
+    beacon.peopleGoing.removeWhere((id) => removedUsers.contains(id));
+    beacon.usersThatCanSee = newDisplay.toList();
+
+    FirebaseFirestore.instance.collection('casualBeacons').doc(beacon.id).update(
+        {'users' : newDisplay.toList()});
+
+    if(removedUsers.isNotEmpty) {
+      removedUsers.forEach((element) {
+        FirebaseFirestore.instance.collection('users').doc(element).update(
+            {'beaconsAttending': FieldValue.arrayRemove([beacon.id])});
+      });
+    }
+
+    if(notifyNewUsers == true)  {
+      _notificationService.sendNotification(
+        newUsers, currentUser, 'venueBeaconInvite',
+        beaconTitle: beacon.eventName,
+        beaconDesc: beacon.desc,
+        beaconId: beacon.id,
+      );
+      _notificationService.sendPushNotification(newUsers,
+        title: "${currentUser.firstName} ${currentUser.lastName} has invited you to ${beacon.eventName}",
+        body: "${beacon.desc}",
+        type: "venueBeaconInvite",
+      );
+    }
+  }
+
+  deleteCasualBeacon(CasualBeacon beacon, UserModel currentUser) async {
+    currentUser.casualBeacons.remove(beacon);
+    await FirebaseFirestore.instance.collection('casualBeacons').doc(beacon.id).delete();
+  }
+
 
 }

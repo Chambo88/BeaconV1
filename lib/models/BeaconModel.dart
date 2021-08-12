@@ -22,6 +22,7 @@ abstract class BeaconModel {
     this.id = json["id"];
     this.lat = json["lat"];
     this.long = json["long"];
+    this.usersThatCanSee = List.from(json["users"]);
   }
 
 

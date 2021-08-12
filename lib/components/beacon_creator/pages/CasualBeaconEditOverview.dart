@@ -1,7 +1,9 @@
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserModel.dart';
+import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
+import 'package:beacon/widgets/Dialogs/TwoButtonDialog.dart';
 import 'package:beacon/widgets/ProfilePicWidget.dart';
 import 'package:beacon/widgets/beacon_sheets/ViewAttendiesSheet.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
@@ -36,6 +38,7 @@ class CasualBeaconEditOverview extends StatefulWidget {
 class _CasualBeaconEditOverviewState extends State<CasualBeaconEditOverview> {
   CasualBeacon beacon;
   FigmaColours figmaColours = FigmaColours();
+  BeaconService beaconService = BeaconService();
   List<UserModel> friendsAttending = [];
 
   @override
@@ -213,13 +216,37 @@ class _CasualBeaconEditOverviewState extends State<CasualBeaconEditOverview> {
                   widget.setStage(CasualBeaconEditStage.description);
                 }, arrow: true,),
                 Container(height: 6,),
-                BeaconFlatButton(icon: Icons.remove_red_eye_outlined, title: "Who can see this beacon",onTap: () {}, arrow: true,),
+                BeaconFlatButton(icon: Icons.remove_red_eye_outlined, title: "Who can see this beacon",onTap: () {
+                  widget.setStage(CasualBeaconEditStage.whoCanSee);
+                }, arrow: true,),
                 Container(height: 6,),
-                BeaconFlatButton(icon: Icons.access_time_outlined, title: "Time", onTap: () {}, arrow: true,),
+                BeaconFlatButton(icon: Icons.access_time_outlined, title: "Time", onTap: () {
+                  widget.setStage(CasualBeaconEditStage.time);
+                }, arrow: true,),
                 Container(height: 6,),
-                BeaconFlatButton(icon: Icons.location_on_outlined, title: "Location", onTap: () {}, arrow:true,),
+                BeaconFlatButton(icon: Icons.location_on_outlined, title: "Location", onTap: () {
+                  widget.setStage(CasualBeaconEditStage.location);
+                }, arrow:true,),
                 Container(height: 6,),
-                BeaconFlatButton(icon: Icons.delete_outline, title: "Delete", onTap: () {}, arrow:true,),
+                BeaconFlatButton(icon: Icons.delete_outline, title: "Cancel", onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return TwoButtonDialog(
+                          title: "Cancel beacon",
+                          bodyText: "Are you sure you want Cancel this beacon?",
+                          onPressedGrey: () => Navigator.pop(context, false),
+                          onPressedHighlight: () => Navigator.pop(context, true),
+                          buttonGreyText: "No",
+                          buttonHighlightText: "Yes",
+                        );
+                      }).then((value) {
+                        if(value == true)  {
+                          beaconService.deleteCasualBeacon(beacon, currentUser);
+                          widget.onBack();
+                        }
+                  });
+                }, arrow:false,),
               ],
             )
         )),

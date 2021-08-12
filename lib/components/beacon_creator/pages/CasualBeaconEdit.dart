@@ -1,10 +1,14 @@
 import 'package:beacon/components/beacon_creator/pages/CasualBeaconEditOverview.dart';
 import 'package:beacon/components/beacon_creator/pages/DescriptionPage.dart';
+import 'package:beacon/components/beacon_creator/pages/WhoCanSeePage.dart';
 import 'package:beacon/models/BeaconModel.dart';
+import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/BeaconService.dart';
+import 'package:beacon/services/NotificationService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
+import 'package:beacon/widgets/Dialogs/TwoButtonDialog.dart';
 import 'package:beacon/widgets/ProfilePicWidget.dart';
 import 'package:beacon/widgets/beacon_sheets/ViewAttendiesSheet.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
@@ -42,6 +46,7 @@ class _CasualBeaconEditState extends State<CasualBeaconEdit> {
   FigmaColours figmaColours = FigmaColours();
   CasualBeaconEditStage _stage;
   BeaconService beaconService = BeaconService();
+  NotificationService _notificationService = NotificationService();
 
   @override
   void initState() {
@@ -56,10 +61,21 @@ class _CasualBeaconEditState extends State<CasualBeaconEdit> {
     });
   }
 
+  Set<GroupModel> getSelectedGroups(UserModel user) {
+    Set<GroupModel> groupsSelected = {};
+    for (GroupModel group in user.groups) {
+      if(group.members.every((member) => beacon.usersThatCanSee.contains(member))) {
+        groupsSelected.add(group);
+      }
+    }
+    return groupsSelected;
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    UserModel currentUser = Provider.of<UserService>(context).currentUser;
+    UserService userService = Provider.of<UserService>(context);
+    UserModel currentUser = userService.currentUser;
     ThemeData theme = Theme.of(context);
     switch(_stage) {
       case CasualBeaconEditStage.overview:
@@ -80,6 +96,7 @@ class _CasualBeaconEditState extends State<CasualBeaconEdit> {
             onClose: widget.onClose,
             onContinue: (title, desc) async {
               await beaconService.updateCasualTitleAndDesc(beacon, title, desc, currentUser);
+              _stage = CasualBeaconEditStage.overview;
 
             },
             totalPageCount: null,
@@ -88,11 +105,64 @@ class _CasualBeaconEditState extends State<CasualBeaconEdit> {
           initDesc: beacon.desc,
         );
       case CasualBeaconEditStage.whoCanSee:
-        return Column(
-          children: [Container(
-            height: 30,
-            color: Colors.red,
-          )],
+        return WhoCanSeePage(
+          onBackClick: () {
+            setState(() {
+              _stage = CasualBeaconEditStage.overview;
+            });
+          },
+          onClose: widget.onClose,
+          initGroups: getSelectedGroups(currentUser),
+          initFriends: beacon.usersThatCanSee.toSet(),
+          initDisplayToAll: false,
+          continueText: "Update",
+          onContinue: (displayToAll, groupList, friendList) {
+            setState(() {
+              Set<String> allFriends = {};
+              if (displayToAll) {
+                allFriends = currentUser.friends.toSet();
+              } else {
+                allFriends = groupList
+                    .map((GroupModel g) => g.members)
+                    .expand((friend) => friend)
+                    .toSet();
+                allFriends.addAll(friendList);
+              }
+              ///Has the user added new people or not
+              if(!beacon.usersThatCanSee.toSet().containsAll(allFriends)) {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return TwoButtonDialog(
+                        title: "Notify",
+                        bodyText: "Send notifications to added friends?",
+                        onPressedGrey: () => Navigator.pop(context, false),
+                        onPressedHighlight: () => Navigator.pop(context, true),
+                        buttonGreyText: "No",
+                        buttonHighlightText: "Yes",
+                      );
+                    }).then((value) {
+                    beaconService.updateCasualUsersThatCanSee(
+                      beacon: beacon,
+                      currentUser: currentUser,
+                      userService: userService,
+                      newDisplay: allFriends,
+                      notifyNewUsers: value
+                    );
+
+                });
+              } else {
+                beaconService.updateCasualUsersThatCanSee(
+                    beacon: beacon,
+                    currentUser: currentUser,
+                    userService: userService,
+                    newDisplay: allFriends,
+                    notifyNewUsers: false
+                );
+              }
+              _stage = CasualBeaconEditStage.overview;
+            });
+          },
         );
       case CasualBeaconEditStage.notifyNewUsers:
         return Column(
