@@ -15,23 +15,23 @@ typedef void TimeCallback(
 );
 
 class TimePage extends StatefulWidget {
-  final VoidCallback onBackClick;
+  final TimeCallback onBackClick;
   final VoidCallback onClose;
   final TimeCallback onContinue;
   final String continueText;
   final int totalPageCount;
   final int currentPageIndex;
   final DateTime initStartDateTime;
-  final double initDuration;
+  final DateTime initEndDateTime;
 
   TimePage({
     @required this.onBackClick,
     @required this.onClose,
     @required this.onContinue,
-    @required this.totalPageCount,
-    @required this.currentPageIndex,
+    this.totalPageCount,
+    this.currentPageIndex,
     this.initStartDateTime,
-    this.initDuration,
+    this.initEndDateTime,
     this.continueText = 'Next',
   });
 
@@ -51,8 +51,11 @@ class _TimePageState extends State<TimePage> {
     if (widget.initStartDateTime != null) {
       _startDateTime = widget.initStartDateTime;
     }
-    if (widget.initDuration != null) {
-      _duration = widget.initDuration;
+    if(widget.initEndDateTime != null) {
+      _endDateTime = widget.initEndDateTime;
+    }
+    if(widget.initEndDateTime != null && widget.initStartDateTime != null) {
+      _duration = _endDateTime.difference(_startDateTime).inHours.toDouble();
     }
   }
 
@@ -98,7 +101,10 @@ class _TimePageState extends State<TimePage> {
     return CreatorPage(
       title: 'Time',
       onClose: widget.onClose,
-      onBackClick: widget.onBackClick,
+      onBackClick: () => widget.onBackClick(
+        _startDateTime,
+        _endDateTime,
+      ),
       continueText: widget.continueText,
       totalPageCount: widget.totalPageCount,
       currentPageIndex: widget.currentPageIndex,
@@ -127,9 +133,9 @@ class _TimePageState extends State<TimePage> {
               child: CupertinoDatePicker(
                 backgroundColor: Color(0xFF131313),
                 initialDateTime:
-                    _startDateTime.isBefore(minDate) ? minDate : _startDateTime,
+                widget.initStartDateTime?? minDate,
                 mode: CupertinoDatePickerMode.dateAndTime,
-                minimumDate: minDate,
+                minimumDate: widget.initStartDateTime?? minDate,
                 maximumDate: DateTime(DateTime.now().year + 5, 2, 1),
                 use24hFormat: false,
                 onDateTimeChanged: (newStartDate) {

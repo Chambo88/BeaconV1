@@ -1,5 +1,6 @@
 import 'package:beacon/components/beacon_creator/pages/CasualBeaconEditOverview.dart';
 import 'package:beacon/components/beacon_creator/pages/DescriptionPage.dart';
+import 'package:beacon/components/beacon_creator/pages/TimePage.dart';
 import 'package:beacon/components/beacon_creator/pages/WhoCanSeePage.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/GroupModel.dart';
@@ -9,10 +10,6 @@ import 'package:beacon/services/NotificationService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/Dialogs/TwoButtonDialog.dart';
-import 'package:beacon/widgets/ProfilePicWidget.dart';
-import 'package:beacon/widgets/beacon_sheets/ViewAttendiesSheet.dart';
-import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
-import 'package:beacon/widgets/tiles/BeaconCreatorSubTitle.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +19,6 @@ enum CasualBeaconEditStage {
   description,
   time,
   location,
-  notifyNewUsers,
 }
 
 
@@ -76,7 +72,6 @@ class _CasualBeaconEditState extends State<CasualBeaconEdit> {
   Widget build(BuildContext context) {
     UserService userService = Provider.of<UserService>(context);
     UserModel currentUser = userService.currentUser;
-    ThemeData theme = Theme.of(context);
     switch(_stage) {
       case CasualBeaconEditStage.overview:
         return CasualBeaconEditOverview(
@@ -106,7 +101,7 @@ class _CasualBeaconEditState extends State<CasualBeaconEdit> {
         );
       case CasualBeaconEditStage.whoCanSee:
         return WhoCanSeePage(
-          onBackClick: () {
+          onBackClick: (_displayToAll, groups, friends) {
             setState(() {
               _stage = CasualBeaconEditStage.overview;
             });
@@ -149,6 +144,7 @@ class _CasualBeaconEditState extends State<CasualBeaconEdit> {
                       newDisplay: allFriends,
                       notifyNewUsers: value
                     );
+                    _stage = CasualBeaconEditStage.overview;
 
                 });
               } else {
@@ -157,19 +153,13 @@ class _CasualBeaconEditState extends State<CasualBeaconEdit> {
                     currentUser: currentUser,
                     userService: userService,
                     newDisplay: allFriends,
-                    notifyNewUsers: false
+                    notifyNewUsers: false,
                 );
+                _stage = CasualBeaconEditStage.overview;
               }
-              _stage = CasualBeaconEditStage.overview;
+
             });
           },
-        );
-      case CasualBeaconEditStage.notifyNewUsers:
-        return Column(
-          children: [Container(
-            height: 30,
-            color: Colors.red,
-          )],
         );
       case CasualBeaconEditStage.location:
         return Column(
@@ -179,11 +169,21 @@ class _CasualBeaconEditState extends State<CasualBeaconEdit> {
           )],
         );
       case CasualBeaconEditStage.time:
-        return Column(
-          children: [Container(
-            height: 30,
-            color: Colors.red,
-          )],
+        return TimePage(
+          continueText: "Update",
+          onClose: widget.onClose,
+          onBackClick: (start, finish) {
+            setState(() {
+              _stage = CasualBeaconEditStage.overview;
+            });
+          },
+          initStartDateTime: beacon.startTime,
+          initEndDateTime: beacon.endTime,
+          onContinue: (start, finish) {
+            beaconService.updateBeaconTime(beacon, start, finish);
+            _stage = CasualBeaconEditStage.overview;
+            setState(() {});
+          },
         );
     }
   }

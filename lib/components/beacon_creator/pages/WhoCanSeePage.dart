@@ -18,7 +18,7 @@ typedef void InviteCallback(
 );
 
 class WhoCanSeePage extends StatefulWidget {
-  final VoidCallback onBackClick;
+  final InviteCallback onBackClick;
   final VoidCallback onClose;
   final InviteCallback onContinue;
   final String continueText;
@@ -54,13 +54,14 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
   @override
   void initState() {
     super.initState();
-    _groupList = widget.initGroups;
+    _groupList = {};
     _friendsList = widget.initFriends;
     _displayToAll = widget.initDisplayToAll;
   }
 
   bool enableButton() {
-    return _displayToAll || _groupList.isNotEmpty || _friendsList.isNotEmpty;
+    // return _displayToAll || _groupList.isNotEmpty || _friendsList.isNotEmpty;
+    return _displayToAll ||  _friendsList.isNotEmpty;
   }
 
   @override
@@ -69,14 +70,15 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
     _userService = Provider.of<UserService>(context);
 
     return CreatorPage(
-      title: 'Who can see my\nBeacon?',
+      title: "Who's welcome?",
       onClose: widget.onClose,
-      onBackClick: widget.onBackClick,
+      onBackClick: () {return widget.onBackClick(_displayToAll, _groupList, _friendsList);},
       continueText: widget.continueText,
       totalPageCount: widget.totalPageCount,
       currentPageIndex: widget.currentPageIndex,
       onContinuePressed: enableButton()
           ? () {
+        // return widget.onContinue(_displayToAll, _friendsList);
         return widget.onContinue(_displayToAll, _groupList, _friendsList);
       }
           : null,
@@ -118,26 +120,23 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
     );
   }
 
-  Set<String> _getAllFriendsSelectedAndGroups() {
-    Set<String> allFriends = _groupList
-        .map((GroupModel g) => g.members)
-        .expand((friend) => friend)
-        .toSet();
-    allFriends.addAll(_friendsList);
-    return allFriends;
-  }
+  // Set<String> _getAllFriendsSelectedAndGroups() {
+  //   Set<String> allFriends = _groupList
+  //       .map((GroupModel g) => g.members)
+  //       .expand((friend) => friend)
+  //       .toSet();
+  //   allFriends.addAll(_friendsList);
+  //   return allFriends;
+  // }
 
-  UserModel getFriendModelFromId(String id, List<UserModel> friendsModels) {
-    for(UserModel friend in friendsModels) {if(friend.id == id) {
-      return friend;
-    }}
-    return UserModel(firstName: "error", lastName: "");
-  }
 
   List<Widget> _selectedFriendTiles(BuildContext context) {
-    List<UserModel> friendsModels = context.read<UserService>().currentUser.friendModels;
-    return _getAllFriendsSelectedAndGroups().map((friend) {
-      UserModel friendModel = getFriendModelFromId(friend, friendsModels);
+    UserService userService = Provider.of<UserService>(context);
+    return _friendsList.map((friend) {
+      UserModel friendModel = userService.getAFriendModelFromId(friend, user: userService.currentUser);
+      if(friendModel.id == userService.currentUser.id) {
+        return Container();
+      }
       return ListTile(
         title: Text(
           "${friendModel.firstName} ${friendModel.lastName}",
@@ -158,9 +157,11 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
       GroupModel group, bool selected, StateSetter setState) {
     setState(() {
       if (!selected) {
-        _groupList.add(group);
+        // _groupList.add(group);
+        _friendsList.addAll(group.members);
       } else {
-        _groupList.remove(group);
+        // _groupList.remove(group);
+        _friendsList.removeAll(group.members);
       }
     });
   }
@@ -180,10 +181,10 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
               return FriendSelectorSheet(
                 onContinue: _updateFriendsList,
                 friendsSelected: _friendsList,
-                selectedFromGroups: _groupList
-                    .map((GroupModel g) => g.members)
-                    .expand((friend) => friend)
-                    .toSet()
+                // selectedFromGroups: _groupList
+                //     .map((GroupModel g) => g.members)
+                //     .expand((friend) => friend)
+                //     .toSet()
               );
             },
           );
@@ -210,9 +211,16 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
           : ListView(
               scrollDirection: Axis.horizontal,
               children: _userService.currentUser.groups.map((GroupModel group) {
+                if(_friendsList.containsAll(group.members)) {
+                  _groupList.add(group);
+                } else {
+                  if(_groupList.contains(group)) {
+                    _groupList.remove(group);
+                  }
+                }
                 return SingleGroup(
                   group: group,
-                  selected: _groupList.contains(group),
+                  selected: _friendsList.containsAll(group.members),
                   onGroupChanged: _handleGroupSelectionChanged,
                   setState: setState,
                 );

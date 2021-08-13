@@ -43,7 +43,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
   UserService _userService;
   NotificationService _notificationService = NotificationService();
   CasualBeacon _beacon = CasualBeacon();
-  CasualBeaconCreatorStage _stage = CasualBeaconCreatorStage.whoCanSee;
+  CasualBeaconCreatorStage _stage = CasualBeaconCreatorStage.description;
 
   ///TODO this is temporary until the location selected works, currently using current location
   UserLocationModel _userLocation;
@@ -66,49 +66,15 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
     _userService = Provider.of<UserService>(context);
     _userLocation = Provider.of<UserLocationModel>(context);
     switch (_stage) {
-      case CasualBeaconCreatorStage.whoCanSee:
-        return WhoCanSeePage(
-          totalPageCount: 5,
-          currentPageIndex: 0,
-          onBackClick: widget.onBack,
-          onClose: widget.onClose,
-          initGroups: _groups,
-          initFriends: _friends,
-          initDisplayToAll: _displayToAll,
 
-          onContinue: (displayToAll, groupList, friendList) {
-            setState(() {
-              if (displayToAll) {
-                _beacon.usersThatCanSee = _userService.currentUser.friends;
-                _friends = _userService.currentUser.friends.toSet();
-                _displayToAll = displayToAll;
-              } else {
-                _displayToAll = displayToAll;
-                _groups = groupList;
-                _friends = friendList;
-                Set<String> allFriends = groupList
-                    .map((GroupModel g) => g.members)
-                    .expand((friend) => friend)
-                    .toSet();
-                allFriends.addAll(friendList);
-                _beacon.usersThatCanSee = allFriends.toList();
-              }
-              _stage = CasualBeaconCreatorStage.description;
-            });
-          },
-        );
       case CasualBeaconCreatorStage.description:
         return DescriptionPage(
           hasTitleField: true,
           initTitle: _beacon.eventName != null ? _beacon.eventName : '',
           initDesc: _beacon.desc != null ? _beacon.desc : '',
           totalPageCount: 5,
-          currentPageIndex: 1,
-          onBackClick: () {
-            setState(() {
-              _stage = CasualBeaconCreatorStage.whoCanSee;
-            });
-          },
+          currentPageIndex: 0,
+          onBackClick: widget.onBack,
           onClose: widget.onClose,
           onContinue: (title, desc) {
             setState(() {
@@ -121,13 +87,16 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
       case CasualBeaconCreatorStage.time:
         return TimePage(
           totalPageCount: 5,
-          currentPageIndex: 2,
+          currentPageIndex: 1,
+          initEndDateTime: _beacon.endTime,
           initStartDateTime:
               _beacon.startTime != null
                   ? _beacon.startTime
                   : null,
-          onBackClick: () {
+          onBackClick: (startTime, endTime) {
             setState(() {
+              _beacon.startTime = startTime;
+              _beacon.endTime = endTime;
               _stage = CasualBeaconCreatorStage.description;
             });
           },
@@ -143,7 +112,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
       case CasualBeaconCreatorStage.location:
         return LocationPage(
           totalPageCount: 5,
-          currentPageIndex: 3,
+          currentPageIndex: 2,
           onBackClick: () {
             setState(() {
               _stage = CasualBeaconCreatorStage.time;
@@ -159,6 +128,43 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
               _beacon.long = _userLocation.longitude.toString();
               _beacon.locationName = "53 Centaurus Road / Smash palace";
               _beacon.address = "60 something st, Cashmere, 4801, Christchurch";
+              _stage = CasualBeaconCreatorStage.whoCanSee;
+            });
+          },
+        );
+      case CasualBeaconCreatorStage.whoCanSee:
+        return WhoCanSeePage(
+          totalPageCount: 5,
+          currentPageIndex: 3,
+          onBackClick: (inviteAll,groups, friendList) {
+            setState(() {
+              _friends = friendList;
+              _groups = groups;
+              _stage = CasualBeaconCreatorStage.location;
+            });
+          },
+          onClose: widget.onClose,
+          // initGroups: _groups,
+          initFriends: _friends,
+          initDisplayToAll: _displayToAll,
+
+          onContinue: (displayToAll, groups, friendList) {
+            setState(() {
+              if (displayToAll) {
+                _beacon.usersThatCanSee = _userService.currentUser.friends;
+                _friends = _userService.currentUser.friends.toSet();
+                _displayToAll = displayToAll;
+              } else {
+                _displayToAll = displayToAll;
+                _groups = groups;
+                _friends = friendList;
+                // Set<String> allFriends = groupList
+                //     .map((GroupModel g) => g.members)
+                //     .expand((friend) => friend)
+                //     .toSet();
+                // allFriends.addAll(friendList);
+                _beacon.usersThatCanSee = friendList.toList();
+              }
               _stage = CasualBeaconCreatorStage.invite;
             });
           },
@@ -168,7 +174,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
           totalPageCount: 5,
           currentPageIndex: 4,
           initFriends: _friends,
-          initGroups: _groups,
+          initGroups: _displayToAll? _userService.currentUser.groups.toSet() : _groups,
           initNotifyAll: _notifyAll,
           initNotifyFriends: _notifyFriends,
           fullList: _userService.currentUser.friendModels,
@@ -176,7 +182,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
             setState(() {
               _notifyFriends = notifyFriends;
               _notifyAll = notifyAll;
-              _stage = CasualBeaconCreatorStage.location;
+              _stage = CasualBeaconCreatorStage.whoCanSee;
             });
           },
           onClose: widget.onClose,
@@ -193,6 +199,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
                 beaconTitle: _beacon.eventName,
                 beaconDesc: _beacon.desc,
                 beaconId: _beacon.id,
+                customId: _beacon.id,
               );
               _notificationService.sendPushNotification(users,
                   title: "${currentUser.firstName} ${currentUser.lastName} has invited you to ${_beacon.eventName}",

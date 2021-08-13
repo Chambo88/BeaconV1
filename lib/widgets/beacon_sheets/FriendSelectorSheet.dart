@@ -15,14 +15,14 @@ import '../SearchBar.dart';
 class FriendSelectorSheet extends StatefulWidget {
   Function onContinue;
   Set<String> friendsSelected = Set();
-  Set<String> selectedFromGroups = Set();
+  // Set<String> selectedFromGroups = Set();
 
 
   FriendSelectorSheet({
     Key key,
     this.onContinue,
     this.friendsSelected,
-    this.selectedFromGroups,
+    // this.selectedFromGroups,
   }) : super(key: key);
 
   @override
@@ -37,7 +37,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
   Set<String> _friendsSelected = {};
   FigmaColours figmaColours ;
   Set<String> _friendsSelectedForClose = {};
-  Set<String> _selectedFromGroups = {};
+  // Set<String> _selectedFromGroups = {};
 
   @override
   void initState() {
@@ -46,7 +46,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
     _friendsSelected = widget.friendsSelected?? {};
     _friendsSelectedForClose = {};
     _friendsSelectedForClose.addAll(_friendsSelected);
-    _selectedFromGroups = widget.selectedFromGroups?? {};
+    // _selectedFromGroups = widget.selectedFromGroups?? {};
     figmaColours =  FigmaColours();
 
   }
@@ -136,7 +136,6 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
               children: _filteredFriends.map((friend) {
                 return GestureDetector(
                   onTap: () {
-                    if(!_selectedFromGroups.contains(friend.id)) {
                       setState(() {
                         if (_friendsSelected.contains(friend.id)) {
                           _friendsSelected.remove(friend.id);
@@ -144,7 +143,6 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
                           _friendsSelected.add(friend.id);
                         }
                       });
-                    };
                   },
                   child: ListTile(
                     leading: Padding(
@@ -159,7 +157,7 @@ class _FriendSelectorSheetState extends State<FriendSelectorSheet> {
                     ),
                     trailing: Padding(
                       padding: EdgeInsets.only(right: 10),
-                      child: GreyCircleCheckBox(toggle: _friendsSelected.contains(friend.id), unTogglable: _selectedFromGroups.contains(friend.id)),
+                      child: GreyCircleCheckBox(toggle: _friendsSelected.contains(friend.id),),
                     )
                   ),
                 );

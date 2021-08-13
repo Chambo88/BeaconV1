@@ -30,7 +30,7 @@ class LiveBeaconCreator extends StatefulWidget {
 class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
   UserService _userService;
   LiveBeacon _beacon = LiveBeacon(active: true);
-  LiveBeaconCreatorStage _stage = LiveBeaconCreatorStage.invite;
+  LiveBeaconCreatorStage _stage = LiveBeaconCreatorStage.description;
 
   ///TODO this is temporary until the location selected works, currently using current location
   UserLocationModel _userLocation;
@@ -40,6 +40,7 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
   var _groups = Set<GroupModel>();
   var _friends = Set<String>();
   var _displayToAll = false;
+  var desc = "";
 
   @override
   void dispose() {
@@ -57,39 +58,49 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
       case LiveBeaconCreatorStage.invite:
         return WhoCanSeePage(
           totalPageCount: 2,
-          currentPageIndex: 0,
-          onBackClick: widget.onBack,
+          currentPageIndex: 1,
+          onBackClick:  (displayToAll, groups, friendList) {
+            setState(() {
+              _friends = friendList;
+              _displayToAll = displayToAll;
+              _stage = LiveBeaconCreatorStage.invite;
+            });
+          },
           initFriends: _friends,
-          initGroups: _groups,
+          // initGroups: _groups,
           initDisplayToAll: _displayToAll,
           onClose: widget.onClose,
-          onContinue: (displayToAll, groupList, friendList) {
+          onContinue: (displayToAll, groups, friendList) {
             setState(() {
               if (displayToAll) {
                 _beacon.usersThatCanSee = _userService.currentUser.friends;
               } else {
-                _groups = groupList;
+                // _groups = groupList;
                 _friends = friendList;
-                Set<String> allFriends = groupList
-                    .map((GroupModel g) => g.members)
-                    .expand((friend) => friend)
-                    .toSet();
-                allFriends.addAll(friendList);
-                _beacon.usersThatCanSee = allFriends.toList();
+                // Set<String> allFriends = groupList
+                //     .map((GroupModel g) => g.members)
+                //     .expand((friend) => friend)
+                //     .toSet();
+                // allFriends.addAll(friendList);
+                _beacon.usersThatCanSee = friendList.toList();
+                _beacon.lat = _userLocation.latitude.toString();
+                _beacon.long = _userLocation.longitude.toString();
+                _beacon.desc = desc;
+                _beacon.active = true;
+                _beacon.id = _userService.currentUser.id;
+                _beacon.userId = _userService.currentUser.id;
+                widget.onCreated(_beacon);
               }
               _stage = LiveBeaconCreatorStage.description;
             });
           },
+          continueText: "Light",
         );
       case LiveBeaconCreatorStage.description:
         return DescriptionPage(
           totalPageCount: 2,
-          currentPageIndex: 1,
-          onBackClick: () {
-            setState(() {
-              _stage = LiveBeaconCreatorStage.invite;
-            });
-          },
+          currentPageIndex: 0,
+          onBackClick: widget.onBack,
           onClose: widget.onClose,
           onContinue: (title, desc) {
             setState(() {
@@ -102,7 +113,7 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
               widget.onCreated(_beacon);
             });
           },
-          continueText: 'Light',
+          continueText: 'Continue',
         );
       default:
         return Container();

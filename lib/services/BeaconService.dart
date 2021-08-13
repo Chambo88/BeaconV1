@@ -155,12 +155,19 @@ class BeaconService {
       UserService userService,
       UserModel currentUser}) {
 
+    print(beacon.usersThatCanSee);
+    print(newDisplay);
 
-    List<UserModel> newUsers = beacon.usersThatCanSee.toSet()
-        .difference(newDisplay)
+
+    List<UserModel> newUsers = newDisplay
+        .difference(beacon.usersThatCanSee.toSet())
         .map((userId) => userService.getAFriendModelFromId(userId)).toList();
 
-    Set<String> removedUsers = newDisplay.difference(beacon.usersThatCanSee.toSet());
+    newUsers.forEach((element) {print(element.id); });
+
+    Set<String> removedUsers = beacon.usersThatCanSee.toSet().difference(newDisplay);
+
+    print(removedUsers);
 
     beacon.peopleGoing.removeWhere((id) => removedUsers.contains(id));
     beacon.usersThatCanSee = newDisplay.toList();
@@ -190,10 +197,20 @@ class BeaconService {
     }
   }
 
+  updateBeaconTime(CasualBeacon beacon, DateTime startTime, DateTime endTime,) async {
+    beacon.endTime = endTime;
+    beacon.startTime = startTime;
+    await FirebaseFirestore.instance.collection('casualBeacons').doc(beacon.id).update(
+        {"startTime" : startTime.toString(),
+          "endTime" : endTime.toString(),
+        });
+  }
+
   deleteCasualBeacon(CasualBeacon beacon, UserModel currentUser) async {
     currentUser.casualBeacons.remove(beacon);
     await FirebaseFirestore.instance.collection('casualBeacons').doc(beacon.id).delete();
   }
+
 
 
 }

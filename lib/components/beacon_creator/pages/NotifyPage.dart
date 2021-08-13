@@ -135,15 +135,25 @@ class _NotifyPageState extends State<NotifyPage> {
     );
   }
 
-  void _handleGroupSelectionChanged(GroupModel group, StateSetter setState) {
+  void _handleGroupSelectionChanged(bool selected, GroupModel group, StateSetter setState, BuildContext context) {
+    List<UserModel> idToUserModel = [];
+    UserService userService = Provider.of<UserService>(context, listen: false);
     group.members.forEach((member) {
-      UserModel friend = getFriendModelFromId(member);
-      _notifyFriends.add(friend);
+      UserModel friend = userService.getAFriendModelFromId(member);
+      idToUserModel.add(friend);
     });
-    setState(() {});
+    setState(() {
+      if (!selected) {
+        _notifyFriends.addAll(idToUserModel);
+      } else {
+        _notifyFriends.removeAll(idToUserModel);
+      }
+    });
   }
 
   Container _groupSelector() {
+    Set<String> notifyIds = {};
+    _notifyFriends.forEach((e) {notifyIds.add(e.id);});
     return Container(
       height: 85.0,
       padding: EdgeInsets.symmetric(vertical: 5.0),
@@ -153,6 +163,7 @@ class _NotifyPageState extends State<NotifyPage> {
         children: _groupsToChoseFrom.map((GroupModel group) {
           return SingleGroup(
             group: group,
+            selected: notifyIds.containsAll(group.members.toSet()),
             onGroupChanged: _handleGroupSelectionChanged,
             setState: setState,
           );
@@ -161,14 +172,6 @@ class _NotifyPageState extends State<NotifyPage> {
     );
   }
 
-  UserModel getFriendModelFromId(String id) {
-    for (UserModel friend in _initFriends) {
-      if (friend.id == id) {
-        return friend;
-      }
-    }
-    return UserModel(firstName: "error", lastName: " ");
-  }
 
   List<Widget> _selectedFriendTiles(BuildContext context) {
     return _initFriends.map((friend) {
@@ -201,8 +204,10 @@ class _NotifyPageState extends State<NotifyPage> {
 }
 
 typedef void GroupListChangeCallBack(
+  bool selected,
   GroupModel group,
   StateSetter setState,
+    BuildContext context,
 );
 
 class SingleGroup extends StatelessWidget {
@@ -210,11 +215,13 @@ class SingleGroup extends StatelessWidget {
     this.group,
     this.onGroupChanged,
     this.setState,
+    this.selected,
   }) : super(key: ObjectKey(group));
 
   final GroupModel group;
   final StateSetter setState;
   final GroupListChangeCallBack onGroupChanged;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +234,7 @@ class SingleGroup extends StatelessWidget {
               color: Color(0xFF4FE30B),
               shape: CircleBorder(
                 side: BorderSide(
-                  color: Colors.purple,
+                  color: selected ? Colors.purple : Color(0xFF4FE30B),
                   width: 2,
                 ),
               ), // button color
@@ -242,8 +249,10 @@ class SingleGroup extends StatelessWidget {
                 ),
                 onTap: () {
                   onGroupChanged(
+                    selected,
                     group,
                     setState,
+                    context,
                   );
                 },
               ),

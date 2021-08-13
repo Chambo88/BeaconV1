@@ -216,7 +216,7 @@ class _CasualBeaconEditOverviewState extends State<CasualBeaconEditOverview> {
                   widget.setStage(CasualBeaconEditStage.description);
                 }, arrow: true,),
                 Container(height: 6,),
-                BeaconFlatButton(icon: Icons.remove_red_eye_outlined, title: "Who can see this beacon",onTap: () {
+                BeaconFlatButton(icon: Icons.remove_red_eye_outlined, title: "Who's welcome",onTap: () {
                   widget.setStage(CasualBeaconEditStage.whoCanSee);
                 }, arrow: true,),
                 Container(height: 6,),
