@@ -19,6 +19,8 @@ class NotificationSettingsPage extends StatefulWidget {
 class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   bool venue;
   bool summons;
+  bool all;
+  bool comingToBeacon;
   NotificationSettingsModel notifSettings;
   NotificationService notifService = NotificationService();
 
@@ -26,8 +28,10 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   void initState() {
     UserModel user = context.read<UserService>().currentUser;
     notifSettings = user.notificationSettings;
-    venue = notifSettings.notificationVenue;
-    summons = notifSettings.notificationSummons;
+    venue = notifSettings.venueInvite;
+    summons = notifSettings.summons;
+    all = notifSettings.all;
+    comingToBeacon = notifSettings.comingToBeacon;
     super.initState();
   }
 
@@ -41,8 +45,28 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
       ),
       body: Column(
         children: [
-          SubTitleText(text: 'Push notifications from'),
           BeaconFlatButton(
+              title: 'All',
+              onTap: () {
+                all = !all;
+                setState(() {
+                  notifService.changeAllNotif(user);
+                });
+              },
+              arrow: false,
+              trailing: Switch(
+                activeColor: Colors.white,
+                activeTrackColor: Theme.of(context).accentColor,
+                value: all,
+                onChanged: (value) {
+                  notifService.changeAllNotif(user);
+                  all = value;
+                  setState(() {
+                  });
+                },
+              )),
+          if (all) SubTitleText(text: 'Push notifications from'),
+          if (all) BeaconFlatButton(
               title: 'Summons',
               onTap: () {
                 summons = !summons;
@@ -62,8 +86,8 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                   });
                 },
               )),
-          BeaconFlatButton(
-              title: 'Venue Beacons',
+          if (all) BeaconFlatButton(
+              title: 'Venue Beacon invites',
               onTap: () {
                 venue = !venue;
                 setState(() {
@@ -82,13 +106,31 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                   });
                 },
               )),
-          SubTitleText(text: 'Push Notifications from People'),
-          BeaconFlatButton(title: "Friends", onTap: () {
+          if (all) BeaconFlatButton(
+              title: 'Friends coming to your beacons',
+              onTap: () {
+                comingToBeacon = !comingToBeacon;
+                setState(() {
+                  notifService.changeComingToBeaconNotif(user);
+                });
+              },
+              arrow: false,
+              trailing: Switch(
+                activeColor: Colors.white,
+                activeTrackColor: Theme.of(context).accentColor,
+                value: comingToBeacon,
+                onChanged: (value) {;
+                notifService.changeComingToBeaconNotif(user);
+                comingToBeacon = value;
+                setState(() {
+                });
+                },
+          )),
+          if (all) SubTitleText(text: 'Push Notifications from People'),
+          if (all) BeaconFlatButton(title: "Friends", onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => NotificationFriendsPage()));
           })
-
-
         ],
       ),
     );

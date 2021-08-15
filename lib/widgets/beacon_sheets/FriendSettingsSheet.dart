@@ -1,14 +1,10 @@
 import 'dart:ui';
-
-import 'package:beacon/Assests/Icons.dart';
-import 'package:beacon/library/ColorHelper.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/menu/friends/ViewFriendsFriendsPage.dart';
 import 'package:beacon/services/NotificationService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/Dialogs/TwoButtonDialog.dart';
-import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -63,7 +59,7 @@ class FriendSettingsSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     UserService userService = context.read<UserService>();
     NotificationService notService = NotificationService();
-    bool enable = userService.currentUser.notificationSettings.notificationReceivedBlocked.contains(user.id);
+    bool enable = userService.currentUser.notificationSettings.blocked.contains(user.id);
     final theme = Theme.of(context);
     return Wrap(children: [
       Container(

@@ -44,7 +44,8 @@ class _MenuPageState extends State<MenuPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-    UserModel user = context.read<UserService>().currentUser;
+    UserService _userService = context.read<UserService>();
+    UserModel user = _userService.currentUser;
     final AuthService _auth = context.watch<AuthService>();
     return Scaffold(
       appBar: AppBar(
@@ -112,13 +113,10 @@ class _MenuPageState extends State<MenuPage> {
             icon: CommunityMaterialIcons.account_group_outline,
             title: 'Groups',
             onTap: () {
-              List<GroupModel> originalOrder = List.from(user.groups);
               Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => GroupSettings())
               ).then((value) {
-                if(value == false) {
-                  user.groups = originalOrder;
-                }
+                _userService.updateGroups();
               });
             },
           ),

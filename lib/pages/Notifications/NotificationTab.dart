@@ -99,7 +99,6 @@ class GetNotificationTile extends StatelessWidget {
             notificationUnread: notificationUnread,
           );
         }
-        break;
       case "comingToBeacon":
         {
           return ComingToBeacon(

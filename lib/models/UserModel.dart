@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 import 'BeaconModel.dart';
 import 'GroupModel.dart';
-import 'NotificationModel.dart';
 import 'NotificationSettingsModel.dart';
 
 class UserModel {
@@ -62,10 +59,11 @@ class UserModel {
         casualBeacons: [],
         beaconsAttending: [],
         notificationSettings: NotificationSettingsModel(
-          notificationSummons: true,
-          notificationReceivedBlocked: [],
-          notificationSendBlocked: [],
-          notificationVenue: true,
+          summons: true,
+          blocked: [],
+          venueInvite: true,
+          all: true,
+          comingToBeacon: true,
         )
     );
   }
@@ -103,10 +101,11 @@ class UserModel {
       // beaconIds: List.from(doc.data()['beaconIds']?? []),
       beaconsAttending: List.from(doc.data()["beaconsAttending"]?? []),
       notificationSettings: NotificationSettingsModel(
-        notificationSummons: doc.data()['notificationSummons'] ?? true,
-        notificationReceivedBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
-        notificationSendBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
-        notificationVenue: doc.data()['notificationVenue'] ?? true,
+        summons: doc.data()['notificationSummons'] ?? true,
+        all: doc.data()['notificationAll'] ?? true,
+        comingToBeacon: doc.data()['notificationComingToBeacon'] ?? true,
+        blocked: List.from(doc.data()['notificationBlocked'] ?? []),
+        venueInvite: doc.data()['notificationVenue'] ?? true,
       )
 
     );

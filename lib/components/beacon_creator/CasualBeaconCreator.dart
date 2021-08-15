@@ -202,6 +202,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
                 customId: _beacon.id,
               );
               _notificationService.sendPushNotification(users,
+                  currentUser,
                   title: "${currentUser.firstName} ${currentUser.lastName} has invited you to ${_beacon.eventName}",
                   body: "${_beacon.desc}",
                   type: "venueBeaconInvite",

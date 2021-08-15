@@ -1,3 +1,16 @@
+///TODO should definatly use this sorta thing instead, dont really know how it works and being lazy
+///types as strings
+///acceptedFriendRequest
+///venueBeaconInvite
+///comingToBeacon
+///summon
+// enum NotificationType {
+//   live,
+//   casual,
+//   event
+//
+
+
 
 //Pretty sure some sort of extension/inhertience thing would be better here for the different models
 class NotificationModel {

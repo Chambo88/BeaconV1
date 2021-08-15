@@ -128,8 +128,10 @@ class _EditGroupPageState extends State<EditGroupPage> {
             onPressed: _enableButton
                 ? () {
                     _group.name = _groupNameTextController.value.text;
-                    userService.removeGroup(widget.originalGroup);
-                    userService.addGroup(_group);
+                    int index = userService.currentUser.groups.indexOf(widget.originalGroup);
+                    userService.currentUser.groups.remove(widget.originalGroup);
+                    userService.currentUser.groups.insert(index, _group);
+                    userService.updateGroups();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -283,6 +285,7 @@ class _EditGroupPageState extends State<EditGroupPage> {
                 autovalidateMode: AutovalidateMode.always,
                 controller: _groupNameTextController,
                 onChanged: (value) {
+                  _group.name = _groupNameTextController.text;
                   setEnabledButton();
                 },
                 validator: (value) {

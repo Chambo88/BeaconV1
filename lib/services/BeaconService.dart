@@ -74,6 +74,7 @@ class BeaconService {
             beaconId: beaconId, beaconTitle: beaconTitle);
         _notificationService.sendPushNotification(
             [host],
+            currentUser,
             title: '${currentUser.firstName} ${currentUser.lastName} is coming to your beacon : ${beaconTitle}',
             type: 'comingToBeacon'
         );
@@ -190,6 +191,7 @@ class BeaconService {
         beaconId: beacon.id,
       );
       _notificationService.sendPushNotification(newUsers,
+        currentUser,
         title: "${currentUser.firstName} ${currentUser.lastName} has invited you to ${beacon.eventName}",
         body: "${beacon.desc}",
         type: "venueBeaconInvite",

@@ -22,8 +22,6 @@ class GroupSettings extends StatefulWidget {
 
 class _GroupSettingsState extends State<GroupSettings> {
 
-  bool orderChanged;
-  bool saved;
   FigmaColours figmaColours;
 
 
@@ -31,8 +29,6 @@ class _GroupSettingsState extends State<GroupSettings> {
   void initState() {
     super.initState();
     figmaColours = FigmaColours();
-    orderChanged = false;
-    saved = false;
   }
 
   @override
@@ -40,7 +36,7 @@ class _GroupSettingsState extends State<GroupSettings> {
     var userService = Provider.of<UserService>(context);
     return WillPopScope(
       onWillPop: () {
-        Navigator.pop(context, saved);
+        Navigator.pop(context,);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -48,7 +44,7 @@ class _GroupSettingsState extends State<GroupSettings> {
             icon: Icon(Icons.arrow_back_ios),
             color: Color(figmaColours.highlight),
             onPressed: () {
-              Navigator.pop(context, saved);
+              Navigator.pop(context,);
             },
           ),
           title: Text("Groups"),
@@ -71,20 +67,6 @@ class _GroupSettingsState extends State<GroupSettings> {
               text: 'Reorder and edit groups',
             ),
             Expanded(child: buildReorderableListView(userService)),
-            (orderChanged)? GradientButton(
-                child: Text(
-                  'Save changes',
-                  style: Theme.of(context).textTheme.headline4,
-                ),
-                onPressed: () {
-                  setState(() {
-                    saved = true;
-                    orderChanged = false;
-                    userService.updateGroups();
-                  });
-                },
-                gradient: ColorHelper.getBeaconGradient()
-            ) : Container()
           ],
         ),
       ),
@@ -156,7 +138,6 @@ class _GroupSettingsState extends State<GroupSettings> {
         ],
         onReorder: (int oldIndex, int newIndex) {
           setState(() {
-            orderChanged = true;
             if (oldIndex < newIndex) {
               newIndex -= 1;
             }

@@ -1,15 +1,17 @@
 class NotificationSettingsModel {
-  List<String> notificationSendBlocked;
-  List<String> notificationReceivedBlocked;
-  bool notificationVenue;
-  bool notificationSummons;
+  List<String> blocked;
+  bool venueInvite;
+  bool summons;
+  bool all;
+  bool comingToBeacon;
 
 
   NotificationSettingsModel({
-    this.notificationSendBlocked,
-    this.notificationReceivedBlocked,
-    this.notificationVenue,
+    this.blocked,
+    this.venueInvite,
+    this.summons,
+    this.comingToBeacon,
+    this.all
 
-    this.notificationSummons
   });
 }

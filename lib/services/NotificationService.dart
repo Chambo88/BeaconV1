@@ -5,13 +5,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:uuid/uuid.dart';
 
-// notificationSummons: doc.data()['notificationSummons'] ?? true,
-// notificationEventInvites: doc.data()['notificationEventInvites'] ?? true,
-// notificationReceivedBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
-// notificationSendBlocked: List.from(doc.data()['notificationSendBlocked'] ?? []),
-// notificationVenue: doc.data()['notificationVenue'] ?? true,
-
-
 
 ///Recieve message bwhen app is in background
 Future<void> backgroundHandler(RemoteMessage message) async{
@@ -97,42 +90,78 @@ class NotificationService {
     //if the other user is already blocked undo the block
     NotificationSettingsModel notSets = user.notificationSettings;
 
-    if(notSets.notificationReceivedBlocked.contains(otherUser.id)) {
+    if(notSets.blocked.contains(otherUser.id)) {
       await FirebaseFirestore.instance.collection('users').doc(user.id).update({
-        "notificationReceivedBlocked": FieldValue.arrayRemove([otherUser.id])});
-      await FirebaseFirestore.instance.collection('users').doc(otherUser.id).update({
-        "notificationSendBlocked": FieldValue.arrayRemove([user.id]),
-      });
-      notSets.notificationReceivedBlocked.remove(otherUser.id);
+        "notificationBlocked": FieldValue.arrayRemove([otherUser.id])});
+      notSets.blocked.remove(otherUser.id);
     } else {
       await FirebaseFirestore.instance.collection('users').doc(user.id).update({
-        "notificationReceivedBlocked": FieldValue.arrayUnion([otherUser.id])});
-      await FirebaseFirestore.instance.collection('users').doc(otherUser.id).update({
-        "notificationSendBlocked": FieldValue.arrayUnion([user.id]),
-      });
-      notSets.notificationReceivedBlocked.add(otherUser.id);
+        "notificationBlocked": FieldValue.arrayUnion([otherUser.id])});
+      notSets.blocked.add(otherUser.id);
     }
   }
 
   changeVenueNotif(UserModel user) async {
     await FirebaseFirestore.instance.collection('users').doc(user.id).update({
-      "notificationVenue": !user.notificationSettings.notificationVenue
+      "notificationVenue": !user.notificationSettings.venueInvite
     });
-    user.notificationSettings.notificationVenue = !user.notificationSettings.notificationVenue;
+    user.notificationSettings.venueInvite = !user.notificationSettings.venueInvite;
+  }
+
+  changeComingToBeaconNotif(UserModel user) async {
+    await FirebaseFirestore.instance.collection('users').doc(user.id).update({
+      "notificationComingToBeacon": !user.notificationSettings.comingToBeacon
+    });
+    user.notificationSettings.comingToBeacon = !user.notificationSettings.comingToBeacon;
+  }
+
+  changeAllNotif(UserModel user) async {
+    await FirebaseFirestore.instance.collection('users').doc(user.id).update({
+      "notificationAll": !user.notificationSettings.all
+    });
+    user.notificationSettings.all = !user.notificationSettings.all;
   }
 
   changeSummonsNotif(UserModel user) async {
     await FirebaseFirestore.instance.collection('users').doc(user.id).update({
-      "notificationSummons": !user.notificationSettings.notificationSummons
+      "notificationSummons": !user.notificationSettings.summons
     });
-    user.notificationSettings.notificationSummons = !user.notificationSettings.notificationSummons;
+    user.notificationSettings.summons = !user.notificationSettings.summons;
   }
 
-  sendPushNotification(List<UserModel> sendToUsers, {String title = '', String body = '', String type = ''}) async {
+  sendPushNotification(List<UserModel> sendToUsers, UserModel currentUser, {String title = '', String body = '', String type = ''}) async {
     Set<String> tokens = {};
     sendToUsers.forEach((element) {
       if (element.tokens.isNotEmpty) {
-        tokens.addAll(element.tokens);
+        if(!element.notificationSettings.blocked.contains(element.id) &&
+        element.notificationSettings.all) {
+          switch (type) {
+            case "venueBeaconInvite" :
+              {
+                if (element.notificationSettings.venueInvite) {
+                  tokens.addAll(element.tokens);
+
+                }
+                break;
+              }
+            case "comingToBeacon" :
+              {
+                if(element.notificationSettings.comingToBeacon) {
+                  tokens.addAll(element.tokens);
+                }
+                break;
+              }
+            case "summon" : {
+              if(element.notificationSettings.summons) {
+                tokens.addAll(element.tokens);
+              }
+              break;
+            }
+            default:
+              tokens.addAll(element.tokens);
+          }
+        }
+
       }
     });
     if(tokens.isNotEmpty) {

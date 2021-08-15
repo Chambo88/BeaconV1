@@ -146,7 +146,7 @@ class ProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
+      padding: const EdgeInsets.fromLTRB(10, 8.0,10, 0),
       child: Row(children: _segments),
     );
   }

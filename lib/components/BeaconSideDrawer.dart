@@ -63,7 +63,7 @@ class BeaconSideDrawer extends StatelessWidget {
                                 ));
                                 beacons.add(
                                     Divider(
-                                      color: Color(figmaColours.greyLight),
+                                      color: Color(figmaColours.greyMedium),
                                       height: 1,
                                     )
                                 );
@@ -88,7 +88,7 @@ class BeaconSideDrawer extends StatelessWidget {
                             ));
                             beacons.add(
                                 Divider(
-                              color: Color(figmaColours.greyLight),
+                              color: Color(figmaColours.greyMedium),
                               height: 1,
                             ));
                           });

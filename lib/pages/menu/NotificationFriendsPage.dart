@@ -121,7 +121,7 @@ class _UserResultSwitchState extends State<UserResultSwitch> {
     UserService userService = context.read<UserService>();
     currentUser = userService.currentUser;
     notService = NotificationService();
-    _isSelected = !currentUser.notificationSettings.notificationReceivedBlocked.contains(widget.user.id);
+    _isSelected = !currentUser.notificationSettings.blocked.contains(widget.user.id);
     super.initState();
   }
 

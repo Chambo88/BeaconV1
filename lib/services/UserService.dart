@@ -98,18 +98,18 @@ class UserService {
         liveBeaconActive: doc.data()['liveBeaconActive'] ?? false,
         //TODO refactor the way settings are stored into a map
         notificationSettings: NotificationSettingsModel(
-          notificationSummons: doc.data()['notificationSummons'] ?? true,
-          notificationReceivedBlocked:
-              List.from(doc.data()['notificationSendBlocked'] ?? []),
-          notificationSendBlocked:
-              List.from(doc.data()['notificationSendBlocked'] ?? []),
-          notificationVenue: doc.data()['notificationVenue'] ?? true,
+          summons: doc.data()['notificationSummons'] ?? true,
+          all: doc.data()['notificationAll'] ?? true,
+          comingToBeacon: doc.data()['notificationComingToBeacon'] ?? true,
+          blocked: List.from(doc.data()['notificationBlocked'] ?? []),
+          venueInvite: doc.data()['notificationVenue'] ?? true,
         ));
     return currentUser;
   }
 
   summonUser(UserModel friend, {UserModel user}) {
     _notificationService.sendPushNotification([friend],
+        currentUser,
         title:
             '${friend.firstName} ${friend.lastName} has summoned you to join them!',
         body: '',
@@ -231,7 +231,7 @@ class UserService {
   addGroup(GroupModel group, {UserModel user}) async {
     // If user is null then current user
     if (user == null) {
-      currentUser.groups.add(group);
+      currentUser.groups.insert(0, group);
     }
     String userId = user != null ? user.id : currentUser.id;
     await FirebaseFirestore.instance.collection('users').doc(userId).update({
@@ -316,6 +316,7 @@ class UserService {
         customId: currentUser.id);
 
     _notificationService.sendPushNotification([potentialFriend],
+        currentUser,
         title:
             "${currentUser.firstName} ${currentUser.lastName} sent you a friend request",
         body: "",
@@ -349,6 +350,7 @@ class UserService {
         .sendNotification([friend], currentUser, 'acceptedFriendRequest');
     // Send Push notification
     _notificationService.sendPushNotification([friend],
+        currentUser,
         title:
             "${currentUser.firstName} ${currentUser.lastName} accepted your friend request",
         body: "",
