@@ -133,7 +133,7 @@ class NotificationService {
     Set<String> tokens = {};
     sendToUsers.forEach((element) {
       if (element.tokens.isNotEmpty) {
-        if(!element.notificationSettings.blocked.contains(element.id) &&
+        if(!element.notificationSettings.blocked.contains(currentUser.id) &&
         element.notificationSettings.all) {
           switch (type) {
             case "venueBeaconInvite" :

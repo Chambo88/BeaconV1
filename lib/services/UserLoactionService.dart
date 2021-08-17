@@ -1,14 +1,16 @@
 import 'dart:async';
-
 import 'package:beacon/models/UserLocationModel.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
 
 class UserLocationService {
   UserLocationModel currentUserLocation;
 
   var location = Location();
+  bool active;
+  String userId;
+  double previousLat;
+  double previousLong;
 
   Future<UserLocationModel> getLocation() async {
     try {
@@ -29,8 +31,19 @@ class UserLocationService {
 
   UserLocationService() {
     // Request permission to use location
+
+    // _serviceEnabled = await location.serviceEnabled();
+    // if (!_serviceEnabled) {
+    //   _serviceEnabled = await location.requestService();
+    //   if (!_serviceEnabled) {
+    //     return;
+    //   }
+    // }
     location.requestPermission().then((granted) {
       if (granted != null) {
+        location.changeSettings(
+          distanceFilter: 50
+        );
         // If granted listen to the onLocationChanged stream and emit over our controller
         location.onLocationChanged.listen((locationData) {
           if (locationData != null) {
@@ -40,10 +53,26 @@ class UserLocationService {
                 longitude: locationData.longitude,
               ),
             );
-
+            updateUserLocation(locationData);
           }
         });
       }
     });
+  }
+
+  setActive(bool _enable) {
+    active = _enable;
+    location.enableBackgroundMode(enable: _enable);
+  }
+
+  updateUserLocation(LocationData locationData) {
+    if(userId != null && active == true) {
+      FirebaseFirestore.instance.collection('liveBeacons').doc(userId).update(
+        {"lat" : locationData.latitude.toString(),
+          "long" : locationData.longitude.toString(),
+          "lastUpdate" : locationData.time.toInt(),
+        }
+      );
+    }
   }
 }

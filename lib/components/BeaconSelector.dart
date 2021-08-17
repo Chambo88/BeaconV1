@@ -4,16 +4,18 @@ import 'package:beacon/components/beacon_creator/CasualBeaconCreator.dart';
 import 'package:beacon/components/beacon_creator/LiveBeaconCreator.dart';
 import 'package:beacon/components/beacon_creator/pages/CasualBeaconEdit.dart';
 import 'package:beacon/models/BeaconModel.dart';
+import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/BeaconService.dart';
+import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/services/UserService.dart';
+import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 import 'package:beacon/widgets/tiles/BeaconCreatorSubTitle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
-
 
 class BeaconSelector extends StatefulWidget {
   @override
@@ -28,6 +30,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   BeaconIcons iconStuff = BeaconIcons();
   FigmaColours figmaColours = FigmaColours();
   CasualBeacon casualBeaconToEdit;
+  UserLocationService _locationService;
 
   final TextEditingController _beaconDescriptionController =
       TextEditingController();
@@ -36,11 +39,11 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   Widget build(BuildContext context) {
     _userService = Provider.of<UserService>(context);
     return Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          if (_showBeaconEditor) _beaconEditor(context),
-          _beaconButton()
-        ],
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (_showBeaconEditor) _beaconEditor(context),
+        _beaconButton()
+      ],
     );
   }
 
@@ -64,12 +67,119 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             _toggleBeaconEditor();
           },
           elevation: 2.0,
-          fillColor: _userService.currentUser.liveBeaconActive? Colors.green : Colors.grey,
+          fillColor: _userService.currentUser.liveBeaconActive
+              ? Colors.green
+              : Colors.grey,
           constraints: BoxConstraints.tight(Size(80, 80)),
           shape: CircleBorder(),
         ),
       ),
     );
+  }
+
+  Widget _liveBeacon(BeaconType type, BuildContext context) {
+    UserLocationService userLocationService =
+        Provider.of<UserLocationService>(context);
+    UserModel currentUser = Provider.of<UserService>(context).currentUser;
+    BeaconService beaconService = BeaconService();
+    return InkWell(
+        onTap: () {
+          setState(() {
+            _beaconTypeSelected = type.toString();
+          });
+        },
+        child: Container(
+          height: 110,
+          margin: EdgeInsets.only(top: 8),
+          color: Color(FigmaColours().greyDark),
+          child: Stack(
+            children: [
+              Positioned(
+                right: 15,
+                top: 15,
+                child: SmallGradientButton(
+                  width: 115,
+                  child: Text(
+                    "Extinguish",
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                  onPressed: () {
+                    userLocationService.setActive(false);
+                    beaconService.extinguishLiveBeacon(currentUser);
+                    setState(() {});
+                  },
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.all(10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 13, left: 5),
+                      child: Container(
+                        width: 50.0,
+                        height: 50.0,
+                        decoration: new BoxDecoration(
+                          color: type.color,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 13,
+                            width: 10,
+                          ),
+                          Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 5),
+                                child: RichText(
+                                    text: TextSpan(
+                                        text: "${type.title} - ",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline4,
+                                        children: [
+                                      TextSpan(
+                                          text: "active",
+                                          style: TextStyle(
+                                            color: type.color,
+                                            fontSize: 18,
+                                          ))
+                                    ])),
+                              ),
+                              Column(
+                                children: [],
+                              )
+                            ],
+                          ),
+                          Expanded(
+                            child: Container(
+                              width: 250,
+                              child: Text(
+                                currentUser.liveBeaconDesc,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodyText1,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 
   Widget _beaconType(BuildContext context, BeaconType type) {
@@ -141,6 +251,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Widget _beaconTypeSelector(BuildContext context) {
+    UserModel currentUser = Provider.of<UserService>(context).currentUser;
     return Column(
       children: [
         Container(
@@ -150,7 +261,6 @@ class _BeaconSelectorState extends State<BeaconSelector> {
               'Beacon',
               style: Theme.of(context).textTheme.headline2,
               textAlign: TextAlign.center,
-
             ),
           ),
         ),
@@ -158,7 +268,9 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                _beaconType(context, BeaconType.live),
+                (currentUser.liveBeaconActive)
+                    ? _liveBeacon(BeaconType.live, context)
+                    : _beaconType(context, BeaconType.live),
                 _beaconType(context, BeaconType.casual),
                 getUserCasualBeacons(),
               ],
@@ -170,21 +282,22 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Widget getUserCasualBeacons() {
-    if(_userService.currentUser.casualBeacons.isEmpty) {
+    if (_userService.currentUser.casualBeacons.isEmpty) {
       return Container();
     }
-    List<Widget> tiles = [BeaconCreatorSubTitle('Your beacons'),
+    List<Widget> tiles = [
+      BeaconCreatorSubTitle('Your beacons'),
       Divider(
         color: Color(figmaColours.greyMedium),
         height: 1,
-      )];
+      )
+    ];
     _userService.currentUser.casualBeacons.forEach((CasualBeacon beacon) {
       tiles.add(casualBeaconSelectorTile(beacon));
-      tiles.add(
-          Divider(
-            color: Color(figmaColours.greyMedium),
-            height: 1,
-          ));
+      tiles.add(Divider(
+        color: Color(figmaColours.greyMedium),
+        height: 1,
+      ));
     });
     return Column(
       children: tiles,
@@ -192,6 +305,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Widget _getBeaconEditorChild(BuildContext context) {
+    _locationService = Provider.of<UserLocationService>(context);
     switch (_beaconTypeSelected) {
       case "BeaconType.live":
         return LiveBeaconCreator(
@@ -209,8 +323,8 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             setState(() {
               _showBeaconEditor = false;
             });
-            beacon.usersThatCanSee.add(_userService.currentUser.id);
             _beaconService.addBeacon(beacon, _userService.currentUser);
+            _locationService.setActive(true);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -247,7 +361,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             );
           },
         );
-      case "casualEdit" :
+      case "casualEdit":
         return CasualBeaconEdit(
           beacon: casualBeaconToEdit,
           onBack: () {
@@ -336,5 +450,3 @@ class _BeaconSelectorState extends State<BeaconSelector> {
     );
   }
 }
-
-

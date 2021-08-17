@@ -93,9 +93,9 @@ class UserService {
             List.from(doc.data()["receivedFriendRequests"] ?? []),
         imageURL: doc.data()['imageURL'] ?? '',
         casualBeacons: casualBeacons,
-        // beaconIds: List.from(doc.data()['beaconIds'] ?? []),
         beaconsAttending: List.from(doc.data()["beaconsAttending"] ?? []),
         liveBeaconActive: doc.data()['liveBeaconActive'] ?? false,
+        liveBeaconDesc: doc.data()['liveBeaconDesc']?? '',
         //TODO refactor the way settings are stored into a map
         notificationSettings: NotificationSettingsModel(
           summons: doc.data()['notificationSummons'] ?? true,

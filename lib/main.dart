@@ -9,7 +9,6 @@ import 'package:beacon/services/RemoteConfigService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/progress_widget.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -17,9 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-
-import 'models/BeaconModel.dart';
-import 'models/UserModel.dart';
 import 'pages/HomePage.dart';
 
 Future<void> main() async {
@@ -88,8 +84,10 @@ class AuthenticationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _currentUser = context.watch<User>();
+    UserLocationService userLocationService = Provider.of<UserLocationService>(context);
     if (_currentUser != null) {
       {
+
         return FutureBuilder(
           future: context.read<UserService>().initUser(_currentUser.uid),
           builder: (context, snapshot) {
@@ -97,6 +95,8 @@ class AuthenticationWrapper extends StatelessWidget {
               ///TODO return a loadingn screem akin to twitter on launch
               return Center(child: circularProgress());
             }
+            userLocationService.userId = _currentUser.uid;
+            userLocationService.setActive(snapshot.data.liveBeaconActive);
             return BuildHomePage();
           },
         );

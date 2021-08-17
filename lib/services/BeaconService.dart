@@ -28,6 +28,7 @@ class BeaconService {
       });
     } else if(beacon.type == BeaconType.live) {
       currentUser.liveBeaconActive = true;
+      currentUser.liveBeaconDesc = beacon.desc;
       await FirebaseFirestore.instance
           .collection('liveBeacons')
           .doc(beacon.id)
@@ -36,10 +37,20 @@ class BeaconService {
           .collection('users')
           .doc(currentUser.id)
           .update({
-        'liveBeaconActive': true}
+        'liveBeaconActive': true,
+        'liveBeaconDesc' : beacon.desc,
+      }
         );
     }
 
+  }
+
+  void extinguishLiveBeacon(UserModel currentUser) async {
+    currentUser.liveBeaconActive = false;
+    await FirebaseFirestore.instance.collection('liveBeacons').doc(currentUser.id).update(
+        {'active' : false});
+    await FirebaseFirestore.instance.collection('users').doc(currentUser.id).update(
+        {'liveBeaconActive' : false});
   }
 
   
