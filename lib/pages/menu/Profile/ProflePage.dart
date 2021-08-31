@@ -69,8 +69,14 @@ class _ProfilePageState extends State<ProfilePage> {
     UserModel user = context.read<UserService>().currentUser;
     return Scaffold(
       appBar: AppBar(
+        leading :IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         title: Text(
-          "Account",
+          "Profile",
         ),
       ),
       body: Column(

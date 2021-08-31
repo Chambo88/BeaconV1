@@ -24,6 +24,7 @@ class FriendSettingsSheet extends StatelessWidget {
         context: context,
         builder: (BuildContext) {
           return TwoButtonDialog(
+            title: "Unfriend",
               bodyText: "Are you sure you want to remove ${user.firstName} ${user.lastName}?",
               onPressedGrey: () => Navigator.pop(context, false),
               onPressedHighlight: () => Navigator.pop(context, true),
@@ -35,10 +36,12 @@ class FriendSettingsSheet extends StatelessWidget {
 
   Future<dynamic> notificationDialog(BuildContext context, bool enabled) {
     String ya = (enabled == true)? "enable" : "disable";
+    String yaya = (enabled == true)? "Enable" : "Disable";
     return showDialog(
         context: context,
         builder: (BuildContext) {
           return TwoButtonDialog(
+            title: "${yaya} notifications",
             bodyText: "Are you sure you want to " + ya + " notifications from ${user.firstName} ${user.lastName}?",
             onPressedGrey: () => Navigator.pop(context, false),
             onPressedHighlight: () => Navigator.pop(context, true),
@@ -87,9 +90,10 @@ class FriendSettingsSheet extends StatelessWidget {
                     style: theme.textTheme.headline4,
                   ),
                   onTap: () async{
-                    await Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => ViewFriendsFriendsPage(friend: user,)));
                     Navigator.pop(context);
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => ViewFriendsFriendsPage(friend: user,)));
+
                   },
                 ),
                 ListTile(

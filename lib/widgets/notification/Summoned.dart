@@ -24,6 +24,7 @@ class Summoned extends StatefulWidget {
 class _SummonedState extends State<Summoned> {
   RichText getBodyText(ThemeData theme) {
     return RichText(
+        overflow: TextOverflow.ellipsis,
       text: TextSpan(children: [
         TextSpan(
             text: '''${widget.sender.firstName} ${widget.sender.lastName}''',

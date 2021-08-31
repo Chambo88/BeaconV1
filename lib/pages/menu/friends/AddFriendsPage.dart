@@ -1,16 +1,12 @@
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/pages/menu/groups/EditGroupsPage.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/SearchBar.dart';
-import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:beacon/widgets/progress_widget.dart';
-import 'package:beacon/widgets/tiles/userListTile.dart';
 import 'package:beacon/widgets/tiles/userTileAddable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:beacon/util/theme.dart';
-import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 
 class AddFriendsPage extends StatefulWidget {
   @override
@@ -96,6 +92,12 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     final userFriendsIds = context.read<UserService>().currentUser.friends;
     return Scaffold(
       appBar: AppBar(
+        leading :IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         title: Text('Add Friends'),
       ),
       body: Column(children: [

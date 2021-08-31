@@ -83,7 +83,7 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
           }
 
           if(firstTime == true) {
-            dataSnapshot.data.docs.forEach((document) {
+            dataSnapshot.data.forEach((document) {
               UserModel user = UserModel.fromDocument(document);
               userModelsResult.add(user);
               UserResultAddable userResult = UserResultAddable(anotherUser: user);
@@ -116,6 +116,12 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading :IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         title: Text("${widget.friend.firstName}'s Friends"),
       ),
       body: Column(

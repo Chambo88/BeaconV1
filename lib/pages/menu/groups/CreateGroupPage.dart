@@ -287,6 +287,7 @@ class SelectedFriend extends StatelessWidget {
               title: Text(
                 "${friendModel.firstName} ${friendModel.lastName}",
                 style: Theme.of(context).textTheme.headline4,
+                overflow: TextOverflow.ellipsis,
               ),
               trailing: IconButton(
                   icon: const Icon(

@@ -1,17 +1,13 @@
-import 'package:beacon/library/ColorHelper.dart';
+
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/services/AuthService.dart';
 import 'package:beacon/services/UserService.dart';
-import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/Dialogs/AddToGroupsDialog.dart';
-import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 import 'package:beacon/widgets/buttons/SmallGreyButton.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:beacon/widgets/notification/NotificationSkeleton.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -68,10 +64,12 @@ class _FriendRequestNotificationState extends State<FriendRequestNotification> {
     //If hasn't been accepted return this
     if (!userService.currentUser.friends.contains(widget.sender.id)) {
       return RichText(
+        overflow: TextOverflow.ellipsis,
         text: TextSpan(children: [
           TextSpan(
               text: '''${widget.sender.firstName} ${widget.sender.lastName}''',
               style: theme.textTheme.headline4),
+
           TextSpan(
               text: ''' wants to be your friend ''',
               style: theme.textTheme.bodyText2),
@@ -79,6 +77,7 @@ class _FriendRequestNotificationState extends State<FriendRequestNotification> {
       );
     }
     return RichText(
+      overflow: TextOverflow.ellipsis,
       text: TextSpan(children: [
         TextSpan(
             text: '''${widget.sender.firstName} ${widget.sender.lastName}''',

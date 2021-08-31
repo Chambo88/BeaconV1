@@ -25,6 +25,7 @@ class ComingToBeacon extends StatefulWidget {
 class _ComingToBeaconState extends State<ComingToBeacon> {
   RichText getBodyText(ThemeData theme) {
     return RichText(
+      overflow: TextOverflow.ellipsis,
       text: TextSpan(children: [
         TextSpan(
             text: '${widget.sender.firstName} ${widget.sender.lastName}',

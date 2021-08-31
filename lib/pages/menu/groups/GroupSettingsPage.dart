@@ -122,6 +122,7 @@ class _GroupSettingsState extends State<GroupSettings> {
                       child: Text(
                         userService.currentUser.groups[index].name,
                         style: Theme.of(context).textTheme.headline4,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     trailing: ReorderableDragStartListener(

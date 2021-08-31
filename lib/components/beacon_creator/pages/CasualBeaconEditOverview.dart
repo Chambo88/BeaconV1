@@ -66,6 +66,7 @@ class _CasualBeaconEditOverviewState extends State<CasualBeaconEditOverview> {
   RichText getTextForPeopleGoing(
       String numPeopleGoing, ThemeData theme, String numFriendsGoing) {
     return RichText(
+        overflow: TextOverflow.ellipsis,
         text: TextSpan(children: [
           TextSpan(
             text: '$numPeopleGoing ',
@@ -200,6 +201,7 @@ class _CasualBeaconEditOverviewState extends State<CasualBeaconEditOverview> {
                     "${beacon.eventName}",
                     style: Theme.of(context).textTheme.headline2,
                     textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               )

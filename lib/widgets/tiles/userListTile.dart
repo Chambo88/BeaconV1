@@ -26,6 +26,8 @@ class userListTile extends StatelessWidget {
           style: TextStyle(
             color: Color(figmaColours.greyMedium),
           ),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
         backgroundColor: Color(figmaColours.greyLight),
       );

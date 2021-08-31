@@ -96,6 +96,7 @@ class FriendCasualItem extends StatelessWidget {
                     Text(
                       "${user.firstName} ${user.lastName}",
                       style: theme.textTheme.headline5,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       '${DateFormat('E d').format(beacon.startTime)}, ${DateFormat('Hm').format(beacon.startTime)} - '
@@ -118,6 +119,7 @@ class FriendCasualItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               RichText(
+                  overflow: TextOverflow.ellipsis,
                 text: TextSpan(
                   text: 'Mutual ',
                   style: Theme.of(context).textTheme.bodyText1,

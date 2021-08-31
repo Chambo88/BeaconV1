@@ -58,7 +58,6 @@ class NotificationSkeleton extends StatelessWidget {
   }
 
   Color getColourContainer(ThemeData theme) {
-    ///Checking to see if friend request type or event invite type
     if(notification != null) {
       if(notificationUnread.contains(notification.id) || !notification.seen) {
         return theme.primaryColor;

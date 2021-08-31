@@ -141,6 +141,7 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
         title: Text(
           "${friendModel.firstName} ${friendModel.lastName}",
           style: Theme.of(context).textTheme.headline5,
+          overflow: TextOverflow.ellipsis,
         ),
         leading: ProfilePicture(user: friendModel, size: 18,),
       );

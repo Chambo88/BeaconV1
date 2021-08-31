@@ -3,10 +3,7 @@ import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/SearchBar.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSettingsSheet.dart';
-import 'package:beacon/widgets/beacon_sheets/IconPickerSheet.dart';
-import 'package:beacon/widgets/progress_widget.dart';
 import 'package:beacon/widgets/tiles/userListTile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -84,7 +81,14 @@ class _FriendsPageState extends State<FriendsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
+        leading :IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         title: Text("Friends"),
         actions: [
           Padding(

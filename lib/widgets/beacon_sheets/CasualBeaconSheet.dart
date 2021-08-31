@@ -1,13 +1,10 @@
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/beacon_sheets/BeaconSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/ViewAttendiesSheet.dart';
 import 'package:beacon/widgets/buttons/GoingButton.dart';
-import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
-import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -126,6 +123,7 @@ class CasualBeaconSheet extends BeaconSheet {
   RichText getTextForPeopleGoing(
       String numPeopleGoing, ThemeData theme, String numFriendsGoing) {
     return RichText(
+        overflow: TextOverflow.ellipsis,
       text: TextSpan(children: [
         TextSpan(
           text: '$numPeopleGoing ',
@@ -265,6 +263,7 @@ class CasualBeaconSheet extends BeaconSheet {
           Text(
             '${host.firstName} ${host.lastName}',
             style: theme.textTheme.headline4,
+            overflow: TextOverflow.ellipsis,
           ),
           Spacer(),
         ],
@@ -309,6 +308,7 @@ class Header extends StatelessWidget {
                     Flexible(
                       child: Text(
                         _beacon.eventName,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 22,
                           color: Colors.white,

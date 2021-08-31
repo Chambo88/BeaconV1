@@ -38,6 +38,7 @@ class _AcceptedFriendRequestState extends State<AcceptedFriendRequest> {
 
   RichText getBodyText(ThemeData theme) {
     return RichText(
+      overflow: TextOverflow.ellipsis,
       text: TextSpan(children: [
         TextSpan(
             text: '${widget.sender.firstName} ${widget.sender.lastName}',

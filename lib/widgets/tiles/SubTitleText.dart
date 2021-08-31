@@ -18,6 +18,7 @@ class SubTitleText extends StatelessWidget {
           child: Text(
               text,
               style: theme.textTheme.subtitle1,
+            overflow: TextOverflow.clip,
           ),
         ),
       ],

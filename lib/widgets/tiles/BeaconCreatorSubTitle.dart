@@ -13,6 +13,7 @@ class BeaconCreatorSubTitle extends StatelessWidget {
         title,
         style: Theme.of(context).textTheme.bodyText1,
         textAlign: TextAlign.start,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

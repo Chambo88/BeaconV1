@@ -40,6 +40,7 @@ class _VenueInviteState extends State<VenueInvite> {
 
   RichText getBodyText(ThemeData theme) {
     return RichText(
+      overflow: TextOverflow.ellipsis,
       text: TextSpan(children: [
         TextSpan(
             text: '${widget.sender.firstName} ${widget.sender.lastName} ',

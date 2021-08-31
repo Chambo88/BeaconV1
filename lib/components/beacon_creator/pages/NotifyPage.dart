@@ -187,6 +187,7 @@ class _NotifyPageState extends State<NotifyPage> {
         child: ListTile(
             title: Text(
               "${friend.firstName} ${friend.lastName}",
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.headline5,
             ),
             leading: ProfilePicture(

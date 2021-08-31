@@ -80,6 +80,12 @@ class _NotificationFriendsPageState extends State<NotificationFriendsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading :IconButton(
+          icon: Icon(Icons.arrow_back_ios),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         title: Text("Friends Notifications"),
       ),
       body: Column(

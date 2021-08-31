@@ -39,23 +39,25 @@ class UserLocationService {
     //     return;
     //   }
     // }
-    location.requestPermission().then((granted) {
+    location.requestPermission().then((PermissionStatus granted) {
       if (granted != null) {
-        location.changeSettings(
-          distanceFilter: 50
-        );
-        // If granted listen to the onLocationChanged stream and emit over our controller
-        location.onLocationChanged.listen((locationData) {
-          if (locationData != null) {
-            _userLocationController.add(
-              UserLocationModel(
-                latitude: locationData.latitude,
-                longitude: locationData.longitude,
-              ),
-            );
-            updateUserLocation(locationData);
-          }
-        });
+        if (granted == PermissionStatus.granted) {
+          location.changeSettings(
+            distanceFilter: 50
+          );
+          // If granted listen to the onLocationChanged stream and emit over our controller
+          location.onLocationChanged.listen((locationData) {
+            if (locationData != null) {
+              _userLocationController.add(
+                UserLocationModel(
+                  latitude: locationData.latitude,
+                  longitude: locationData.longitude,
+                ),
+              );
+              updateUserLocation(locationData);
+            }
+          });
+        }
       }
     });
   }
