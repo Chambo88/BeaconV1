@@ -184,7 +184,7 @@ class listOfPeople extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(bottom: 10, left: 20),
-              child: Text('Friends Going',
+              child: Text('Friends',
                 style: theme.textTheme.bodyText2
               ),
             ),
@@ -199,14 +199,14 @@ class listOfPeople extends StatelessWidget {
                       "${friend.firstName} ${friend.lastName}",
                       textAlign: TextAlign.left,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.headline5
+                      style: theme.textTheme.headline4
                   ),
                 );
               }).toList(),
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 10, left: 20, top:10),
-              child: Text('Others Going',
+              child: Text('Others',
                   style: theme.textTheme.bodyText2
               ),
             ),
@@ -221,7 +221,7 @@ class listOfPeople extends StatelessWidget {
                       "${friend.firstName} ${friend.lastName}",
                       textAlign: TextAlign.left,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.headline5
+                      style: theme.textTheme.headline4
                   ),
                 );
               }).toList(),
@@ -272,8 +272,8 @@ class title extends StatelessWidget {
           Align(
             alignment: Alignment.center,
             child: Text(
-              "People going",
-              style: Theme.of(context).textTheme.headline3,
+              "Who's going",
+              style: Theme.of(context).textTheme.headline2,
             ),
           ),
           Align(

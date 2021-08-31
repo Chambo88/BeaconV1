@@ -19,6 +19,7 @@ class UserModel {
   List<CasualBeacon> casualBeacons;
   // List<String> beaconIds;
   List<String> beaconsAttending;
+  String city;
   bool liveBeaconActive;
   String liveBeaconDesc;
   Map<String, DateTime> recentlySummoned = {};
@@ -39,7 +40,8 @@ class UserModel {
       this.casualBeacons,
       this.beaconsAttending,
       this.liveBeaconActive,
-      this.liveBeaconDesc
+      this.liveBeaconDesc,
+      this.city
   });
 
   get getFirstName => firstName;
@@ -60,6 +62,7 @@ class UserModel {
         imageURL: '',
         casualBeacons: [],
         beaconsAttending: [],
+        city: '',
         liveBeaconActive: false,
         liveBeaconDesc: '',
         notificationSettings: NotificationSettingsModel(
@@ -103,6 +106,7 @@ class UserModel {
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       imageURL: doc.data()['imageURL'] ?? '',
       // beaconIds: List.from(doc.data()['beaconIds']?? []),
+      city: doc.data()['city']?? '',
       beaconsAttending: List.from(doc.data()["beaconsAttending"]?? []),
       liveBeaconActive: doc.data()["liveBeaconActive"],
       liveBeaconDesc: doc.data()["liveBeaconDesc"],

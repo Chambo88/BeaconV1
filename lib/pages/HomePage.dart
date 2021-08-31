@@ -1,3 +1,4 @@
+import 'package:beacon/pages/Events/EventsPage.dart';
 import 'package:beacon/pages/MapPage.dart';
 import 'package:beacon/pages/menu/MenuPage.dart';
 import 'package:beacon/util/theme.dart';
@@ -17,6 +18,7 @@ class _BuildHomePageState extends State<BuildHomePage> {
   int _pageIndex = 0;
   final pages = [
     MapPage(),
+    EventsPage(),
     NotificationPage(),
     MenuPage(),
   ];
@@ -33,6 +35,7 @@ class _BuildHomePageState extends State<BuildHomePage> {
       resizeToAvoidBottomInset: false,
       body: pages[_pageIndex],
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: _pageIndex,
         onTap: (index) {
           setState(() {
@@ -55,9 +58,21 @@ class _BuildHomePageState extends State<BuildHomePage> {
             ),
           ),
           BottomNavigationBarItem(
+            label: 'events',
+            icon: Icon(
+              Icons.event_outlined,
+              color: Colors.white,
+            ),
+            activeIcon: Icon(
+              Icons.event_rounded,
+              color: Color(FigmaColours().highlight),
+            ),
+          ),
+          BottomNavigationBarItem(
               label: 'notification',
               icon: NotificationIcon(active: false),
               activeIcon: NotificationIcon(active: true)
+
           ),
           BottomNavigationBarItem(
             label: 'settings',

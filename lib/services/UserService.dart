@@ -93,6 +93,7 @@ class UserService {
             List.from(doc.data()["receivedFriendRequests"] ?? []),
         imageURL: doc.data()['imageURL'] ?? '',
         casualBeacons: casualBeacons,
+        city: doc.data()['city'] ?? '',
         beaconsAttending: List.from(doc.data()["beaconsAttending"] ?? []),
         liveBeaconActive: doc.data()['liveBeaconActive'] ?? false,
         liveBeaconDesc: doc.data()['liveBeaconDesc']?? '',
@@ -106,6 +107,12 @@ class UserService {
         ));
     return currentUser;
   }
+
+  setCity(String city) async {
+    currentUser.city = city;
+    _fireStoreDataBase.collection('users').doc(currentUser.id).update({'city' : city});
+  }
+
 
   summonUser(UserModel friend, {UserModel user}) {
     _notificationService.sendPushNotification([friend],
