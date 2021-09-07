@@ -38,6 +38,7 @@ class _EventsPageState extends State<EventsPage> {
                 minimumSize: Size(50, 30),
                 alignment: Alignment.centerLeft),
             child: RichText(
+              overflow: TextOverflow.ellipsis,
               maxLines: 1,
               text: TextSpan(
                   text: (currentUser.city == '')? "Select a city" : "What's on in - ",
@@ -47,7 +48,7 @@ class _EventsPageState extends State<EventsPage> {
                       text: currentUser.city,
                       style: TextStyle(
                           color: Color(_figmaColours.highlight),
-                          overflow: TextOverflow.ellipsis
+
                       ),
                     ),
                   ]

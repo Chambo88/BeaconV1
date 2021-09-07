@@ -31,61 +31,63 @@ class _BuildHomePageState extends State<BuildHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: pages[_pageIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _pageIndex,
-        onTap: (index) {
-          setState(() {
-            _pageIndex = index;
-          });
-        },
-        backgroundColor: Colors.black,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: [
-          BottomNavigationBarItem(
-            label: 'beacon',
-            icon: Icon(
-              Icons.local_fire_department_outlined,
-              color: Colors.white,
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: pages[_pageIndex],
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: _pageIndex,
+          onTap: (index) {
+            setState(() {
+              _pageIndex = index;
+            });
+          },
+          backgroundColor: Colors.black,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          items: [
+            BottomNavigationBarItem(
+              label: 'beacon',
+              icon: Icon(
+                Icons.local_fire_department_outlined,
+                color: Colors.white,
+              ),
+              activeIcon: Icon(
+                Icons.local_fire_department_rounded,
+                color: Color(FigmaColours().highlight),
+              ),
             ),
-            activeIcon: Icon(
-              Icons.local_fire_department_rounded,
-              color: Color(FigmaColours().highlight),
+            BottomNavigationBarItem(
+              label: 'events',
+              icon: Icon(
+                Icons.event_outlined,
+                color: Colors.white,
+              ),
+              activeIcon: Icon(
+                Icons.event_rounded,
+                color: Color(FigmaColours().highlight),
+              ),
             ),
-          ),
-          BottomNavigationBarItem(
-            label: 'events',
-            icon: Icon(
-              Icons.event_outlined,
-              color: Colors.white,
-            ),
-            activeIcon: Icon(
-              Icons.event_rounded,
-              color: Color(FigmaColours().highlight),
-            ),
-          ),
-          BottomNavigationBarItem(
-              label: 'notification',
-              icon: NotificationIcon(active: false),
-              activeIcon: NotificationIcon(active: true)
+            BottomNavigationBarItem(
+                label: 'notification',
+                icon: NotificationIcon(active: false),
+                activeIcon: NotificationIcon(active: true)
 
-          ),
-          BottomNavigationBarItem(
-            label: 'settings',
-            icon: Icon(
-              Icons.menu_outlined,
-              color: Colors.white,
             ),
-            activeIcon: Icon(
-              Icons.menu,
-              color: Color(FigmaColours().highlight),
-            ),
-          )
-        ],
+            BottomNavigationBarItem(
+              label: 'settings',
+              icon: Icon(
+                Icons.menu_outlined,
+                color: Colors.white,
+              ),
+              activeIcon: Icon(
+                Icons.menu,
+                color: Color(FigmaColours().highlight),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
