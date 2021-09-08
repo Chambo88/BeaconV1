@@ -1,6 +1,7 @@
+import 'package:beacon/models/EventModel.dart';
 import 'package:beacon/util/theme.dart';
+import 'package:beacon/widgets/Dialogs/DateRangeDialog.dart';
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class EventsTab extends StatefulWidget {
 
@@ -14,6 +15,7 @@ class _EventsTabState extends State<EventsTab> {
   DateTime filterStartDate;
   DateTime filterEndDate;
   FigmaColours figmaColours;
+  List<EventModel> eventModelsTemp;
 
   @override
   void initState() {
@@ -21,6 +23,7 @@ class _EventsTabState extends State<EventsTab> {
     filterBy = "Mutual";
     filterStartDate = DateTime.now();
     figmaColours = FigmaColours();
+    eventModelsTemp = [EventModel.dummy()];
     super.initState();
   }
 
@@ -46,7 +49,7 @@ class _EventsTabState extends State<EventsTab> {
                     ),
                   ),
 
-                  label: Text(" Mutual   ",
+                  label: Text(" Mutual ",
                     style: TextStyle(
                         color: (filterBy == "Mutual")? Color(figmaColours.highlight) : Colors.white
                     ),
@@ -67,7 +70,7 @@ class _EventsTabState extends State<EventsTab> {
                       color: (filterBy == "Top")? Color(figmaColours.highlight) : Colors.white,
                     ),
                   ),
-                  label: Text("Top   ",
+                  label: Text("Top ",
                     style: TextStyle(
                       color: (filterBy == "Top")? Color(figmaColours.highlight) : Colors.white
                     ),
@@ -85,20 +88,64 @@ class _EventsTabState extends State<EventsTab> {
                   padding: const EdgeInsets.only(left: 8.0),
                   side: BorderSide(width: 0),
                   avatar: Icon(Icons.date_range_outlined,
-                    color: (filterEndDate != null)? Color(figmaColours.highlight) : Colors.white,
+                    color: (filterStartDate != null)? Color(figmaColours.highlight) : Colors.white,
                   ),
-                  label: Text('Date     ',
+                  label: Text('Date    ',
                     style: TextStyle(
-                        color: (filterEndDate != null)? Color(figmaColours.highlight) : Colors.white
+                        color: (filterStartDate != null)? Color(figmaColours.highlight) : Colors.white
                     ),),
-                  onPressed: () {},
+                  onPressed: () {
+                    return showDialog(
+                        context: context,
+                        builder: (context) {
+                          return DateRangeDialog(
+                            initStart: filterStartDate,
+                            initEnd: filterEndDate,
+                          );
+                        }).then((args) {
+                          if(args != null) {
+                            filterStartDate = args.startDate;
+                            if(args.endDate != null) {
+                              filterEndDate = args.endDate;
+                            } else {
+                              filterEndDate = null;
+                            }
+
+                          } else {
+                            filterStartDate = null;
+                            filterEndDate = null;
+                          }
+                          setState(() {
+                          });
+                    });
+                  },
                   backgroundColor: Color(figmaColours.greyDark),
                 ),
               ),
             ],
           ),
         ),
-        SfDateRangePicker(),
+        ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+            itemBuilder: (context, i) {
+              return Row(
+                children: [Container(
+                  width: 100,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    image: DecorationImage(
+                      image: NetworkImage(eventModelsTemp[i].imageUrl),
+                      fit: BoxFit.cover
+                    )
+                  ),
+                ),]
+              );
+            },
+
+          itemCount: 1,
+        )
       ],
     );
   }

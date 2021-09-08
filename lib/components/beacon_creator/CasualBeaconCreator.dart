@@ -127,7 +127,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
               _beacon.lat = _userLocation.latitude.toString();
               _beacon.long = _userLocation.longitude.toString();
               _beacon.locationName = "53 Centaurus Road / Smash palace";
-              _beacon.address = "60 something st, Cashmere, 4801, Christchurch";
+              _beacon.fullAddress = "60 something st, Cashmere, 4801, Christchurch";
               _stage = CasualBeaconCreatorStage.whoCanSee;
             });
           },

@@ -237,7 +237,7 @@ class CasualBeaconSheet extends BeaconSheet {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text(_beacon.address,
+                  child: Text(_beacon.fullAddress,
                       style: TextStyle(
                         color: Color(figmaColours.greyLight),
                         fontSize: 16,
