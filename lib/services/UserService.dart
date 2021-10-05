@@ -124,6 +124,19 @@ class UserService {
     _notificationService.sendNotification([friend], currentUser, 'summon');
   }
 
+  List<UserModel> getMutual(List<String> idList) {
+    List<UserModel> mutuals = [];
+    for(String id in idList) {
+      currentUser.friendModels.forEach((element) {
+        if(element.id == id) {
+          mutuals.add(element);
+        }
+      });
+    }
+    return mutuals;
+  }
+
+
   UserModel getAFriendModelFromId(String id, {UserModel user}) {
     for (UserModel friend in currentUser.friendModels) {
       if (friend.id == id) {
