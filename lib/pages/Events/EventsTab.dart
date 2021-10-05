@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import 'EventDetailsPage.dart';
+
 class EventsTab extends StatefulWidget {
 
   @override
@@ -96,93 +98,48 @@ class _EventsTabState extends State<EventsTab> {
                     ],
                   ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(eventModelsTemp[i].eventName + " -",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4.0),
-                        child: Text(eventModelsTemp[i].hostName,
-                          style: Theme.of(context).textTheme.body2,
-                        ),
-                      ),
-                      Row(
-                        children: [Container(
-                          width: 85,
-                          height: 70,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            image: DecorationImage(
-                              image: NetworkImage(eventModelsTemp[i].imageUrl),
-                              fit: BoxFit.cover
-                            )
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => EventDetailsPage(event: eventModelsTemp[i]))
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(eventModelsTemp[i].eventName + " -",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                        Expanded(
-                          flex: 6,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: Icon(Icons.date_range),
-                                  ),
-                                  Flexible(
-                                    child: Container(
-                                      child: Text(
-                                        getDateText(eventModelsTemp[i].startTime).replaceAll("", "\u{200B}"),
-                                        style: Theme.of(context).textTheme.headline6,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        softWrap: false,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              Container(
-                                height: 8,
-                              ),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: Icon(Icons.location_on_outlined),
-                                  ),
-                                  Flexible(
-                                    child: Container(
-                                      child: Text(
-                                          eventModelsTemp[i].locationName.replaceAll("", "\u{200B}"),
-                                        style: Theme.of(context).textTheme.headline6,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        softWrap: false,
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-
-                            ],
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 4.0),
+                          child: Text(eventModelsTemp[i].hostName,
+                            style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ),
+                        Row(
+                          children: [Container(
+                            width: 85,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              image: DecorationImage(
+                                image: NetworkImage(eventModelsTemp[i].imageUrl),
+                                fit: BoxFit.cover
+                              )
+                            ),
+                          ),
                           Expanded(
-                            flex: 5,
+                            flex: 6,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,11 +148,18 @@ class _EventsTabState extends State<EventsTab> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                      child: Icon(Icons.music_note_outlined),
+                                      child: Icon(Icons.date_range),
                                     ),
-                                    Text(
-                                      eventModelsTemp[i].mainGenre,
-                                      style: Theme.of(context).textTheme.headline6,
+                                    Flexible(
+                                      child: Container(
+                                        child: Text(
+                                          getDateText(eventModelsTemp[i].startTime).replaceAll("", "\u{200B}"),
+                                          style: Theme.of(context).textTheme.headline6,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: false,
+                                        ),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -206,36 +170,81 @@ class _EventsTabState extends State<EventsTab> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                      child: Icon(Icons.people_alt_outlined),
+                                      child: Icon(Icons.location_on_outlined),
                                     ),
-                                    RichText(
-                                      text: TextSpan(
-                                        text: (mutualFriendCount != '0') ? "${mutualFriendCount}m" : '',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Color(figmaColours.highlight),
+                                    Flexible(
+                                      child: Container(
+                                        child: Text(
+                                            eventModelsTemp[i].locationName.replaceAll("", "\u{200B}"),
+                                          style: Theme.of(context).textTheme.headline6,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          softWrap: false,
                                         ),
-                                        children: [
-                                          TextSpan(
-                                            text: (mutualFriendCount != '0') ? " | ${eventModelsTemp[i].usersAttending.length.toString()}" :
-                                            "${eventModelsTemp[i].usersAttending.length.toString()}",
-                                            style: Theme.of(context).textTheme.headline6,
-                                          )
-                                        ]
                                       ),
-                                      textWidthBasis: TextWidthBasis.longestLine,
-                                      overflow: TextOverflow.ellipsis,
-
                                     )
                                   ],
                                 ),
 
                               ],
                             ),
-                          )
-                        ]
-                      ),
-                    ],
+                          ),
+                            Expanded(
+                              flex: 5,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                        child: Icon(Icons.music_note_outlined),
+                                      ),
+                                      Text(
+                                        eventModelsTemp[i].mainGenre,
+                                        style: Theme.of(context).textTheme.headline6,
+                                      )
+                                    ],
+                                  ),
+                                  Container(
+                                    height: 8,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                        child: Icon(Icons.people_alt_outlined),
+                                      ),
+                                      RichText(
+                                        text: TextSpan(
+                                          text: (mutualFriendCount != '0') ? "${mutualFriendCount}m" : '',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Color(figmaColours.highlight),
+                                          ),
+                                          children: [
+                                            TextSpan(
+                                              text: (mutualFriendCount != '0') ? " | ${eventModelsTemp[i].usersAttending.length.toString()}" :
+                                              "${eventModelsTemp[i].usersAttending.length.toString()}",
+                                              style: Theme.of(context).textTheme.headline6,
+                                            )
+                                          ]
+                                        ),
+                                        textWidthBasis: TextWidthBasis.longestLine,
+                                        overflow: TextOverflow.ellipsis,
+
+                                      )
+                                    ],
+                                  ),
+
+                                ],
+                              ),
+                            )
+                          ]
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );

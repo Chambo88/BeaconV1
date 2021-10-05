@@ -148,6 +148,16 @@ class CustomTheme {
         iconTheme: IconThemeData(
           color: Color(0xFFAD00FF)
         ),
+        toolbarTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold
+        ),
+        titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold
+        ),
         textTheme: TextTheme(
             headline6: TextStyle(
               color: Colors.white,

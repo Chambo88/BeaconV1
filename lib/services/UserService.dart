@@ -79,6 +79,7 @@ class UserService {
       }
     }
 
+
     currentUser = UserModel(
         id: doc.id,
         email: doc.data()['email'],
@@ -89,6 +90,8 @@ class UserService {
         friendModels: _friendModels,
         tokens: _tokens,
         sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
+        eventsAttending: List.from(doc.data()["eventsAttending"] ?? []),
+        hostsFollowed: List.from(doc.data()["hostsFollowed"] ?? []),
         receivedFriendRequests:
             List.from(doc.data()["receivedFriendRequests"] ?? []),
         imageURL: doc.data()['imageURL'] ?? '',
@@ -422,5 +425,45 @@ class UserService {
         .collection('notifications')
         .doc(currentUser.id)
         .delete();
+  }
+
+  changeFollowHost(String hostId) async {
+    if(currentUser.hostsFollowed.contains(hostId)) {
+      currentUser.hostsFollowed.remove(hostId);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .update({
+        'hostsFollowed': FieldValue.arrayRemove([hostId]),
+      });
+    } else {
+      currentUser.hostsFollowed.add(hostId);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .update({
+        'hostsFollowed': FieldValue.arrayUnion([hostId]),
+      });
+    }
+  }
+
+  changeEventAttending(String eventId) async {
+    if(currentUser.eventsAttending.contains(eventId)) {
+      currentUser.eventsAttending.remove(eventId);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .update({
+        'eventsAttending': FieldValue.arrayRemove([eventId]),
+      });
+    } else {
+      currentUser.eventsAttending.add(eventId);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .update({
+        'eventsAttending': FieldValue.arrayUnion([eventId]),
+      });
+    }
   }
 }
