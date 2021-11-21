@@ -90,7 +90,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                       HostProfilePicture(
                         picURL: event.hostLogoUrl,
                         hostName: event.hostName,
-                        size: 30,
+                        size: 24,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 16.0),
@@ -139,9 +139,9 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Row(
                     children: [
-                      Icon(Icons.music_note_outlined),
+                      Icon(Icons.music_note_outlined, size: 30,),
                       Padding(
-                        padding: EdgeInsets.only(left: 8),
+                        padding: EdgeInsets.only(left: 14),
                         child: Text(
                           "Genre's - ",
                           style: Theme.of(context).textTheme.bodyText1,
@@ -190,6 +190,9 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                       style: theme.textTheme.headline5,
                     ),
                 ),
+                Container(
+                  height: 65,
+                )
 
               ],
             ),
@@ -277,14 +280,14 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
               children: [
                 Text(
                   event.locationName,
-                  style: theme.textTheme.headline4,
+                  style: theme.textTheme.headline5,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Text(event.fullAddress,
                       style: TextStyle(
                         color: Color(figmaColours.greyLight),
-                        fontSize: 16,
+                        fontSize: 14,
                       )),
                 )
               ],
@@ -368,24 +371,24 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         TextSpan(
           text: '$numPeopleGoing ',
           style: TextStyle(
-              fontWeight: FontWeight.bold, color: Color(figmaColours.highlight), fontSize: 18),
+              fontWeight: FontWeight.bold, color: Color(figmaColours.highlight), fontSize: 16),
         ),
         TextSpan(
             text: 'going',
-            style: theme.textTheme.headline4,
+            style: theme.textTheme.headline5,
             children: (numFriendsGoing == '0')
                 ? []
                 : [
               TextSpan(
-                  text: ', including ', style: theme.textTheme.headline4),
+                  text: ', including ', style: theme.textTheme.headline5),
               TextSpan(
                 text: '$numFriendsGoing ',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Color(figmaColours.highlight),
-                    fontSize: 18),
+                    fontSize: 16),
               ),
-              TextSpan(text: 'friends', style: theme.textTheme.headline4),
+              TextSpan(text: 'friends', style: theme.textTheme.headline5),
             ])
       ]),
     );

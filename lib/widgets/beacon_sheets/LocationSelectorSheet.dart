@@ -1,21 +1,13 @@
-import 'dart:io';
-
-import 'package:beacon/library/ColorHelper.dart';
-import 'package:beacon/services/RemoteConfigService.dart';
-import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/BeaconBottomSheet.dart';
-import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_place/google_place.dart';
-import 'package:provider/provider.dart';
 
 import '../SearchBar.dart';
 
 typedef LocationSelectedCallback(AutocompletePrediction prediction);
 
 class LocationSelectorSheet extends StatefulWidget {
-  LocationSelectedCallback onSelected;
+  final LocationSelectedCallback onSelected;
 
   LocationSelectorSheet({
     Key key,
@@ -28,8 +20,6 @@ class LocationSelectorSheet extends StatefulWidget {
 
 class _LocationSelectorSheetState extends State<LocationSelectorSheet> {
   TextEditingController _searchController;
-  final FocusNode _focusNode = FocusNode();
-  RemoteConfigService _configService;
   GooglePlace _googlePlace;
   List<AutocompletePrediction> _predictions = [];
 
@@ -47,6 +37,7 @@ class _LocationSelectorSheetState extends State<LocationSelectorSheet> {
 
   void autoCompleteSearch(String value) async {
     var result = await _googlePlace.autocomplete.get(value);
+
     if (result != null && result.predictions != null && mounted) {
       setState(() {
         _predictions = result.predictions;
@@ -57,16 +48,9 @@ class _LocationSelectorSheetState extends State<LocationSelectorSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    _configService = Provider.of<RemoteConfigService>(context);
 
     if (_googlePlace == null) {
-      String apiKey;
-      if (Platform.isAndroid) {
-        apiKey = _configService.remoteConfig.getString('androidGoogleMapsKey');
-      } else if (Platform.isIOS) {
-        apiKey = _configService.remoteConfig.getString('iOSGoogleMapsKey');
-      }
-      _googlePlace = GooglePlace(apiKey);
+      _googlePlace = GooglePlace('AIzaSyCECMYSrS2ATQJ6vB67c5TIY8XlqH9W8Bk');
     }
 
     // Pop up Friend selector
@@ -88,7 +72,9 @@ class _LocationSelectorSheetState extends State<LocationSelectorSheet> {
               hintText: 'Smash Palace',
               onChanged: (value) {
                 if (value.isNotEmpty) {
-                  autoCompleteSearch(value);
+                  setState(() {
+                    autoCompleteSearch(value);
+                  });
                 } else {
                   if (_predictions.length > 0 && mounted) {
                     setState(() {

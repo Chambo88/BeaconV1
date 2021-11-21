@@ -1,19 +1,16 @@
 import 'dart:io';
 
+import 'package:beacon/models/LocationModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
-import 'package:beacon/services/UserLoactionService.dart';
-import 'package:beacon/services/RemoteConfigService.dart';
 import 'package:beacon/widgets/beacon_sheets/LocationSelectorSheet.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker/google_maps_place_picker.dart';
-import 'package:google_place/google_place.dart';
+import 'package:google_place/google_place.dart' as GooglePlace;
 import 'package:provider/provider.dart';
 import 'CreatorPage.dart';
 
-typedef void LocationCallback(AutocompletePrediction location);
+typedef void LocationCallback(GooglePlace.AutocompletePrediction location);
 
 class LocationPage extends StatefulWidget {
   final VoidCallback onBackClick;
@@ -22,6 +19,7 @@ class LocationPage extends StatefulWidget {
   final String continueText;
   final int totalPageCount;
   final int currentPageIndex;
+  final LocationModel initLocation;
 
   LocationPage({
     @required this.onBackClick,
@@ -30,6 +28,7 @@ class LocationPage extends StatefulWidget {
     @required this.totalPageCount,
     @required this.currentPageIndex,
     this.continueText = 'Next',
+    this.initLocation,
   });
 
   @override
@@ -37,22 +36,38 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
-  AutocompletePrediction _selectedPlace;
+  GooglePlace.AutocompletePrediction _selectedPlace;
+  List<Location> locations = [];
   UserLocationModel _userLocation;
-  RemoteConfigService _configService;
+  LocationModel _selectedLocation;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initLocation != null) {
+      _selectedLocation = widget.initLocation;
+    }
+  }
+
+  bool isNumeric(String s) {
+    if (s == null) {
+      return false;
+    }
+    return double.tryParse(s) != null;
+  }
 
   @override
   Widget build(BuildContext context) {
     _userLocation = Provider.of<UserLocationModel>(context);
-    _configService = Provider.of<RemoteConfigService>(context);
+    // _configService = Provider.of<RemoteConfigService>(context);
     var theme = Theme.of(context);
 
-    String apiKey;
-    if (Platform.isAndroid) {
-      apiKey = _configService.remoteConfig.getString('androidGoogleMapsKey');
-    } else if (Platform.isIOS) {
-      apiKey = _configService.remoteConfig.getString('iOSGoogleMapsKey');
-    }
+    // String apiKey;
+    // if (Platform.isAndroid) {
+    //   apiKey = _configService.remoteConfig.getString('androidGoogleMapsKey');
+    // } else if (Platform.isIOS) {
+    //   apiKey = _configService.remoteConfig.getString('iOSGoogleMapsKey');
+    // }
 
     return CreatorPage(
       title: 'Place',
@@ -62,13 +77,13 @@ class _LocationPageState extends State<LocationPage> {
       totalPageCount: widget.totalPageCount,
       currentPageIndex: widget.currentPageIndex,
       onContinuePressed: () {
-        widget.onContinue(_selectedPlace);
+        if (_selectedPlace == null) widget.onContinue(_selectedPlace);
       },
       child: _userLocation != null
           ? Column(
               children: [
                 InkWell(
-                  child: _selectedPlace != null
+                  child: _selectedLocation != null
                       ? ListTile(
                           leading: Icon(
                             Icons.location_on,
@@ -78,10 +93,10 @@ class _LocationPageState extends State<LocationPage> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                '${_selectedPlace.terms[0].value} ${_selectedPlace.terms[1].value}',
+                                '${_selectedLocation.name} ',
                                 style: theme.textTheme.headline5,
                               ),
-                              Text('${_selectedPlace.description}'),
+                              Text('${_selectedLocation.street}'),
                             ],
                           ),
                         )
@@ -94,6 +109,17 @@ class _LocationPageState extends State<LocationPage> {
                             while (!snapshot.hasData) {
                               return circularProgress();
                             }
+                            LocationModel newLocation = LocationModel(
+                              lat: _userLocation.latitude,
+                              long: _userLocation.longitude,
+                              name: snapshot.data[0].name,
+                              street: snapshot.data[0].street,
+                            );
+                            print(snapshot.data[0].administrativeArea);
+                            print(snapshot.data[0].country);
+                            print(snapshot.data[0].subAdministrativeArea);
+                            print(snapshot.data[0].name);
+                            _selectedLocation = newLocation;
                             return ListTile(
                               leading: Icon(
                                 Icons.location_on,
@@ -107,7 +133,7 @@ class _LocationPageState extends State<LocationPage> {
                                     style: theme.textTheme.headline5,
                                   ),
                                   Text(
-                                    '${snapshot.data[0].street}, ${snapshot.data[0].subAdministrativeArea}',
+                                    '${snapshot.data[0].street}',
                                   ),
                                 ],
                               ),
@@ -121,8 +147,25 @@ class _LocationPageState extends State<LocationPage> {
                         isScrollControlled: true,
                         builder: (context) {
                           return LocationSelectorSheet(
-                            onSelected: (location) {
-                              _selectedPlace = location;
+                            onSelected: (location) async {
+                              locations = await locationFromAddress(
+                                  location.description);
+                              List<Placemark> placeMark =
+                                  await placemarkFromCoordinates(
+                                locations[0].latitude,
+                                locations[0].longitude,
+                              );
+                              LocationModel newLocation = LocationModel(
+                                lat: locations[0].latitude,
+                                long: locations[0].longitude,
+                                fullAdress: location.description,
+                                name: isNumeric(location.terms[0].value)
+                                    ? location.terms[1].value
+                                    : location.terms[0].value,
+                                street: placeMark[0].street,
+                              );
+                              _selectedLocation = newLocation;
+                              setState(() {});
                             },
                           );
                         },

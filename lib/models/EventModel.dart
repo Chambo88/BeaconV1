@@ -49,13 +49,14 @@ class EventModel {
       endTime: DateTime.now(),
       startTime: DateTime.now(),
       locationName: "The White House",
-      fullAddress: "69 DeezNuts Ave",
+      fullAddress: "69 Deznuts Ave, Cashmere, Christchurch",
       genres: ['DnB', 'Bit of Kanye', 'House'],
       mainGenre: 'Dnb',
       usersAttending: [],
       lat: '0',
       long: '0',
-      desc: 'An event where your dreams come true \n \n you finally find the woman/man of your dreams, you go home finally happy.'
+      desc:
+      'An event where your dreams come true \n \n you finally find the woman/man of your dreams, you go home finally happy.'
           'You go out for breakfast the next day, the order is taking too long but your hangover doesnt get to you as you are lost in each others eyes talking about how much fun this gig was'
           'Things escalate, and 10 years later you have your first child'
           'You name him Raver because it\'s a sick name and fuck you Dad'

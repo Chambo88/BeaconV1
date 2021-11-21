@@ -66,7 +66,6 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
     _userService = Provider.of<UserService>(context);
     _userLocation = Provider.of<UserLocationModel>(context);
     switch (_stage) {
-
       case CasualBeaconCreatorStage.description:
         return DescriptionPage(
           hasTitleField: true,
@@ -90,9 +89,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
           currentPageIndex: 1,
           initEndDateTime: _beacon.endTime,
           initStartDateTime:
-              _beacon.startTime != null
-                  ? _beacon.startTime
-                  : null,
+              _beacon.startTime != null ? _beacon.startTime : null,
           onBackClick: (startTime, endTime) {
             setState(() {
               _beacon.startTime = startTime;
@@ -119,7 +116,9 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
             });
           },
           onClose: widget.onClose,
-          onContinue: (location) {
+          onContinue: (
+            locationName,
+          ) {
             setState(() {
               ///Todo need to return the location lat long and Name here
 
@@ -127,7 +126,8 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
               _beacon.lat = _userLocation.latitude.toString();
               _beacon.long = _userLocation.longitude.toString();
               _beacon.locationName = "53 Centaurus Road / Smash palace";
-              _beacon.fullAddress = "60 something st, Cashmere, 4801, Christchurch";
+              _beacon.fullAddress =
+                  "60 something st, Cashmere, 4801, Christchurch";
               _stage = CasualBeaconCreatorStage.whoCanSee;
             });
           },
@@ -136,7 +136,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
         return WhoCanSeePage(
           totalPageCount: 5,
           currentPageIndex: 3,
-          onBackClick: (inviteAll,groups, friendList) {
+          onBackClick: (inviteAll, groups, friendList) {
             setState(() {
               _friends = friendList;
               _groups = groups;
@@ -174,7 +174,8 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
           totalPageCount: 5,
           currentPageIndex: 4,
           initFriends: _friends,
-          initGroups: _displayToAll? _userService.currentUser.groups.toSet() : _groups,
+          initGroups:
+              _displayToAll ? _userService.currentUser.groups.toSet() : _groups,
           initNotifyAll: _notifyAll,
           initNotifyFriends: _notifyFriends,
           fullList: _userService.currentUser.friendModels,
@@ -195,17 +196,21 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
               _beacon.userId = currentUser.id;
               _beacon.peopleGoing = [currentUser.id];
               _notificationService.sendNotification(
-                  users, _userService.currentUser, 'venueBeaconInvite',
+                users,
+                _userService.currentUser,
+                'venueBeaconInvite',
                 beaconTitle: _beacon.eventName,
                 beaconDesc: _beacon.desc,
                 beaconId: _beacon.id,
                 customId: _beacon.id,
               );
-              _notificationService.sendPushNotification(users,
-                  currentUser,
-                  title: "${currentUser.firstName} ${currentUser.lastName} has invited you to ${_beacon.eventName}",
-                  body: "${_beacon.desc}",
-                  type: "venueBeaconInvite",
+              _notificationService.sendPushNotification(
+                users,
+                currentUser,
+                title:
+                    "${currentUser.firstName} ${currentUser.lastName} has invited you to ${_beacon.eventName}",
+                body: "${_beacon.desc}",
+                type: "venueBeaconInvite",
               );
               widget.onCreated(_beacon);
             });
