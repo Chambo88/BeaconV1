@@ -1,19 +1,16 @@
-import 'dart:io';
-
 import 'package:beacon/models/LocationModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/widgets/beacon_sheets/LocationSelectorSheet.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:google_place/google_place.dart' as GooglePlace;
 import 'package:provider/provider.dart';
 import 'CreatorPage.dart';
 
-typedef void LocationCallback(GooglePlace.AutocompletePrediction location);
+typedef void LocationCallback(dynamic location);
 
 class LocationPage extends StatefulWidget {
-  final VoidCallback onBackClick;
+  final LocationCallback onBackClick;
   final VoidCallback onClose;
   final LocationCallback onContinue;
   final String continueText;
@@ -36,7 +33,6 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
-  GooglePlace.AutocompletePrediction _selectedPlace;
   List<Location> locations = [];
   UserLocationModel _userLocation;
   LocationModel _selectedLocation;
@@ -58,26 +54,18 @@ class _LocationPageState extends State<LocationPage> {
 
   @override
   Widget build(BuildContext context) {
-    _userLocation = Provider.of<UserLocationModel>(context);
-    // _configService = Provider.of<RemoteConfigService>(context);
+    _userLocation = Provider.of<UserLocationModel>(context, listen: false);
     var theme = Theme.of(context);
-
-    // String apiKey;
-    // if (Platform.isAndroid) {
-    //   apiKey = _configService.remoteConfig.getString('androidGoogleMapsKey');
-    // } else if (Platform.isIOS) {
-    //   apiKey = _configService.remoteConfig.getString('iOSGoogleMapsKey');
-    // }
 
     return CreatorPage(
       title: 'Place',
       onClose: widget.onClose,
-      onBackClick: widget.onBackClick,
+      onBackClick: () => widget.onBackClick(_selectedLocation),
       continueText: widget.continueText,
       totalPageCount: widget.totalPageCount,
       currentPageIndex: widget.currentPageIndex,
       onContinuePressed: () {
-        if (_selectedPlace == null) widget.onContinue(_selectedPlace);
+        if (_selectedLocation != null) widget.onContinue(_selectedLocation);
       },
       child: _userLocation != null
           ? Column(
@@ -110,15 +98,17 @@ class _LocationPageState extends State<LocationPage> {
                               return circularProgress();
                             }
                             LocationModel newLocation = LocationModel(
-                              lat: _userLocation.latitude,
-                              long: _userLocation.longitude,
-                              name: snapshot.data[0].name,
-                              street: snapshot.data[0].street,
-                            );
-                            print(snapshot.data[0].administrativeArea);
-                            print(snapshot.data[0].country);
-                            print(snapshot.data[0].subAdministrativeArea);
-                            print(snapshot.data[0].name);
+                                lat: _userLocation.latitude,
+                                long: _userLocation.longitude,
+                                name: snapshot.data[0].street,
+                                street: snapshot.data[0].street,
+                                fullAdress: snapshot.data[0].street +
+                                    ", " +
+                                    snapshot.data[0].subLocality +
+                                    ", " +
+                                    snapshot.data[0].locality +
+                                    ", " +
+                                    snapshot.data[0].country);
                             _selectedLocation = newLocation;
                             return ListTile(
                               leading: Icon(

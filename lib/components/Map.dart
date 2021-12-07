@@ -1,17 +1,12 @@
-import 'dart:async';
-import 'dart:io';
-
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/CameraLocationService.dart';
-import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/mapTheme.dart';
 import 'package:beacon/widgets/beacon_sheets/CasualBeaconSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/LiveBeaconSheet.dart';
 import 'package:beacon/widgets/progress_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -36,10 +31,8 @@ class _MapState extends State<MapComponent> {
         final Marker marker = Marker(
             markerId: MarkerId(beacon.id),
             position: LatLng(
-              double.parse(beacon.lat),
-              double.parse(
-                beacon.long,
-              ),
+              beacon.lat,
+              beacon.long,
             ),
             icon: beaconIcon,
             onTap: () {
@@ -56,7 +49,7 @@ class _MapState extends State<MapComponent> {
               );
             });
 
-        if(this.mounted) {
+        if (this.mounted) {
           setState(() {
             // adding a new marker to map
             _liveMarkers[MarkerId(beacon.id)] = marker;
@@ -100,10 +93,8 @@ class _MapState extends State<MapComponent> {
         final Marker marker = Marker(
             markerId: MarkerId(beacon.id),
             position: LatLng(
-              double.parse(beacon.lat),
-              double.parse(
-                beacon.long,
-              ),
+              beacon.location.lat,
+              beacon.location.long,
             ),
             icon: beaconIcon,
             onTap: () {

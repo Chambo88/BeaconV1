@@ -5,7 +5,6 @@ import 'package:beacon/components/beacon_creator/pages/LocationPage.dart';
 import 'package:beacon/components/beacon_creator/pages/TimePage.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/GroupModel.dart';
-import 'package:beacon/models/UserLocationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/NotificationService.dart';
 import 'package:beacon/services/UserService.dart';
@@ -45,9 +44,6 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
   CasualBeacon _beacon = CasualBeacon();
   CasualBeaconCreatorStage _stage = CasualBeaconCreatorStage.description;
 
-  ///TODO this is temporary until the location selected works, currently using current location
-  UserLocationModel _userLocation;
-
   /// Holding here as well as the beacon model in case the user goes back
   /// e.g (initGroup, initFriends)
   var _groups = Set<GroupModel>();
@@ -55,6 +51,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
   var _displayToAll = false;
   var _notifyFriends = Set<UserModel>();
   var _notifyAll = true;
+  var _selectedLocation;
 
   @override
   void dispose() {
@@ -64,7 +61,6 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
   @override
   Widget build(BuildContext context) {
     _userService = Provider.of<UserService>(context);
-    _userLocation = Provider.of<UserLocationModel>(context);
     switch (_stage) {
       case CasualBeaconCreatorStage.description:
         return DescriptionPage(
@@ -110,24 +106,24 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
         return LocationPage(
           totalPageCount: 5,
           currentPageIndex: 2,
-          onBackClick: () {
+          initLocation: _selectedLocation,
+          onBackClick: (selectedLoc) {
+            if (selectedLoc != null) {
+              _selectedLocation = selectedLoc;
+            }
             setState(() {
               _stage = CasualBeaconCreatorStage.time;
             });
           },
           onClose: widget.onClose,
           onContinue: (
-            locationName,
+            selectedLocation,
           ) {
             setState(() {
               ///Todo need to return the location lat long and Name here
 
               // _beacon.location = location.geometry;
-              _beacon.lat = _userLocation.latitude.toString();
-              _beacon.long = _userLocation.longitude.toString();
-              _beacon.locationName = "53 Centaurus Road / Smash palace";
-              _beacon.fullAddress =
-                  "60 something st, Cashmere, 4801, Christchurch";
+              _beacon.location = selectedLocation;
               _stage = CasualBeaconCreatorStage.whoCanSee;
             });
           },
@@ -158,11 +154,6 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
                 _displayToAll = displayToAll;
                 _groups = groups;
                 _friends = friendList;
-                // Set<String> allFriends = groupList
-                //     .map((GroupModel g) => g.members)
-                //     .expand((friend) => friend)
-                //     .toSet();
-                // allFriends.addAll(friendList);
                 _beacon.usersThatCanSee = friendList.toList();
               }
               _stage = CasualBeaconCreatorStage.invite;

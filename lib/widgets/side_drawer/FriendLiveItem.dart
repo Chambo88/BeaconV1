@@ -26,7 +26,7 @@ class FriendLiveItem extends StatelessWidget {
 
     UserModel user = userService.getAFriendModelFromId(beacon.userId);
 
-    if(beacon.userId == userService.currentUser.id) {
+    if (beacon.userId == userService.currentUser.id) {
       return Container();
     }
 
@@ -37,8 +37,8 @@ class FriendLiveItem extends StatelessWidget {
           cameraPosition: CameraPosition(
             zoom: 12,
             target: LatLng(
-              double.parse(beacon.lat),
-              double.parse(beacon.long),
+              beacon.lat,
+              beacon.long,
             ),
           ),
         );
@@ -89,21 +89,20 @@ class FriendLiveItem extends StatelessWidget {
                             style: theme.textTheme.bodyText1,
                           ),
                         ),
-                       Row(
-                         mainAxisAlignment: MainAxisAlignment.end,
-                         children: [
-                           Padding(
-                             padding: const EdgeInsets.only(top: 8),
-                             child: SummonButton(
-                               currentUser: userService.currentUser,
-                               friend: user,
-                               small: true,
-                             ),
-                           ),
-                         ],
-                       ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: SummonButton(
+                                currentUser: userService.currentUser,
+                                friend: user,
+                                small: true,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
-
                     ),
                   ),
                 ),
