@@ -4,12 +4,12 @@ import 'package:beacon/pages/Events/FriendsTab.dart';
 import 'package:beacon/pages/Events/GoingTab.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/beacon_sheets/ChangeCitySheet.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:beacon/util/theme.dart';
 
 class EventsPage extends StatefulWidget {
-
   const EventsPage();
 
   @override
@@ -17,19 +17,20 @@ class EventsPage extends StatefulWidget {
 }
 
 class _EventsPageState extends State<EventsPage> {
-
   FigmaColours _figmaColours;
   int currentIndex;
+  Future<QuerySnapshot> eventData;
 
   @override
   void initState() {
     _figmaColours = FigmaColours();
     currentIndex = 0;
+
     super.initState();
   }
 
   Widget getTitle(UserModel currentUser) {
-    if(currentIndex == 0) {
+    if (currentIndex == 0) {
       return Row(
         children: [
           TextButton(
@@ -41,18 +42,18 @@ class _EventsPageState extends State<EventsPage> {
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               text: TextSpan(
-                  text: (currentUser.city == '')? "Select a city" : "What's on in - ",
+                  text: (currentUser.city == '')
+                      ? "Select a city"
+                      : "What's on in - ",
                   style: Theme.of(context).textTheme.headline2,
                   children: [
                     TextSpan(
                       text: currentUser.city,
                       style: TextStyle(
-                          color: Color(_figmaColours.highlight),
-
+                        color: Color(_figmaColours.highlight),
                       ),
                     ),
-                  ]
-              ),
+                  ]),
             ),
             onPressed: () {
               showModalBottomSheet(
@@ -76,7 +77,8 @@ class _EventsPageState extends State<EventsPage> {
                   builder: (context) {
                     return ChangeCitySheet();
                   },
-                ).then((value) => setState(() {}));},
+                ).then((value) => setState(() {}));
+              },
               icon: Icon(Icons.arrow_drop_down))
         ],
       );
@@ -96,7 +98,7 @@ class _EventsPageState extends State<EventsPage> {
       initialIndex: 0,
       length: 3,
       child: Scaffold(
-        appBar:  AppBar(
+        appBar: AppBar(
           centerTitle: false,
           title: getTitle(currentUser),
           actions: [
@@ -110,9 +112,7 @@ class _EventsPageState extends State<EventsPage> {
                 child: IconButton(
                   icon: const Icon(Icons.search),
                   color: Color(_figmaColours.highlight),
-                  onPressed: () {
-
-                  },
+                  onPressed: () {},
                 ),
               ),
             ),
@@ -145,9 +145,7 @@ class _EventsPageState extends State<EventsPage> {
             GoingTab(),
           ],
         ),
-
       ),
-
-      );
+    );
   }
 }
