@@ -15,7 +15,7 @@ class SearchBar extends StatelessWidget {
     @required this.onChanged,
     @required this.width,
     this.hintText,
-    this.autofocus=false,
+    this.autofocus = false,
   });
 
   TextField searchBar() {
@@ -36,12 +36,11 @@ class SearchBar extends StatelessWidget {
           color: Color(figmaColours.greyLight),
           fontSize: 18.0,
         ),
-        fillColor: Color(figmaColours.greyMedium),
+        fillColor: Color(figmaColours.greyDark),
         filled: true,
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.white.withOpacity(0)),
           borderRadius: BorderRadius.circular(15),
-
         ),
         enabledBorder: UnderlineInputBorder(
           // borderSide: BorderSide(color: Colors.white),
@@ -60,7 +59,7 @@ class SearchBar extends StatelessWidget {
       ),
       onChanged: (value) {
         onChanged(value);
-        if(value == '') {
+        if (value == '') {
           controller.clear();
         }
       },

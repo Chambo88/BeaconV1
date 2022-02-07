@@ -2,6 +2,7 @@ import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/Events/EventsTab.dart';
 import 'package:beacon/pages/Events/FriendsTab.dart';
 import 'package:beacon/pages/Events/GoingTab.dart';
+import 'package:beacon/pages/Events/SearchPage.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/beacon_sheets/ChangeCitySheet.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,8 +11,8 @@ import 'package:provider/provider.dart';
 import 'package:beacon/util/theme.dart';
 
 class EventsPage extends StatefulWidget {
-  const EventsPage();
-
+  const EventsPage(this.context);
+  final BuildContext context;
   @override
   State<EventsPage> createState() => _EventsPageState();
 }
@@ -25,8 +26,16 @@ class _EventsPageState extends State<EventsPage> {
   void initState() {
     _figmaColours = FigmaColours();
     currentIndex = 0;
-
+    String city = widget.context.read<UserService>().currentUser.city;
+    eventData = getData(city);
     super.initState();
+  }
+
+  Future<QuerySnapshot> getData(String city) {
+    return FirebaseFirestore.instance
+        .collection('eventBeacons')
+        .where('city', isEqualTo: city)
+        .get();
   }
 
   Widget getTitle(UserModel currentUser) {
@@ -112,7 +121,11 @@ class _EventsPageState extends State<EventsPage> {
                 child: IconButton(
                   icon: const Icon(Icons.search),
                   color: Color(_figmaColours.highlight),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            SearchPage(eventData: eventData)));
+                  },
                 ),
               ),
             ),
@@ -140,7 +153,10 @@ class _EventsPageState extends State<EventsPage> {
         ),
         body: TabBarView(
           children: [
-            EventsTab(),
+            EventsTab(
+              city: currentUser.city,
+              eventData: eventData,
+            ),
             FriendsTab(),
             GoingTab(),
           ],

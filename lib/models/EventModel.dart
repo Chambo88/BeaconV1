@@ -1,5 +1,7 @@
 import 'dart:ffi';
 
+import 'package:beacon/models/UserModel.dart';
+
 class EventModel {
   String eventId;
   String hostId;
@@ -21,29 +23,30 @@ class EventModel {
   String imageUrl;
   String hostLogoUrl;
   String city;
+  List<UserModel> mutualFriends;
 
-  EventModel({
-    this.eventId,
-    this.hostId,
-    this.hostName,
-    this.startTime,
-    this.endTime,
-    this.eventName,
-    this.genres,
-    this.mainGenre,
-    this.usersAttending,
-    this.lat,
-    this.long,
-    this.desc,
-    this.price,
-    this.locationName,
-    this.fullAddress,
-    this.listenUrl,
-    this.imageUrl,
-    this.hostLogoUrl,
-    this.city,
-    this.startTimeMili,
-  });
+  EventModel(
+      {this.eventId,
+      this.hostId,
+      this.hostName,
+      this.startTime,
+      this.endTime,
+      this.eventName,
+      this.genres,
+      this.mainGenre,
+      this.usersAttending,
+      this.lat,
+      this.long,
+      this.desc,
+      this.price,
+      this.locationName,
+      this.fullAddress,
+      this.listenUrl,
+      this.imageUrl,
+      this.hostLogoUrl,
+      this.city,
+      this.startTimeMili,
+      this.mutualFriends});
 
   factory EventModel.dummy() {
     return EventModel(
@@ -73,6 +76,7 @@ class EventModel {
         price: 0,
         listenUrl: '',
         hostId: '',
+        mutualFriends: [],
         hostLogoUrl:
             'https://cdn.xxl.thumbs.canstockphoto.com/french-sailor-stock-photo_csp10455420.jpg',
         hostName: 'Strong Sailors',

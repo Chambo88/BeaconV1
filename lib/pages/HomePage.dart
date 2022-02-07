@@ -3,9 +3,7 @@ import 'package:beacon/pages/MapPage.dart';
 import 'package:beacon/pages/menu/MenuPage.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/NotificationIcon.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'Notifications/NotificationPage.dart';
 
@@ -16,21 +14,20 @@ class BuildHomePage extends StatefulWidget {
 
 class _BuildHomePageState extends State<BuildHomePage> {
   int _pageIndex = 0;
-  final pages = [
-    MapPage(),
-    EventsPage(),
-    NotificationPage(),
-    MenuPage(),
-  ];
 
   @override
   void initState() {
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      MapPage(),
+      EventsPage(context),
+      NotificationPage(),
+      MenuPage(),
+    ];
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -72,9 +69,7 @@ class _BuildHomePageState extends State<BuildHomePage> {
             BottomNavigationBarItem(
                 label: 'notification',
                 icon: NotificationIcon(active: false),
-                activeIcon: NotificationIcon(active: true)
-
-            ),
+                activeIcon: NotificationIcon(active: true)),
             BottomNavigationBarItem(
               label: 'settings',
               icon: Icon(
