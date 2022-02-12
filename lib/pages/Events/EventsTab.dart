@@ -26,6 +26,7 @@ class _EventsTabState extends State<EventsTab> {
   List<EventModel> eventModelsFiltered = [];
   List<EventModel> eventModelsAll = [];
   Future<QuerySnapshot> _eventData;
+  bool gotData = false;
 
   @override
   void initState() {
@@ -34,35 +35,6 @@ class _EventsTabState extends State<EventsTab> {
     _eventData = widget.eventData;
 
     super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: _eventData,
-        builder: (context, dataSnapshot) {
-          if (dataSnapshot.hasError) {
-            print(dataSnapshot.error);
-            return Text(dataSnapshot.error);
-          }
-
-          if (dataSnapshot.connectionState != ConnectionState.done) {
-            return circularProgress();
-          }
-
-          if (dataSnapshot.hasData) {
-            dataSnapshot.data.docs.forEach((document) {
-              EventModel event = EventModel.fromJson(document.data());
-              eventModelsAll.add(event);
-              eventModelsFiltered.add(event);
-            });
-
-            return _buildEventList();
-          }
-          return TextButton(
-              child: Text('bla'),
-              onPressed: () => print(EventModel.dummy().toString()));
-        });
   }
 
   Column _buildEventList() {
@@ -206,5 +178,37 @@ class _EventsTabState extends State<EventsTab> {
         ],
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: _eventData,
+        builder: (context, dataSnapshot) {
+          if (dataSnapshot.hasError) {
+            print(dataSnapshot.error);
+            return Text(dataSnapshot.error);
+          }
+
+          if (dataSnapshot.connectionState != ConnectionState.done) {
+            return circularProgress();
+          }
+
+          if (dataSnapshot.hasData) {
+            if (!gotData) {
+              dataSnapshot.data.docs.forEach((document) {
+                EventModel event = EventModel.fromJson(document.data());
+                eventModelsAll.add(event);
+                eventModelsFiltered.add(event);
+              });
+              gotData = true;
+            }
+
+            return _buildEventList();
+          }
+          return TextButton(
+              child: Text('bla'),
+              onPressed: () => print(EventModel.dummy().toString()));
+        });
   }
 }

@@ -38,58 +38,69 @@ class _EventsPageState extends State<EventsPage> {
         .get();
   }
 
+  //TODO sort list
+
   Widget getTitle(UserModel currentUser) {
     if (currentIndex == 0) {
-      return Row(
-        children: [
-          TextButton(
-            style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 4),
-                minimumSize: Size(50, 30),
-                alignment: Alignment.centerLeft),
-            child: RichText(
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              text: TextSpan(
-                  text: (currentUser.city == '')
-                      ? "Select a city"
-                      : "What's on in - ",
-                  style: Theme.of(context).textTheme.headline2,
+      return Container(
+        child: Row(
+          children: [
+            Expanded(
+              child: TextButton(
+                style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 4),
+                    minimumSize: Size(50, 30),
+                    alignment: Alignment.centerLeft),
+                child: Row(
                   children: [
-                    TextSpan(
-                      text: currentUser.city,
-                      style: TextStyle(
-                        color: Color(_figmaColours.highlight),
-                      ),
+                    Text(
+                      (currentUser.city == '')
+                          ? "Select a city"
+                          : "What's on in - ",
+                      style: Theme.of(context).textTheme.headline2,
                     ),
-                  ]),
-            ),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                backgroundColor: Colors.transparent,
-                isScrollControlled: true,
-                builder: (context) {
-                  return ChangeCitySheet();
+                    Flexible(
+                      child: Container(
+                        child: Text(
+                          currentUser.city,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: Color(_figmaColours.highlight),
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return ChangeCitySheet();
+                    },
+                  ).then((value) => setState(() {}));
                 },
-              ).then((value) => setState(() {}));
-            },
-          ),
-          IconButton(
-              padding: EdgeInsets.all(4),
-              constraints: BoxConstraints(),
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  isScrollControlled: true,
-                  builder: (context) {
-                    return ChangeCitySheet();
-                  },
-                ).then((value) => setState(() {}));
-              },
-              icon: Icon(Icons.arrow_drop_down))
-        ],
+              ),
+            ),
+            IconButton(
+                padding: EdgeInsets.all(4),
+                constraints: BoxConstraints(),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (context) {
+                      return ChangeCitySheet();
+                    },
+                  ).then((value) => setState(() {}));
+                },
+                icon: Icon(Icons.arrow_drop_down))
+          ],
+        ),
       );
     } else if (currentIndex == 1) {
       return Text("Friends beacons");
