@@ -1,4 +1,5 @@
 import 'package:beacon/models/EventModel.dart';
+import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/Dialogs/DateRangeDialog.dart';
@@ -10,7 +11,7 @@ import 'package:provider/provider.dart';
 
 class EventsTab extends StatefulWidget {
   final String city;
-  Future<QuerySnapshot> eventData;
+  final Future<QuerySnapshot> eventData;
 
   EventsTab({this.city, this.eventData});
 
@@ -18,8 +19,10 @@ class EventsTab extends StatefulWidget {
   State<EventsTab> createState() => _EventsTabState();
 }
 
+enum filterStates { mutual, top }
+
 class _EventsTabState extends State<EventsTab> {
-  String filterBy;
+  filterStates filterBy;
   DateTime filterStartDate;
   DateTime filterEndDate;
   FigmaColours figmaColours;
@@ -30,7 +33,7 @@ class _EventsTabState extends State<EventsTab> {
 
   @override
   void initState() {
-    filterBy = "Mutual";
+    filterBy = filterStates.mutual;
     figmaColours = FigmaColours();
     _eventData = widget.eventData;
 
@@ -38,25 +41,20 @@ class _EventsTabState extends State<EventsTab> {
   }
 
   Column _buildEventList() {
-    UserService userService = Provider.of<UserService>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         getChips(context),
-        SingleChildScrollView(
-          physics: ScrollPhysics(),
+        Expanded(
           child: ListView.builder(
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
             itemBuilder: (context, i) {
-              String mutualFriendCount = userService
-                  .getMutual(eventModelsFiltered[i].usersAttending)
-                  .length
-                  .toString();
               return EventTile(
                 key: ObjectKey(i),
                 event: eventModelsFiltered[i],
-                mutualFriendCount: mutualFriendCount,
+                mutualFriendCount:
+                    eventModelsFiltered[i].mutualFriends.length.toString(),
                 figmaColours: figmaColours,
               );
             },
@@ -65,6 +63,35 @@ class _EventsTabState extends State<EventsTab> {
         ),
       ],
     );
+  }
+
+  void filterList() {
+    print('ok');
+    List<EventModel> eventModelsTemp = [...eventModelsAll];
+
+    if (filterStartDate != null) {
+      if (filterEndDate != null) {
+        print('theyre hoth  nulol');
+        eventModelsTemp = eventModelsTemp
+            .where((event) => (event.startTime.isAfter(filterStartDate) &&
+                event.startTime.isBefore(filterEndDate)))
+            .toList();
+      } else {
+        print('start is not nul');
+        eventModelsTemp = eventModelsTemp
+            .where((event) => event.startTime.day == filterStartDate.day)
+            .toList();
+      }
+    }
+    if (filterBy == filterStates.mutual) {
+      print('we mutul');
+      eventModelsTemp.sort(
+          (a, b) => b.mutualFriends.length.compareTo(a.mutualFriends.length));
+    } else if (filterBy == filterStates.top) {
+      eventModelsTemp.sort(
+          (a, b) => b.usersAttending.length.compareTo(a.usersAttending.length));
+    }
+    eventModelsFiltered = eventModelsTemp;
   }
 
   Container getChips(BuildContext context) {
@@ -82,7 +109,7 @@ class _EventsTabState extends State<EventsTab> {
                 padding: const EdgeInsets.only(left: 6.0),
                 child: Icon(
                   Icons.people_outline_outlined,
-                  color: (filterBy == "Mutual")
+                  color: (filterBy == filterStates.mutual)
                       ? Color(figmaColours.highlight)
                       : Colors.white,
                 ),
@@ -90,13 +117,14 @@ class _EventsTabState extends State<EventsTab> {
               label: Text(
                 " Mutual ",
                 style: TextStyle(
-                    color: (filterBy == "Mutual")
+                    color: (filterBy == filterStates.mutual)
                         ? Color(figmaColours.highlight)
                         : Colors.white),
               ),
               onPressed: () {
                 setState(() {
-                  filterBy = "Mutual";
+                  filterBy = filterStates.mutual;
+                  filterList();
                 });
               },
               backgroundColor: Color(figmaColours.greyDark),
@@ -110,7 +138,7 @@ class _EventsTabState extends State<EventsTab> {
                 padding: const EdgeInsets.only(left: 6.0),
                 child: Icon(
                   Icons.arrow_upward_outlined,
-                  color: (filterBy == "Top")
+                  color: (filterBy == filterStates.top)
                       ? Color(figmaColours.highlight)
                       : Colors.white,
                 ),
@@ -118,13 +146,14 @@ class _EventsTabState extends State<EventsTab> {
               label: Text(
                 "Top ",
                 style: TextStyle(
-                    color: (filterBy == "Top")
+                    color: (filterBy == filterStates.top)
                         ? Color(figmaColours.highlight)
                         : Colors.white),
               ),
               onPressed: () {
                 setState(() {
-                  filterBy = "Top";
+                  filterBy = filterStates.top;
+                  filterList();
                 });
               },
               backgroundColor: Color(figmaColours.greyDark),
@@ -158,18 +187,20 @@ class _EventsTabState extends State<EventsTab> {
                         initEnd: filterEndDate,
                       );
                     }).then((args) {
-                  if (args != null) {
-                    filterStartDate = args.startDate;
-                    if (args.endDate != null) {
-                      filterEndDate = args.endDate;
+                  setState(() {
+                    if (args != null) {
+                      filterStartDate = args.startDate;
+                      if (args.endDate != null) {
+                        filterEndDate = args.endDate;
+                      } else {
+                        filterEndDate = null;
+                      }
                     } else {
+                      filterStartDate = null;
                       filterEndDate = null;
                     }
-                  } else {
-                    filterStartDate = null;
-                    filterEndDate = null;
-                  }
-                  setState(() {});
+                    filterList();
+                  });
                 });
               },
               backgroundColor: Color(figmaColours.greyDark),
@@ -182,6 +213,7 @@ class _EventsTabState extends State<EventsTab> {
 
   @override
   Widget build(BuildContext context) {
+    UserService userService = Provider.of<UserService>(context, listen: false);
     return FutureBuilder(
         future: _eventData,
         builder: (context, dataSnapshot) {
@@ -198,6 +230,9 @@ class _EventsTabState extends State<EventsTab> {
             if (!gotData) {
               dataSnapshot.data.docs.forEach((document) {
                 EventModel event = EventModel.fromJson(document.data());
+                List<UserModel> mutuals =
+                    userService.getMutual(event.usersAttending);
+                event.mutualFriends = mutuals;
                 eventModelsAll.add(event);
                 eventModelsFiltered.add(event);
               });
