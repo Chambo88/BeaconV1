@@ -123,12 +123,14 @@ class CasualBeaconSheet extends BeaconSheet {
   RichText getTextForPeopleGoing(
       String numPeopleGoing, ThemeData theme, String numFriendsGoing) {
     return RichText(
-        overflow: TextOverflow.ellipsis,
+      overflow: TextOverflow.ellipsis,
       text: TextSpan(children: [
         TextSpan(
           text: '$numPeopleGoing ',
           style: TextStyle(
-              fontWeight: FontWeight.bold, color: Color(figmaColours.highlight), fontSize: 18),
+              fontWeight: FontWeight.bold,
+              color: Color(figmaColours.highlight),
+              fontSize: 18),
         ),
         TextSpan(
             text: 'going',
@@ -232,12 +234,12 @@ class CasualBeaconSheet extends BeaconSheet {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _beacon.locationName,
+                  _beacon.location.name,
                   style: theme.textTheme.headline4,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text(_beacon.address,
+                  child: Text(_beacon.location.fullAdress,
                       style: TextStyle(
                         color: Color(figmaColours.greyLight),
                         fontSize: 16,
@@ -325,12 +327,11 @@ class Header extends StatelessWidget {
                     children: [
                       Text(
                         '${DateFormat('E, MMM d').format(_beacon.startTime)}, ${DateFormat('Hm').format(_beacon.startTime)} - '
-                            '${DateFormat('Hm').format(_beacon.endTime)}',
+                        '${DateFormat('Hm').format(_beacon.endTime)}',
                         style: TextStyle(
-                          color: Color(figmaColours.highlight),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18
-                        ),
+                            color: Color(figmaColours.highlight),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18),
                       ),
                     ],
                   ),

@@ -32,9 +32,6 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
   UserService _userService;
   LiveBeacon _beacon = LiveBeacon(active: true);
   LiveBeaconCreatorStage _stage = LiveBeaconCreatorStage.description;
-  UserLocationService _locationService;
-
-  ///TODO this is temporary until the location selected works, currently using current location
   UserLocationModel _userLocation;
 
   // Holding here as well as the beacon model in case the user goes back
@@ -54,15 +51,14 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
     _userService = Provider.of<UserService>(context);
 
     ///Temp use current location for live beacon
-    _userLocation = Provider.of<UserLocationModel>(context);
-
+    _userLocation = Provider.of<UserLocationModel>(context, listen: false);
 
     switch (_stage) {
       case LiveBeaconCreatorStage.invite:
         return WhoCanSeePage(
           totalPageCount: 2,
           currentPageIndex: 1,
-          onBackClick:  (displayToAll, groups, friendList) {
+          onBackClick: (displayToAll, groups, friendList) {
             setState(() {
               _friends = friendList;
               _displayToAll = displayToAll;
@@ -76,8 +72,8 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
             setState(() {
               if (displayToAll) {
                 _beacon.usersThatCanSee = _userService.currentUser.friends;
-                _beacon.lat = _userLocation.latitude.toString();
-                _beacon.long = _userLocation.longitude.toString();
+                _beacon.lat = _userLocation.latitude;
+                _beacon.long = _userLocation.longitude;
                 _beacon.active = true;
                 _beacon.id = _userService.currentUser.id;
                 _beacon.userId = _userService.currentUser.id;
@@ -85,8 +81,8 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
               } else {
                 _friends = friendList;
                 _beacon.usersThatCanSee = friendList.toList();
-                _beacon.lat = _userLocation.latitude.toString();
-                _beacon.long = _userLocation.longitude.toString();
+                _beacon.lat = _userLocation.latitude;
+                _beacon.long = _userLocation.longitude;
                 _beacon.active = true;
                 _beacon.id = _userService.currentUser.id;
                 _beacon.userId = _userService.currentUser.id;
@@ -107,7 +103,6 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
             setState(() {
               _beacon.desc = desc;
               _stage = LiveBeaconCreatorStage.invite;
-
             });
           },
           continueText: 'Continue',

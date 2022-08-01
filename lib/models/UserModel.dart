@@ -13,12 +13,15 @@ class UserModel {
   String imageURL;
   List<String> sentFriendRequests;
   List<String> receivedFriendRequests;
+  List<String> hostsFollowed;
+  List<String> eventsAttending;
   NotificationSettingsModel notificationSettings;
   List<UserModel> friendModels;
   Set<String> tokens;
   List<CasualBeacon> casualBeacons;
   // List<String> beaconIds;
   List<String> beaconsAttending;
+  String city;
   bool liveBeaconActive;
   String liveBeaconDesc;
   Map<String, DateTime> recentlySummoned = {};
@@ -39,7 +42,10 @@ class UserModel {
       this.casualBeacons,
       this.beaconsAttending,
       this.liveBeaconActive,
-      this.liveBeaconDesc
+      this.liveBeaconDesc,
+      this.city,
+      this.hostsFollowed,
+      this.eventsAttending,
   });
 
   get getFirstName => firstName;
@@ -60,6 +66,9 @@ class UserModel {
         imageURL: '',
         casualBeacons: [],
         beaconsAttending: [],
+        hostsFollowed: [],
+        city: '',
+        eventsAttending: [],
         liveBeaconActive: false,
         liveBeaconDesc: '',
         notificationSettings: NotificationSettingsModel(
@@ -102,10 +111,13 @@ class UserModel {
       sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
       receivedFriendRequests: List.from(doc.data()["receivedFriendRequests"] ?? []),
       imageURL: doc.data()['imageURL'] ?? '',
+      hostsFollowed: List.from(doc.data()["hostsFollowed"] ?? []),
       // beaconIds: List.from(doc.data()['beaconIds']?? []),
+      city: doc.data()['city']?? '',
       beaconsAttending: List.from(doc.data()["beaconsAttending"]?? []),
       liveBeaconActive: doc.data()["liveBeaconActive"],
       liveBeaconDesc: doc.data()["liveBeaconDesc"],
+      eventsAttending: List.from(doc.data()["eventsAttending"]?? []),
       notificationSettings: NotificationSettingsModel(
         summons: doc.data()['notificationSummons'] ?? true,
         all: doc.data()['notificationAll'] ?? true,

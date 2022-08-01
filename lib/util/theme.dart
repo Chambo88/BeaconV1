@@ -1,7 +1,4 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class CustomTheme {
   static ThemeData get theme {
@@ -10,7 +7,7 @@ class CustomTheme {
 
       backgroundColor: Colors.black,
       primaryColorLight: Color(0xFF2A2929),
-      primaryColor: Color(0xFF111111),
+      primaryColor: Color(0xFF030303),
       primaryColorDark: Color(0xFF000000),
       accentColor: Color(0xFFAD00FF),
 
@@ -64,7 +61,7 @@ class CustomTheme {
           labelStyle: TextStyle(
             color: Colors.white,
           ),
-          fillColor: Color(0xFF111111),
+          fillColor: Color(0xFF030303),
           filled: true,
           border: InputBorder.none,
           focusedBorder: InputBorder.none,
@@ -83,10 +80,7 @@ class CustomTheme {
         headline1: TextStyle(
             color: Colors.white, fontSize: 24.0, fontWeight: FontWeight.bold),
         headline2: TextStyle(
-          color: Colors.white,
-          fontSize: 22.0,
-          fontWeight: FontWeight.bold
-        ),
+            color: Colors.white, fontSize: 22.0, fontWeight: FontWeight.bold),
         headline3: TextStyle(
           color: Colors.white,
           fontSize: 20.0,
@@ -134,25 +128,26 @@ class CustomTheme {
         ),
       ),
       sliderTheme: SliderThemeData(
-        thumbColor: Color(0xFFAD00FF),
-        activeTrackColor: Color(0xFFAD00FF),
-        inactiveTrackColor: Color(0xFF868A8C),
-        activeTickMarkColor: Colors.transparent,
-        inactiveTickMarkColor: Colors.transparent,
-        overlappingShapeStrokeColor: Colors.white,
-          overlayColor: Color(0x33AD00FF)
-      ),
+          thumbColor: Color(0xFFAD00FF),
+          activeTrackColor: Color(0xFFAD00FF),
+          inactiveTrackColor: Color(0xFF868A8C),
+          activeTickMarkColor: Colors.transparent,
+          inactiveTickMarkColor: Colors.transparent,
+          overlappingShapeStrokeColor: Colors.white,
+          overlayColor: Color(0x33AD00FF)),
       appBarTheme: AppBarTheme(
-          color: Colors.black,
+        color: Colors.black,
         centerTitle: true,
-        toolbarHeight: 50,
-        iconTheme: IconThemeData(
-          color: Color(0xFFAD00FF)
-        ),
+        iconTheme: IconThemeData(color: Color(0xFFAD00FF)),
+        toolbarTextStyle: TextStyle(
+            color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
         titleTextStyle: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-        ),
+            color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+        textTheme: TextTheme(
+            headline6: TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold)),
         // titleTextStyle: TextStyle(
         //   fontWeight: FontWeight.bold,
         // )
@@ -168,6 +163,6 @@ class FigmaColours {
 
   int greyLight = 0xFF868A8C;
   int greyMedium = 0xFF242424;
-  int greyDark = 0xFF111111;
+  int greyDark = 0xFF030303;
   int highlight = 0xFFAD00FF;
 }

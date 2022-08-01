@@ -79,6 +79,7 @@ class UserService {
       }
     }
 
+
     currentUser = UserModel(
         id: doc.id,
         email: doc.data()['email'],
@@ -89,10 +90,13 @@ class UserService {
         friendModels: _friendModels,
         tokens: _tokens,
         sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
+        eventsAttending: List.from(doc.data()["eventsAttending"] ?? []),
+        hostsFollowed: List.from(doc.data()["hostsFollowed"] ?? []),
         receivedFriendRequests:
             List.from(doc.data()["receivedFriendRequests"] ?? []),
         imageURL: doc.data()['imageURL'] ?? '',
         casualBeacons: casualBeacons,
+        city: doc.data()['city'] ?? '',
         beaconsAttending: List.from(doc.data()["beaconsAttending"] ?? []),
         liveBeaconActive: doc.data()['liveBeaconActive'] ?? false,
         liveBeaconDesc: doc.data()['liveBeaconDesc']?? '',
@@ -107,6 +111,12 @@ class UserService {
     return currentUser;
   }
 
+  setCity(String city) async {
+    currentUser.city = city;
+    _fireStoreDataBase.collection('users').doc(currentUser.id).update({'city' : city});
+  }
+
+
   summonUser(UserModel friend, {UserModel user}) {
     _notificationService.sendPushNotification([friend],
         currentUser,
@@ -116,6 +126,19 @@ class UserService {
         type: 'summon');
     _notificationService.sendNotification([friend], currentUser, 'summon');
   }
+
+  List<UserModel> getMutual(List<String> idList) {
+    List<UserModel> mutuals = [];
+    for(String id in idList) {
+      currentUser.friendModels.forEach((element) {
+        if(element.id == id) {
+          mutuals.add(element);
+        }
+      });
+    }
+    return mutuals;
+  }
+
 
   UserModel getAFriendModelFromId(String id, {UserModel user}) {
     for (UserModel friend in currentUser.friendModels) {
@@ -402,5 +425,45 @@ class UserService {
         .collection('notifications')
         .doc(currentUser.id)
         .delete();
+  }
+
+  changeFollowHost(String hostId) async {
+    if(currentUser.hostsFollowed.contains(hostId)) {
+      currentUser.hostsFollowed.remove(hostId);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .update({
+        'hostsFollowed': FieldValue.arrayRemove([hostId]),
+      });
+    } else {
+      currentUser.hostsFollowed.add(hostId);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .update({
+        'hostsFollowed': FieldValue.arrayUnion([hostId]),
+      });
+    }
+  }
+
+  changeEventAttending(String eventId) async {
+    if(currentUser.eventsAttending.contains(eventId)) {
+      currentUser.eventsAttending.remove(eventId);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .update({
+        'eventsAttending': FieldValue.arrayRemove([eventId]),
+      });
+    } else {
+      currentUser.eventsAttending.add(eventId);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .update({
+        'eventsAttending': FieldValue.arrayUnion([eventId]),
+      });
+    }
   }
 }

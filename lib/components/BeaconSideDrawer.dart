@@ -25,11 +25,7 @@ class BeaconSideDrawer extends StatelessWidget {
           initialIndex: 0,
           length: 2,
           child: Scaffold(
-            appBar: AppBar(
-              // title: Text("Today's Beacons"),
-              toolbarHeight: 0,
-              automaticallyImplyLeading: false,
-              bottom: TabBar(
+            appBar: TabBar(
                 labelColor: theme.accentColor,
                 unselectedLabelColor: Colors.white,
                 labelStyle: theme.textTheme.headline3,
@@ -42,7 +38,6 @@ class BeaconSideDrawer extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
             body: TabBarView(
               children: [
                 SingleChildScrollView(
