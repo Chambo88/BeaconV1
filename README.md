@@ -1,3 +1,5 @@
+**At this stage the project is frozen however as other side projects are taking priority and this code base was written rather poorly and is in dire need of a rewrite**
+
 # beacon
 
 I created this app in 2019 as a part of a startup during university. The apps goal was to find a way to streamline the hosting process for personal events, and create a GUI to see what was happening in the area and who else was in the area.
@@ -28,4 +30,3 @@ The last beacon is an 'Event beacon' that businesses could use to promote nightl
 
 There is a lot more planned for this app including new ways of messaging and group chats.
 
-**At this stage the project is frozen however as other side projects are taking priority and this code base was written rather poorly and is in dire need of a rewrite**
