@@ -1,28 +1,26 @@
 import 'package:beacon/util/theme.dart';
-import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:beacon/widgets/tiles/BeaconCreatorSubTitle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:intl/intl.dart'; //for date format
 import 'package:intl/date_symbol_data_local.dart'; //for date locale
 
 import 'CreatorPage.dart';
 
 typedef void TimeCallback(
-  DateTime startDateTime,
-  DateTime endDateTime,
+  DateTime? startDateTime,
+  DateTime? endDateTime,
 );
 
 class TimePage extends StatefulWidget {
-  final TimeCallback onBackClick;
-  final VoidCallback onClose;
-  final TimeCallback onContinue;
-  final String continueText;
-  final int totalPageCount;
-  final int currentPageIndex;
-  final DateTime initStartDateTime;
-  final DateTime initEndDateTime;
+  final TimeCallback? onBackClick;
+  final VoidCallback? onClose;
+  final TimeCallback? onContinue;
+  final String? continueText;
+  final int? totalPageCount;
+  final int? currentPageIndex;
+  final DateTime? initStartDateTime;
+  final DateTime? initEndDateTime;
 
   TimePage({
     @required this.onBackClick,
@@ -49,18 +47,18 @@ class _TimePageState extends State<TimePage> {
   void initState() {
     super.initState();
     if (widget.initStartDateTime != null) {
-      _startDateTime = widget.initStartDateTime;
+      _startDateTime = widget.initStartDateTime!;
     }
-    if(widget.initEndDateTime != null) {
-      _endDateTime = widget.initEndDateTime;
+    if (widget.initEndDateTime != null) {
+      _endDateTime = widget.initEndDateTime!;
     }
-    if(widget.initEndDateTime != null && widget.initStartDateTime != null) {
+    if (widget.initEndDateTime != null && widget.initStartDateTime != null) {
       _duration = _endDateTime.difference(_startDateTime).inHours.toDouble();
     }
   }
 
   Widget _date(BuildContext context,
-      {DateTime date, VoidCallback onTimeTap, VoidCallback onDateTap}) {
+      {DateTime? date, VoidCallback? onTimeTap, VoidCallback? onDateTap}) {
     initializeDateFormatting();
     String languageCode = Localizations.localeOf(context).languageCode;
     String format = 'd MMMM';
@@ -70,25 +68,23 @@ class _TimePageState extends State<TimePage> {
       // color: Colors.black,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14.0),
-        child: Row(
-          children: [
-            Text(
-              '${new DateFormat(format, languageCode).format(date)} ',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            Spacer(),
-            Text(
-                '${new DateFormat.jm(languageCode).format(date)} - '
-                    '${new DateFormat.jm(languageCode).format(_endDateTime)}',
-                style: Theme.of(context).textTheme.headline4,
-                // TextStyle(
-                //     fontSize: 16,
-                //     color: Theme.of(context).accentColor,
-                //     fontWeight: FontWeight.bold
-                // )
-            )
-          ]
-        ),
+        child: Row(children: [
+          Text(
+            '${new DateFormat(format, languageCode).format(date!)} ',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          Spacer(),
+          Text(
+            '${new DateFormat.jm(languageCode).format(date)} - '
+            '${new DateFormat.jm(languageCode).format(_endDateTime)}',
+            style: Theme.of(context).textTheme.headlineMedium,
+            // TextStyle(
+            //     fontSize: 16,
+            //     color: Theme.of(context).secondaryHeaderColor,
+            //     fontWeight: FontWeight.bold
+            // )
+          )
+        ]),
       ),
     );
   }
@@ -101,14 +97,14 @@ class _TimePageState extends State<TimePage> {
     return CreatorPage(
       title: 'Time',
       onClose: widget.onClose,
-      onBackClick: () => widget.onBackClick(
+      onBackClick: () => widget.onBackClick!(
         _startDateTime,
         _endDateTime,
       ),
       continueText: widget.continueText,
       totalPageCount: widget.totalPageCount,
       currentPageIndex: widget.currentPageIndex,
-      onContinuePressed: () => widget.onContinue(
+      onContinuePressed: () => widget.onContinue!(
         _startDateTime,
         _endDateTime,
       ),
@@ -127,15 +123,13 @@ class _TimePageState extends State<TimePage> {
             child: CupertinoTheme(
               data: CupertinoThemeData(
                 textTheme: CupertinoTextThemeData(
-                  dateTimePickerTextStyle: theme.textTheme.headline4
-                ),
+                    dateTimePickerTextStyle: theme.textTheme.headlineMedium),
               ),
               child: CupertinoDatePicker(
                 backgroundColor: Color(0xFF131313),
-                initialDateTime:
-                widget.initStartDateTime?? minDate,
+                initialDateTime: widget.initStartDateTime ?? minDate,
                 mode: CupertinoDatePickerMode.dateAndTime,
-                minimumDate: widget.initStartDateTime?? minDate,
+                minimumDate: widget.initStartDateTime ?? minDate,
                 maximumDate: DateTime(DateTime.now().year + 5, 2, 1),
                 use24hFormat: false,
                 onDateTimeChanged: (newStartDate) {

@@ -1,24 +1,17 @@
 import 'dart:async';
 
-import 'package:beacon/models/BeaconModel.dart';
-import 'package:beacon/models/GroupModel.dart';
-import 'package:beacon/models/UserModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-
-import 'UserService.dart';
 
 class AuthService {
-  final FirebaseAuth _firebaseAuth;
-  FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
+  final FirebaseAuth? _firebaseAuth;
   // UserModel currentUser;
 
   AuthService(this._firebaseAuth);
 
-  Stream<User> get authStateChanges => _firebaseAuth.authStateChanges();
+  Stream<User?> get authStateChanges => _firebaseAuth!.authStateChanges();
 
-  User get getUserId => _firebaseAuth.currentUser;
+  User get getUserId => _firebaseAuth!.currentUser!;
 
   // UserModel get getUser => currentUser;
 
@@ -26,7 +19,7 @@ class AuthService {
 
   Future signOut() async {
     try {
-      return await _firebaseAuth.signOut();
+      return await _firebaseAuth!.signOut();
     } catch (e) {
       print(e.toString());
       return null;
@@ -54,32 +47,33 @@ class AuthService {
     return caseSearchList;
   }
 
-  Future<String> signIn({String email, String password}) async {
+  Future<String> signIn({String? email, String? password}) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
+      await _firebaseAuth!
+          .signInWithEmailAndPassword(email: email!, password: password!);
       return "";
     } on FirebaseAuthException catch (e) {
-      return e.message;
+      return e.message!;
     }
   }
 
   Future<String> signUp(
-      {String firstName,
-      String lastName,
-      String email,
-      String password}) async {
+      {required String firstName,
+      required String lastName,
+      required String email,
+      required String password}) async {
     try {
-      UserCredential userCred = await _firebaseAuth
+      // Jordan is cool
+      UserCredential userCred = await _firebaseAuth!
           .createUserWithEmailAndPassword(email: email, password: password);
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(userCred.user.uid)
+          .doc(userCred.user!.uid)
           .set({
         'firstName': firstName,
         'lastName': lastName,
         'email': email,
-        'userId': userCred.user.uid.toString(),
+        'userId': userCred.user!.uid.toString(),
         'nameSearch': setSearchParam(firstName, lastName),
         'sentFriendRequests': [],
         'receivedFriendRequests': [],
@@ -89,7 +83,7 @@ class AuthService {
 
       return "";
     } on FirebaseAuthException catch (e) {
-      return e.message;
+      return e.message!;
     }
   }
 }

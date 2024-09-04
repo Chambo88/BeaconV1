@@ -1,14 +1,12 @@
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/widgets/SearchBar.dart';
+import 'package:beacon/widgets/BeaconSearchBar.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:beacon/widgets/tiles/userTileAddable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-
 class ViewFriendsFriendsPage extends StatefulWidget {
-
-  UserModel friend;
+  UserModel? friend;
   ViewFriendsFriendsPage({@required this.friend});
 
   @override
@@ -16,20 +14,19 @@ class ViewFriendsFriendsPage extends StatefulWidget {
 }
 
 class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
-
-  TextEditingController searchTextEditingController;
+  TextEditingController? searchTextEditingController;
   List<String> userNames = [];
   List<UserModel> userModelsResult = [];
   List<UserResultAddable> userResultsTiles = [];
-  List<Future<QuerySnapshot>> friendsFromFB;
-  bool firstTime;
+  List<Future<QuerySnapshot>>? friendsFromFB;
+  bool? firstTime;
 
   @override
   void initState() {
     searchTextEditingController = TextEditingController();
     firstTime = true;
-    if (widget.friend.friends.isNotEmpty) {
-      friendsFromFB = getSnapshots(widget.friend.friends);
+    if (widget.friend!.friends!.isNotEmpty) {
+      friendsFromFB = getSnapshots(widget.friend!.friends!);
     }
     super.initState();
   }
@@ -37,7 +34,8 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
   List<Future<QuerySnapshot>> getSnapshots(List<String> attendiesIds) {
     var chunks = [];
     for (var i = 0; i < attendiesIds.length; i += 10) {
-      chunks.add(attendiesIds.sublist(i, i + 10 > attendiesIds.length ? attendiesIds.length : i + 10));
+      chunks.add(attendiesIds.sublist(
+          i, i + 10 > attendiesIds.length ? attendiesIds.length : i + 10));
     } //break a list of whatever size into chunks of 10. cos of firebase limit
 
     List<Future<QuerySnapshot>> combine = [];
@@ -48,12 +46,12 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
           .get();
       combine.add(result);
     }
-    return combine;//get a list of the Future, which will have 10 each.
+    return combine; //get a list of the Future, which will have 10 each.
   }
 
   @override
   void dispose() {
-    searchTextEditingController.dispose();
+    searchTextEditingController!.dispose();
     super.dispose();
   }
 
@@ -62,31 +60,33 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
     List<UserResultAddable> userResultsTilesTemp = [];
     query = query.toLowerCase().replaceAll(' ', '');
     for (UserModel user in userModelsResult) {
-      if ((user.firstName.toLowerCase() + user.lastName.toLowerCase() ).startsWith(query) ||
-          user.lastName.toLowerCase().startsWith(query)) {
-        UserResultAddable userResult = UserResultAddable(anotherUser: user,);
+      if ((user.firstName!.toLowerCase() + user.lastName!.toLowerCase())
+              .startsWith(query) ||
+          user.lastName!.toLowerCase().startsWith(query)) {
+        UserResultAddable userResult = UserResultAddable(
+          anotherUser: user,
+        );
         userResultsTilesTemp.add(userResult);
       }
     }
     userResultsTiles = userResultsTilesTemp;
     setState(() {});
-
   }
-
 
   FutureBuilder displayFriends() {
     return FutureBuilder(
-        future: Future.wait(friendsFromFB),
+        future: Future.wait(friendsFromFB!),
         builder: (context, dataSnapshot) {
           while (!dataSnapshot.hasData) {
             return circularProgress();
           }
 
-          if(firstTime == true) {
+          if (firstTime == true) {
             dataSnapshot.data.forEach((document) {
               UserModel user = UserModel.fromDocument(document);
               userModelsResult.add(user);
-              UserResultAddable userResult = UserResultAddable(anotherUser: user);
+              UserResultAddable userResult =
+                  UserResultAddable(anotherUser: user);
               userResultsTiles.add(userResult);
             });
           }
@@ -98,13 +98,11 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
             shrinkWrap: true,
             children: userResultsTiles,
           );
-
-        }
-    );
+        });
   }
 
   Widget doesUserHaveFriendsLol() {
-    if (widget.friend.friends.isNotEmpty) {
+    if (widget.friend!.friends!.isNotEmpty) {
       return displayFriends();
     } else {
       return Container();
@@ -113,22 +111,21 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-        leading :IconButton(
+        leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text("${widget.friend.firstName}'s Friends"),
+        title: Text("${widget.friend!.firstName}'s Friends"),
       ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
-            child: SearchBar(
+            child: BeaconSearchBar(
               controller: searchTextEditingController,
               onChanged: filterSearchResults,
               width: MediaQuery.of(context).size.width,
@@ -140,8 +137,3 @@ class _ViewFriendsFriendsPageState extends State<ViewFriendsFriendsPage> {
     );
   }
 }
-
-
-
-
-

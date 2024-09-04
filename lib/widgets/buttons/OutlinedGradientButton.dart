@@ -1,26 +1,25 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class OutlinedGradientButton extends StatelessWidget {
-  final _GradientPainter _painter;
-  final Widget _child;
-  final VoidCallback _callback;
-  final double _radius;
-  final IconData _icon;
-  final double _iconSize;
+  final _GradientPainter? _painter;
+  final Widget? _child;
+  final VoidCallback? _callback;
+  final double? _radius;
+  final IconData? _icon;
+  final double? _iconSize;
 
   OutlinedGradientButton({
-    @required double strokeWidth,
-    @required double radius,
-    @required Gradient gradient,
-    @required Widget child,
-    @required VoidCallback onPressed,
-    IconData icon,
-    double iconSize,
+    @required double? strokeWidth,
+    @required double? radius,
+    @required Gradient? gradient,
+    @required Widget? child,
+    @required VoidCallback? onPressed,
+    IconData? icon,
+    double? iconSize,
   })  : this._painter = _GradientPainter(
-          strokeWidth: strokeWidth,
-          radius: radius,
-          gradient: gradient,
+          strokeWidth: strokeWidth!,
+          radius: radius!,
+          gradient: gradient!,
         ),
         this._child = child,
         this._callback = onPressed,
@@ -42,7 +41,7 @@ class OutlinedGradientButton extends StatelessWidget {
         ),
       );
     }
-    builder.add(_child);
+    builder.add(_child!);
     return builder;
   }
 
@@ -54,7 +53,7 @@ class OutlinedGradientButton extends StatelessWidget {
         behavior: HitTestBehavior.translucent,
         onTap: _callback,
         child: InkWell(
-          borderRadius: BorderRadius.circular(_radius),
+          borderRadius: BorderRadius.circular(_radius!),
           onTap: _callback,
           child: Container(
             constraints: BoxConstraints(minWidth: 88, minHeight: 48),
@@ -72,14 +71,14 @@ class OutlinedGradientButton extends StatelessWidget {
 
 class _GradientPainter extends CustomPainter {
   final Paint _paint = Paint();
-  final double radius;
-  final double strokeWidth;
-  final Gradient gradient;
+  final double? radius;
+  final double? strokeWidth;
+  final Gradient? gradient;
 
   _GradientPainter({
-    @required double strokeWidth,
-    @required double radius,
-    @required Gradient gradient,
+    @required double? strokeWidth,
+    @required double? radius,
+    @required Gradient? gradient,
   })  : this.strokeWidth = strokeWidth,
         this.radius = radius,
         this.gradient = gradient;
@@ -89,16 +88,16 @@ class _GradientPainter extends CustomPainter {
     // create outer rectangle equals size
     Rect outerRect = Offset.zero & size;
     var outerRRect =
-        RRect.fromRectAndRadius(outerRect, Radius.circular(radius));
+        RRect.fromRectAndRadius(outerRect, Radius.circular(radius!));
 
     // create inner rectangle smaller by strokeWidth
-    Rect innerRect = Rect.fromLTWH(strokeWidth, strokeWidth,
-        size.width - strokeWidth * 2, size.height - strokeWidth * 2);
+    Rect innerRect = Rect.fromLTWH(strokeWidth!, strokeWidth!,
+        size.width - strokeWidth! * 2, size.height - strokeWidth! * 2);
     var innerRRect = RRect.fromRectAndRadius(
-        innerRect, Radius.circular(radius - strokeWidth));
+        innerRect, Radius.circular(radius! - strokeWidth!));
 
     // apply gradient shader
-    _paint.shader = gradient.createShader(outerRect);
+    _paint.shader = gradient!.createShader(outerRect);
 
     // create difference between outer and inner paths and draw it
     Path path1 = Path()..addRRect(outerRRect);

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/menu/friends/ViewFriendsFriendsPage.dart';
 import 'package:beacon/services/NotificationService.dart';
@@ -13,8 +12,8 @@ import '../BeaconBottomSheet.dart';
 typedef void removeUser(UserModel user);
 
 class FriendSettingsSheet extends StatelessWidget {
-  UserModel user;
-  final removeUser onRemoved;
+  UserModel? user;
+  final removeUser? onRemoved;
 
   FigmaColours figmaColours = FigmaColours();
   FriendSettingsSheet({@required this.user, @required this.onRemoved});
@@ -25,24 +24,8 @@ class FriendSettingsSheet extends StatelessWidget {
         builder: (BuildContext) {
           return TwoButtonDialog(
             title: "Unfriend",
-              bodyText: "Are you sure you want to remove ${user.firstName} ${user.lastName}?",
-              onPressedGrey: () => Navigator.pop(context, false),
-              onPressedHighlight: () => Navigator.pop(context, true),
-            buttonGreyText: "No",
-            buttonHighlightText: "Yes",
-          );
-        });
-  }
-
-  Future<dynamic> notificationDialog(BuildContext context, bool enabled) {
-    String ya = (enabled == true)? "enable" : "disable";
-    String yaya = (enabled == true)? "Enable" : "Disable";
-    return showDialog(
-        context: context,
-        builder: (BuildContext) {
-          return TwoButtonDialog(
-            title: "${yaya} notifications",
-            bodyText: "Are you sure you want to " + ya + " notifications from ${user.firstName} ${user.lastName}?",
+            bodyText:
+                "Are you sure you want to remove ${user!.firstName} ${user!.lastName}?",
             onPressedGrey: () => Navigator.pop(context, false),
             onPressedHighlight: () => Navigator.pop(context, true),
             buttonGreyText: "No",
@@ -51,18 +34,45 @@ class FriendSettingsSheet extends StatelessWidget {
         });
   }
 
-  Text getNotifStatusText(UserModel user, UserModel currentUser, ThemeData theme, bool enable) {
-    if(enable == true) {
-      return Text("Enable notifications from ${user.firstName} ${user.lastName}", style: theme.textTheme.headline4,);
+  Future<dynamic> notificationDialog(BuildContext context, bool enabled) {
+    String ya = (enabled == true) ? "enable" : "disable";
+    String yaya = (enabled == true) ? "Enable" : "Disable";
+    return showDialog(
+        context: context,
+        builder: (BuildContext) {
+          return TwoButtonDialog(
+            title: "${yaya} notifications",
+            bodyText: "Are you sure you want to " +
+                ya +
+                " notifications from ${user!.firstName} ${user!.lastName}?",
+            onPressedGrey: () => Navigator.pop(context, false),
+            onPressedHighlight: () => Navigator.pop(context, true),
+            buttonGreyText: "No",
+            buttonHighlightText: "Yes",
+          );
+        });
+  }
+
+  Text getNotifStatusText(
+      UserModel user, UserModel currentUser, ThemeData theme, bool enable) {
+    if (enable == true) {
+      return Text(
+        "Enable notifications from ${user.firstName} ${user.lastName}",
+        style: theme.textTheme.headlineMedium,
+      );
     }
-    return Text("Disable notifications from ${user.firstName} ${user.lastName}", style: theme.textTheme.headline4,);
+    return Text(
+      "Disable notifications from ${user.firstName} ${user.lastName}",
+      style: theme.textTheme.headlineMedium,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     UserService userService = context.read<UserService>();
     NotificationService notService = NotificationService();
-    bool enable = userService.currentUser.notificationSettings.blocked.contains(user.id);
+    bool enable = userService
+        .currentUser!.notificationSettings!.blocked!.contains(user!.id!);
     final theme = Theme.of(context);
     return Wrap(children: [
       Container(
@@ -86,14 +96,15 @@ class FriendSettingsSheet extends StatelessWidget {
                     size: 34,
                   ),
                   title: Text(
-                    "See ${user.firstName} ${user.lastName}'s friends ",
-                    style: theme.textTheme.headline4,
+                    "See ${user!.firstName} ${user!.lastName}'s friends ",
+                    style: theme.textTheme.headlineMedium,
                   ),
-                  onTap: () async{
+                  onTap: () async {
                     Navigator.pop(context);
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => ViewFriendsFriendsPage(friend: user,)));
-
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => ViewFriendsFriendsPage(
+                              friend: user!,
+                            )));
                   },
                 ),
                 ListTile(
@@ -102,16 +113,17 @@ class FriendSettingsSheet extends StatelessWidget {
                     color: Color(figmaColours.greyLight),
                     size: 34,
                   ),
-                  title: getNotifStatusText(user, userService.currentUser, theme, enable),
+                  title: getNotifStatusText(
+                      user!, userService.currentUser!, theme, enable),
                   onTap: () {
                     notificationDialog(context, enable).then((value) {
                       if (value == true) {
-                        notService.changeBlockNotificationStatus(user: userService.currentUser, otherUser: user);
+                        notService.changeBlockNotificationStatus(
+                            user: userService.currentUser, otherUser: user!);
                         Navigator.pop(context);
                       }
                     });
                   },
-
                 ),
                 ListTile(
                   leading: Icon(
@@ -120,18 +132,17 @@ class FriendSettingsSheet extends StatelessWidget {
                     size: 34,
                   ),
                   onTap: () {
-                    deleteFriendDialog(context).
-                    then((value) {
+                    deleteFriendDialog(context).then((value) {
                       if (value == true) {
-                        userService.removeFriend(user);
-                        onRemoved(user);
+                        userService.removeFriend(user!);
+                        onRemoved!(user!);
                         Navigator.pop(context);
                       }
                     });
                   },
                   title: Text(
-                    "Unfriend ${user.firstName} ${user.lastName}",
-                    style: theme.textTheme.headline4,
+                    "Unfriend ${user!.firstName} ${user!.lastName}",
+                    style: theme.textTheme.headlineMedium,
                   ),
                 )
               ],

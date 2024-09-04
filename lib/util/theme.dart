@@ -5,11 +5,11 @@ class CustomTheme {
     return ThemeData(
       // basic colors
 
-      backgroundColor: Colors.black,
+      scaffoldBackgroundColor: Colors.black,
       primaryColorLight: Color(0xFF2A2929),
       primaryColor: Color(0xFF030303),
       primaryColorDark: Color(0xFF000000),
-      accentColor: Color(0xFFAD00FF),
+      secondaryHeaderColor: Color(0xFFAD00FF),
 
       //More basic colours from FIGMA
 
@@ -18,13 +18,13 @@ class CustomTheme {
       ),
 
       switchTheme: SwitchThemeData(
-          trackColor: MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.selected)) {
+          trackColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
               return Color(0xFFAD00FF);
             }
             return Color(0xFF323232);
           }),
-          thumbColor: MaterialStateProperty.all(Colors.white)),
+          thumbColor: WidgetStateProperty.all(Colors.white)),
 
       // buttons
       buttonTheme: ButtonThemeData(
@@ -32,19 +32,19 @@ class CustomTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          primary: Color(0xFFAD00FF),
+          foregroundColor: Color(0xFFAD00FF),
           backgroundColor: Color(0xFFFF6648),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
           style: ButtonStyle(
-        foregroundColor: MaterialStateProperty.resolveWith((states) {
-          return (states.contains(MaterialState.disabled))
+        foregroundColor: WidgetStateProperty.resolveWith((states) {
+          return (states.contains(WidgetState.disabled))
               ? Color(0xFF868A8C)
               : Color(0xFFAD00FF);
         }),
-        textStyle: MaterialStateProperty.resolveWith((states) {
-          return (states.contains(MaterialState.disabled))
+        textStyle: WidgetStateProperty.resolveWith((states) {
+          return (states.contains(WidgetState.disabled))
               ? TextStyle(
                   color: Color(0xFF868A8C),
                   fontSize: 16,
@@ -77,40 +77,40 @@ class CustomTheme {
       // text
       textTheme: TextTheme(
         //used in AppBar
-        headline1: TextStyle(
+        displayLarge: TextStyle(
             color: Colors.white, fontSize: 24.0, fontWeight: FontWeight.bold),
-        headline2: TextStyle(
+        displayMedium: TextStyle(
             color: Colors.white, fontSize: 22.0, fontWeight: FontWeight.bold),
-        headline3: TextStyle(
+        displaySmall: TextStyle(
           color: Colors.white,
           fontSize: 20.0,
         ),
-        headline4: TextStyle(
+        headlineMedium: TextStyle(
           color: Colors.white,
           fontSize: 18.0,
         ),
-        headline5: TextStyle(
+        headlineSmall: TextStyle(
           color: Colors.white,
           fontSize: 16.0,
         ),
-        headline6: TextStyle(
+        titleLarge: TextStyle(
           color: Colors.white,
           fontSize: 14.0,
         ),
-        bodyText1: TextStyle(
+        bodyLarge: TextStyle(
           color: Color(0xFF868A8C),
           fontSize: 16.0,
         ),
-        bodyText2: TextStyle(
+        bodyMedium: TextStyle(
           color: Color(0xFF868A8C),
-          fontSize: 18.0,
+          fontSize: 14.0,
         ),
-        caption: TextStyle(
+        labelLarge: TextStyle(
           color: Color(0xFFAD00FF),
           fontSize: 14.0,
         ),
         //THIS ONES THE LITTLE TEXt ABOVE OPTIONS IN MENUS ETC
-        subtitle1: TextStyle(
+        titleMedium: TextStyle(
           color: Color(0xFF868A8C),
           fontSize: 16.0,
         ),
@@ -143,17 +143,8 @@ class CustomTheme {
             color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
         titleTextStyle: TextStyle(
             color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-        textTheme: TextTheme(
-            headline6: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.bold)),
-        // titleTextStyle: TextStyle(
-        //   fontWeight: FontWeight.bold,
-        // )
       ),
       textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.white),
-      scaffoldBackgroundColor: Colors.black,
     );
   }
 }

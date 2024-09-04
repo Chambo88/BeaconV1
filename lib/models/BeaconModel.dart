@@ -2,12 +2,12 @@ import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/models/LocationModel.dart';
 
 abstract class BeaconModel {
-  String id;
-  String userId;
-  String userName;
-  BeaconType type;
-  List<String> usersThatCanSee;
-  String desc;
+  String? id;
+  String? userId;
+  String? userName;
+  BeaconType? type;
+  List<String>? usersThatCanSee;
+  String? desc;
 
   BeaconModel(
       {this.id,
@@ -30,9 +30,9 @@ abstract class BeaconModel {
 }
 
 class LiveBeacon extends BeaconModel {
-  bool active;
-  double lat;
-  double long;
+  bool? active;
+  double? lat;
+  double? long;
 
   extinguish() {
     this.active = false;
@@ -62,12 +62,12 @@ class LiveBeacon extends BeaconModel {
       };
 
   LiveBeacon({
-    String userId,
-    bool active,
-    double lat,
-    double long,
-    String desc,
-    List<String> users,
+    String? userId,
+    bool? active,
+    double? lat,
+    double? long,
+    String? desc,
+    List<String>? users,
   })  : this.lat = lat,
         this.long = long,
         super(
@@ -79,23 +79,23 @@ class LiveBeacon extends BeaconModel {
 }
 
 class CasualBeacon extends BeaconModel {
-  String eventName;
-  DateTime startTime;
-  DateTime endTime;
-  LocationModel location;
-  List<String> peopleGoing;
+  String? eventName;
+  DateTime? startTime;
+  DateTime? endTime;
+  LocationModel? location;
+  List<String>? peopleGoing;
 
   CasualBeacon({
-    String id,
-    String userId,
-    String type,
-    String desc,
-    String eventName,
-    DateTime startTime,
-    DateTime endTime,
-    List<String> users,
-    LocationModel location,
-    List<String> peopleGoing,
+    String? id,
+    String? userId,
+    String? type,
+    String? desc,
+    String? eventName,
+    DateTime? startTime,
+    DateTime? endTime,
+    List<String>? users,
+    LocationModel? location,
+    List<String>? peopleGoing,
   })  : this.eventName = eventName,
         this.startTime = startTime,
         this.endTime = endTime,
@@ -125,9 +125,9 @@ class CasualBeacon extends BeaconModel {
         'users': usersThatCanSee,
         'userId': userId,
         'peopleGoing': peopleGoing,
-        'location': location.toJson(),
+        'location': location?.toJson(),
         'startTime': startTime.toString(),
-        'startTimeMili': startTime.millisecondsSinceEpoch,
+        'startTimeMili': startTime?.millisecondsSinceEpoch,
         'endTime': endTime.toString(),
         'id': id,
       };

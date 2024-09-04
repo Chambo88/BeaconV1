@@ -2,15 +2,15 @@ import 'package:beacon/widgets/BeaconBottomSheet.dart';
 import 'package:flutter/material.dart';
 import 'package:google_place/google_place.dart';
 
-import '../SearchBar.dart';
+import '../BeaconSearchBar.dart';
 
 typedef LocationSelectedCallback(AutocompletePrediction prediction);
 
 class LocationSelectorSheet extends StatefulWidget {
-  final LocationSelectedCallback onSelected;
+  final LocationSelectedCallback? onSelected;
 
   LocationSelectorSheet({
-    Key key,
+    Key? key,
     this.onSelected,
   }) : super(key: key);
 
@@ -19,8 +19,8 @@ class LocationSelectorSheet extends StatefulWidget {
 }
 
 class _LocationSelectorSheetState extends State<LocationSelectorSheet> {
-  TextEditingController _searchController;
-  GooglePlace _googlePlace;
+  TextEditingController? _searchController;
+  GooglePlace? _googlePlace;
   List<AutocompletePrediction> _predictions = [];
 
   @override
@@ -31,16 +31,16 @@ class _LocationSelectorSheetState extends State<LocationSelectorSheet> {
 
   @override
   void dispose() {
-    _searchController.dispose();
+    _searchController!.dispose();
     super.dispose();
   }
 
   void autoCompleteSearch(String value) async {
-    var result = await _googlePlace.autocomplete.get(value);
+    var result = await _googlePlace!.autocomplete.get(value);
 
     if (result != null && result.predictions != null && mounted) {
       setState(() {
-        _predictions = result.predictions;
+        _predictions = result.predictions!;
       });
     }
   }
@@ -63,11 +63,11 @@ class _LocationSelectorSheetState extends State<LocationSelectorSheet> {
             ),
             title: Text('Location',
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.headline4),
+                style: theme.textTheme.headlineMedium),
           ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16),
-            child: SearchBar(
+            child: BeaconSearchBar(
               controller: _searchController,
               hintText: 'Smash Palace',
               onChanged: (value) {
@@ -96,9 +96,9 @@ class _LocationSelectorSheetState extends State<LocationSelectorSheet> {
                       color: Colors.white,
                     ),
                   ),
-                  title: Text(_predictions[index].description),
+                  title: Text(_predictions[index].description!),
                   onTap: () {
-                    widget.onSelected(_predictions[index]);
+                    widget.onSelected!(_predictions[index]);
                     Navigator.pop(context);
                   },
                 );

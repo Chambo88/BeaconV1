@@ -4,21 +4,21 @@ import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/material.dart';
 
 class TwoButtonDialog extends StatelessWidget {
-  TwoButtonDialog(
-      {@required this.bodyText,
-      @required this.onPressedGrey,
-      @required this.onPressedHighlight,
-      @required this.buttonGreyText,
-      @required this.buttonHighlightText,
-        this.title,
-      });
+  TwoButtonDialog({
+    @required this.bodyText,
+    @required this.onPressedGrey,
+    @required this.onPressedHighlight,
+    @required this.buttonGreyText,
+    @required this.buttonHighlightText,
+    this.title,
+  });
 
-  String bodyText;
-  final VoidCallback onPressedGrey;
-  final VoidCallback onPressedHighlight;
-  final String buttonGreyText;
-  final String buttonHighlightText;
-  final String title;
+  String? bodyText;
+  final VoidCallback? onPressedGrey;
+  final VoidCallback? onPressedHighlight;
+  final String? buttonGreyText;
+  final String? buttonHighlightText;
+  final String? title;
   FigmaColours figmaColours = FigmaColours();
 
   @override
@@ -49,17 +49,19 @@ class TwoButtonDialog extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              (title == null)? Container() : Center(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.headline3,
-                ),
-              ),
+              (title == null)
+                  ? Container()
+                  : Center(
+                      child: Text(
+                        title!,
+                        style: Theme.of(context).textTheme.displaySmall,
+                      ),
+                    ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  bodyText,
-                  style: Theme.of(context).textTheme.bodyText2,
+                  bodyText!,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
               Spacer(
@@ -80,23 +82,21 @@ class TwoButtonDialog extends StatelessWidget {
                       child: MaterialButton(
                         elevation: 15,
                         child: Text(
-                          buttonGreyText,
-                          style: Theme.of(context).textTheme.headline5,
+                          buttonGreyText!,
+                          style: Theme.of(context).textTheme.headlineSmall,
                         ),
                         onPressed: onPressedGrey,
                       ),
                     ),
-
                   ),
-
                   Padding(
                     padding: const EdgeInsets.only(left: 16),
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.4 - 24,
                       child: GradientButton(
-                          child: Text(buttonHighlightText,
-                              style: Theme.of(context).textTheme.headline5),
-                          onPressed: onPressedHighlight,
+                          child: Text(buttonHighlightText!,
+                              style: Theme.of(context).textTheme.headlineSmall),
+                          onPressed: onPressedHighlight!,
                           // onPressed: () => Navigator.pop(context, true),
                           gradient: ColorHelper.getBeaconGradient()),
                     ),

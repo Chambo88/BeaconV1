@@ -4,13 +4,13 @@ import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/material.dart';
 
 class BeaconAlertDialog extends StatelessWidget {
-  BeaconAlertDialog(
-      {@required this.bodyText,
-        this.title,
-      });
+  BeaconAlertDialog({
+    @required this.bodyText,
+    this.title,
+  });
 
-  final String bodyText;
-  final String title;
+  final String? bodyText;
+  final String? title;
   FigmaColours figmaColours = FigmaColours();
 
   @override
@@ -41,17 +41,19 @@ class BeaconAlertDialog extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              (title == null)? Container() : Center(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.headline3,
-                ),
-              ),
+              (title == null)
+                  ? Container()
+                  : Center(
+                      child: Text(
+                        title!,
+                        style: Theme.of(context).textTheme.displaySmall,
+                      ),
+                    ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  bodyText,
-                  style: Theme.of(context).textTheme.bodyText2,
+                  bodyText!,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
               Spacer(
@@ -63,7 +65,7 @@ class BeaconAlertDialog extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 0.8 - 32,
                     child: GradientButton(
                         child: Text('close',
-                            style: Theme.of(context).textTheme.headline5),
+                            style: Theme.of(context).textTheme.headlineSmall),
                         onPressed: () => Navigator.pop(context, true),
                         gradient: ColorHelper.getBeaconGradient()),
                   )

@@ -5,7 +5,6 @@ import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/HostProfilePicWidget.dart';
 import 'package:beacon/widgets/ProfilePicWidget.dart';
 import 'package:beacon/widgets/beacon_sheets/ViewAttendiesSheet.dart';
-import 'package:beacon/widgets/buttons/OutlinedGradientButton.dart';
 import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class EventDetailsPage extends StatefulWidget {
-
-  EventModel event;
+  EventModel? event;
 
   EventDetailsPage({this.event});
 
@@ -23,11 +21,10 @@ class EventDetailsPage extends StatefulWidget {
 }
 
 class _EventDetailsPageState extends State<EventDetailsPage> {
-
-  EventModel event;
-  FigmaColours figmaColours;
-  String genreString;
-  List<UserModel> friendsAttending = [];
+  EventModel? event;
+  FigmaColours? figmaColours;
+  String? genreString;
+  List<UserModel>? friendsAttending = [];
 
   @override
   void initState() {
@@ -40,7 +37,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
   String generateGenresString() {
     String returnMe = '';
-    for(String genre in event.genres) {
+    for (String genre in event!.genres!) {
       returnMe += genre + ', ';
     }
     returnMe = returnMe.substring(0, returnMe.length - 2);
@@ -50,11 +47,11 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   @override
   Widget build(BuildContext context) {
     UserService userService = Provider.of<UserService>(context);
-    UserModel currentUser = userService.currentUser;
+    UserModel currentUser = userService.currentUser!;
     ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(event.eventName),
+        title: Text(event!.eventName!),
       ),
       body: Stack(
         children: [
@@ -66,21 +63,18 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   height: 150,
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: NetworkImage(event.imageUrl),
-                          fit: BoxFit.cover
-                      )
-                  ),
+                          image: NetworkImage(event!.imageUrl!),
+                          fit: BoxFit.cover)),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    '${DateFormat('E, MMM d').format(event.startTime)}, ${DateFormat('Hm').format(event.startTime)} - '
-                        '${DateFormat('Hm').format(event.endTime)}',
+                    '${DateFormat('E, MMM d').format(event!.startTime!)}, ${DateFormat('Hm').format(event!.startTime!)} - '
+                    '${DateFormat('Hm').format(event!.endTime!)}',
                     style: TextStyle(
-                        color: Color(figmaColours.highlight),
+                        color: Color(figmaColours!.highlight),
                         fontWeight: FontWeight.bold,
-                        fontSize: 18
-                    ),
+                        fontSize: 18),
                   ),
                 ),
                 Padding(
@@ -88,43 +82,48 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   child: Row(
                     children: [
                       HostProfilePicture(
-                        picURL: event.hostLogoUrl,
-                        hostName: event.hostName,
+                        picURL: event!.hostLogoUrl!,
+                        hostName: event!.hostName!,
                         size: 24,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 16.0),
-                        child: Text('Host - ',
-                          style: Theme.of(context).textTheme.bodyText2,
+                        child: Text(
+                          'Host - ',
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),
-                      Text(event.hostName,
+                      Text(
+                        event!.hostName!,
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          overflow: TextOverflow.ellipsis
-                        ),
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            overflow: TextOverflow.ellipsis),
                       ),
                       Spacer(),
-                      currentUser.hostsFollowed.contains(event.hostId)? SmallGradientButton(
-                        width: 110,
-                        height: 30,
-                        onPressed: () {
-                          userService.changeFollowHost(event.hostId);
-                          setState(() {});
-                        },
-                        child: Text("Following",
-                        style: Theme.of(context).textTheme.headline5),
-                      ) : SmallOutlinedButton(
-                        width: 110,
-                        height: 30,
-                        onPressed: () {userService.changeFollowHost(event.hostId);
-                        setState(() {});
-                        },
-                        title: "Follow",
-                      )
-
+                      currentUser.hostsFollowed!.contains(event!.hostId)
+                          ? SmallGradientButton(
+                              width: 110,
+                              height: 30,
+                              onPressed: () {
+                                userService.changeFollowHost(event!.hostId!);
+                                setState(() {});
+                              },
+                              child: Text("Following",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall),
+                            )
+                          : SmallOutlinedButton(
+                              width: 110,
+                              height: 30,
+                              onPressed: () {
+                                userService.changeFollowHost(event!.hostId!);
+                                setState(() {});
+                              },
+                              title: "Follow",
+                            )
                     ],
                   ),
                 ),
@@ -132,24 +131,27 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Divider(
                     height: 1,
-                    color: Color(figmaColours.greyMedium),
+                    color: Color(figmaColours!.greyMedium),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Row(
                     children: [
-                      Icon(Icons.music_note_outlined, size: 30,),
+                      Icon(
+                        Icons.music_note_outlined,
+                        size: 30,
+                      ),
                       Padding(
                         padding: EdgeInsets.only(left: 14),
                         child: Text(
                           "Genre's - ",
-                          style: Theme.of(context).textTheme.bodyText1,
+                          style: Theme.of(context).textTheme.bodyLarge,
                         ),
                       ),
                       Text(
-                        genreString,
-                        style: Theme.of(context).textTheme.headline5,
+                        genreString!,
+                        style: Theme.of(context).textTheme.headlineSmall,
                       )
                     ],
                   ),
@@ -158,42 +160,41 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Divider(
                     height: 1,
-                    color: Color(figmaColours.greyMedium),
+                    color: Color(figmaColours!.greyMedium),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: attendingTile(currentUser, event, theme, context),
+                  child: attendingTile(currentUser, event!, theme, context),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Divider(
                     height: 1,
-                    color: Color(figmaColours.greyMedium),
+                    color: Color(figmaColours!.greyMedium),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: getLocationRow(event, theme),
+                  child: getLocationRow(event!, theme),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Divider(
                     height: 1,
-                    color: Color(figmaColours.greyMedium),
+                    color: Color(figmaColours!.greyMedium),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
-                      event.desc,
-                      style: theme.textTheme.headline5,
-                    ),
+                    event!.desc!,
+                    style: theme.textTheme.headlineSmall,
+                  ),
                 ),
                 Container(
                   height: 65,
                 )
-
               ],
             ),
           ),
@@ -202,23 +203,21 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
             child: Container(
               width: MediaQuery.of(context).size.width,
               height: 60,
-              color: Color(figmaColours.greyDark),
+              color: Color(figmaColours!.greyDark),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left:8.0),
+                    padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
                       "Price - ",
-                      style: theme.textTheme.headline4,
+                      style: theme.textTheme.headlineMedium,
                     ),
                   ),
                   Text(
-                    "\$${event.price.toString()}",
+                    "\$${event!.price.toString()}",
                     style: TextStyle(
-                      color: Color(figmaColours.highlight),
-                      fontSize: 18
-                    ),
+                        color: Color(figmaColours!.highlight), fontSize: 18),
                   ),
                   Spacer(),
                   Padding(
@@ -229,35 +228,37 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                       onPressed: () {},
                       child: Text(
                         "Get Tickets",
-                        style: theme.textTheme.headline5,
+                        style: theme.textTheme.headlineSmall,
                       ),
                     ),
                   ),
-                  currentUser.eventsAttending.contains(event.eventId)?
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: SmallGradientButton(
-                      width: 115,
-                      height: 30,
-                      onPressed: () {
-                        userService.changeEventAttending(event.eventId);
-                        setState(() {});
-                      },
-                      child: Text("Going",
-                          style: Theme.of(context).textTheme.headline5),
-                    ),
-                  ) : Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: SmallOutlinedButton(
-                      width: 110,
-                      height: 30,
-                      onPressed: () {userService.changeEventAttending(event.eventId);
-                      setState(() {});
-                      },
-                      title: "Going?",
-                    ),
-                  )
-
+                  currentUser.eventsAttending!.contains(event!.eventId)
+                      ? Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: SmallGradientButton(
+                            width: 115,
+                            height: 30,
+                            onPressed: () {
+                              userService.changeEventAttending(event!.eventId!);
+                              setState(() {});
+                            },
+                            child: Text("Going",
+                                style:
+                                    Theme.of(context).textTheme.headlineSmall),
+                          ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: SmallOutlinedButton(
+                            width: 110,
+                            height: 30,
+                            onPressed: () {
+                              userService.changeEventAttending(event!.eventId!);
+                              setState(() {});
+                            },
+                            title: "Going?",
+                          ),
+                        )
                 ],
               ),
             ),
@@ -279,14 +280,14 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  event.locationName,
-                  style: theme.textTheme.headline5,
+                  event.locationName!,
+                  style: theme.textTheme.headlineSmall,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text(event.fullAddress,
+                  child: Text(event.fullAddress!,
                       style: TextStyle(
-                        color: Color(figmaColours.greyLight),
+                        color: Color(figmaColours!.greyLight),
                         fontSize: 14,
                       )),
                 )
@@ -298,16 +299,16 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     );
   }
 
-  Widget attendingTile(UserModel currentUser, EventModel event,
-      ThemeData theme, BuildContext context) {
-    String numPeopleGoing = event.usersAttending.length.toString();
-    friendsAttending.clear();
-    for (UserModel friend in currentUser.friendModels) {
-      if (event.usersAttending.contains(friend.id)) {
-        friendsAttending.add(friend);
+  Widget attendingTile(UserModel currentUser, EventModel event, ThemeData theme,
+      BuildContext context) {
+    String numPeopleGoing = event.usersAttending!.length.toString();
+    friendsAttending!.clear();
+    for (UserModel friend in currentUser.friendModels!) {
+      if (event.usersAttending!.contains(friend.id)) {
+        friendsAttending!.add(friend);
       }
     }
-    String numFriendsGoing = friendsAttending.length.toString();
+    String numFriendsGoing = friendsAttending!.length.toString();
 
     return InkWell(
       onTap: () {
@@ -320,7 +321,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
               onContinue: () {
                 Navigator.of(context).pop();
               },
-              attendiesIds: event.usersAttending,
+              attendiesIds: event.usersAttending!,
             );
           },
         );
@@ -339,14 +340,14 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  friendsAttending.isNotEmpty
+                  friendsAttending!.isNotEmpty
                       ? Stack(
-                    children: getProfilePicStack(),
-                  )
+                          children: getProfilePicStack(),
+                        )
                       : Container(),
                   Padding(
                     padding: EdgeInsets.only(
-                        top: (friendsAttending.isNotEmpty) ? 6 : 0),
+                        top: (friendsAttending!.isNotEmpty) ? 6 : 0),
                     child: getTextForPeopleGoing(
                         numPeopleGoing, theme, numFriendsGoing),
                   )
@@ -371,25 +372,29 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         TextSpan(
           text: '$numPeopleGoing ',
           style: TextStyle(
-              fontWeight: FontWeight.bold, color: Color(figmaColours.highlight), fontSize: 16),
+              fontWeight: FontWeight.bold,
+              color: Color(figmaColours!.highlight),
+              fontSize: 16),
         ),
         TextSpan(
             text: 'going',
-            style: theme.textTheme.headline5,
+            style: theme.textTheme.headlineSmall,
             children: (numFriendsGoing == '0')
                 ? []
                 : [
-              TextSpan(
-                  text: ', including ', style: theme.textTheme.headline5),
-              TextSpan(
-                text: '$numFriendsGoing ',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color(figmaColours.highlight),
-                    fontSize: 16),
-              ),
-              TextSpan(text: 'friends', style: theme.textTheme.headline5),
-            ])
+                    TextSpan(
+                        text: ', including ',
+                        style: theme.textTheme.headlineSmall),
+                    TextSpan(
+                      text: '$numFriendsGoing ',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(figmaColours!.highlight),
+                          fontSize: 16),
+                    ),
+                    TextSpan(
+                        text: 'friends', style: theme.textTheme.headlineSmall),
+                  ])
       ]),
     );
   }
@@ -397,7 +402,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   List<Widget> getProfilePicStack() {
     List<Widget> profPics = [];
     double count = 0;
-    for (UserModel friend in friendsAttending) {
+    for (UserModel friend in friendsAttending!) {
       profPics.add(Padding(
           padding: EdgeInsets.only(left: count * 25),
           child: ProfilePicture(user: friend)));
@@ -409,6 +414,4 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     profPics = profPics.reversed.toList();
     return profPics;
   }
-
-
 }

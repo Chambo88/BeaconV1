@@ -9,21 +9,21 @@ import 'package:provider/provider.dart';
 
 import 'CreatorPage.dart';
 
-typedef void NotifyCallback(List<UserModel> users);
-typedef void NotifyCallback2(Set<UserModel> friends, bool notifyAll);
+typedef void NotifyCallback(List<UserModel?> users);
+typedef void NotifyCallback2(Set<UserModel>? friends, bool? notifyAll);
 
 class NotifyPage extends StatefulWidget {
-  final NotifyCallback2 onBackClick;
-  final VoidCallback onClose;
-  final NotifyCallback onContinue;
-  final String continueText;
-  final int totalPageCount;
-  final int currentPageIndex;
-  final Set<GroupModel> initGroups;
-  final Set<String> initFriends;
-  final bool initNotifyAll;
-  final Set<UserModel> initNotifyFriends;
-  final List<UserModel> fullList;
+  final NotifyCallback2? onBackClick;
+  final VoidCallback? onClose;
+  final NotifyCallback? onContinue;
+  final String? continueText;
+  final int? totalPageCount;
+  final int? currentPageIndex;
+  final Set<GroupModel>? initGroups;
+  final Set<String>? initFriends;
+  final bool? initNotifyAll;
+  final Set<UserModel>? initNotifyFriends;
+  final List<UserModel>? fullList;
 
   NotifyPage({
     @required this.onBackClick,
@@ -46,29 +46,29 @@ class NotifyPage extends StatefulWidget {
 class _NotifyPageState extends State<NotifyPage> {
   var _notifyFriends = Set<UserModel>();
   var _notifyAll = true;
-  var _groupsToChoseFrom = Set<GroupModel>();
-  var _initFriends = Set<UserModel>();
-  var _initFriendsIds = Set<String>();
+  var _groupsToChoseFrom = Set<GroupModel?>();
+  var _initFriends = Set<UserModel?>();
+  var _initFriendsIds = Set<String?>();
 
   @override
   void initState() {
     super.initState();
-    _initFriendsIds = widget.initFriends;
-    _groupsToChoseFrom = widget.initGroups;
+    _initFriendsIds = widget.initFriends!;
+    _groupsToChoseFrom = widget.initGroups!;
     Set<String> IdsFromGroups = _groupsToChoseFrom
-        .map((GroupModel g) => g.members)
+        .map((GroupModel? g) => g!.members!)
         .expand((friend) => friend)
         .toSet();
     _initFriendsIds.addAll(IdsFromGroups);
     _initFriends = _initFriendsIds.map((friend) {
-      for (UserModel user in widget.fullList) {
+      for (UserModel user in widget.fullList!) {
         if (user.id == friend) {
           return user;
         }
       }
     }).toSet();
-    _notifyFriends = widget.initNotifyFriends;
-    _notifyAll = widget.initNotifyAll;
+    _notifyFriends = widget.initNotifyFriends!;
+    _notifyAll = widget.initNotifyAll!;
   }
 
   @override
@@ -77,15 +77,14 @@ class _NotifyPageState extends State<NotifyPage> {
         title: 'Notify',
         onClose: widget.onClose,
         onBackClick: () {
-          widget.onBackClick(_notifyFriends, _notifyAll);
+          widget.onBackClick!(_notifyFriends, _notifyAll);
         },
         continueText: widget.continueText,
         onContinuePressed: () {
-          if(_notifyAll) {
-            widget.onContinue(_initFriends.toList());
-          }
-          else {
-            widget.onContinue(_notifyFriends.toList());
+          if (_notifyAll) {
+            widget.onContinue!(_initFriends.toList());
+          } else {
+            widget.onContinue!(_notifyFriends.toList());
           }
         },
         totalPageCount: widget.totalPageCount,
@@ -129,16 +128,17 @@ class _NotifyPageState extends State<NotifyPage> {
       padding: const EdgeInsets.only(left: 16, top: 7, bottom: 7),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.bodyText1,
+        style: Theme.of(context).textTheme.bodyLarge,
         textAlign: TextAlign.start,
       ),
     );
   }
 
-  void _handleGroupSelectionChanged(bool selected, GroupModel group, StateSetter setState, BuildContext context) {
+  void _handleGroupSelectionChanged(bool selected, GroupModel group,
+      StateSetter setState, BuildContext context) {
     List<UserModel> idToUserModel = [];
     UserService userService = Provider.of<UserService>(context, listen: false);
-    group.members.forEach((member) {
+    group.members!.forEach((member) {
       UserModel friend = userService.getAFriendModelFromId(member);
       idToUserModel.add(friend);
     });
@@ -152,18 +152,20 @@ class _NotifyPageState extends State<NotifyPage> {
   }
 
   Container _groupSelector() {
-    Set<String> notifyIds = {};
-    _notifyFriends.forEach((e) {notifyIds.add(e.id);});
+    Set<String?> notifyIds = {};
+    _notifyFriends.forEach((e) {
+      notifyIds.add(e.id);
+    });
     return Container(
       height: 85.0,
       padding: EdgeInsets.symmetric(vertical: 5.0),
       color: Theme.of(context).primaryColor,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        children: _groupsToChoseFrom.map((GroupModel group) {
+        children: _groupsToChoseFrom.map((GroupModel? group) {
           return SingleGroup(
-            group: group,
-            selected: notifyIds.containsAll(group.members.toSet()),
+            group: group!,
+            selected: notifyIds.containsAll(group.members!.toSet()),
             onGroupChanged: _handleGroupSelectionChanged,
             setState: setState,
           );
@@ -172,7 +174,6 @@ class _NotifyPageState extends State<NotifyPage> {
     );
   }
 
-
   List<Widget> _selectedFriendTiles(BuildContext context) {
     return _initFriends.map((friend) {
       return GestureDetector(
@@ -180,15 +181,16 @@ class _NotifyPageState extends State<NotifyPage> {
           setState(() {
             if (_notifyFriends.contains(friend)) {
               _notifyFriends.remove(friend);
+            } else {
+              _notifyFriends.add(friend!);
             }
-            else {_notifyFriends.add(friend);}
           });
         },
         child: ListTile(
             title: Text(
-              "${friend.firstName} ${friend.lastName}",
+              "${friend!.firstName} ${friend.lastName}",
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.headline5,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             leading: ProfilePicture(
               user: friend,
@@ -208,7 +210,7 @@ typedef void GroupListChangeCallBack(
   bool selected,
   GroupModel group,
   StateSetter setState,
-    BuildContext context,
+  BuildContext context,
 );
 
 class SingleGroup extends StatelessWidget {
@@ -219,10 +221,10 @@ class SingleGroup extends StatelessWidget {
     this.selected,
   }) : super(key: ObjectKey(group));
 
-  final GroupModel group;
-  final StateSetter setState;
-  final GroupListChangeCallBack onGroupChanged;
-  final bool selected;
+  final GroupModel? group;
+  final StateSetter? setState;
+  final GroupListChangeCallBack? onGroupChanged;
+  final bool? selected;
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +237,7 @@ class SingleGroup extends StatelessWidget {
               color: Color(0xFF4FE30B),
               shape: CircleBorder(
                 side: BorderSide(
-                  color: selected ? Colors.purple : Color(0xFF4FE30B),
+                  color: selected! ? Colors.purple : Color(0xFF4FE30B),
                   width: 2,
                 ),
               ), // button color
@@ -245,14 +247,14 @@ class SingleGroup extends StatelessWidget {
                   width: 60,
                   height: 60,
                   child: Icon(
-                    group.icon,
+                    group!.icon,
                   ),
                 ),
                 onTap: () {
-                  onGroupChanged(
-                    selected,
-                    group,
-                    setState,
+                  onGroupChanged!(
+                    selected!,
+                    group!,
+                    setState!,
                     context,
                   );
                 },
@@ -260,7 +262,7 @@ class SingleGroup extends StatelessWidget {
             ),
           ),
           Text(
-            group.name,
+            group!.name!,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 12,

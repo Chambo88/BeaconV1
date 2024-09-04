@@ -1,6 +1,6 @@
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/UserService.dart';
-import 'package:beacon/widgets/SearchBar.dart';
+import 'package:beacon/widgets/BeaconSearchBar.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:beacon/widgets/tiles/userTileAddable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,7 +14,7 @@ class AddFriendsPage extends StatefulWidget {
 }
 
 class _AddFriendsPageState extends State<AddFriendsPage> {
-  Future<QuerySnapshot> futureSearchResults;
+  Future<QuerySnapshot>? futureSearchResults;
   FigmaColours figmaColours = FigmaColours();
   TextEditingController searchTextEditingController = TextEditingController();
 
@@ -24,14 +24,13 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     super.dispose();
   }
 
-
-
   void filterSearchResults(String query) {
     if (query.isNotEmpty) {
       Query allUsers = FirebaseFirestore.instance.collection("users");
       Future<QuerySnapshot> userDoc = allUsers
           .where("nameSearch",
-              arrayContains: query.toLowerCase().trim().replaceAll(' ', '')).limit(5)
+              arrayContains: query.toLowerCase().trim().replaceAll(' ', ''))
+          .limit(5)
           .get();
       setState(() {
         futureSearchResults = userDoc;
@@ -51,7 +50,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
         children: [
           Text(
             '',
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headlineMedium,
           )
         ],
       ),
@@ -71,7 +70,8 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
         dataSnapshot.data.docs.forEach((document) {
           UserModel users = UserModel.fromDocument(document);
           if (users.id != userId && !friendsIds.contains(users.id)) {
-            UserResultAddable userResult = UserResultAddable(anotherUser: users);
+            UserResultAddable userResult =
+                UserResultAddable(anotherUser: users);
             searchUsersResult.add(userResult);
           }
         });
@@ -88,11 +88,11 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userId = context.read<UserService>().currentUser.id;
-    final userFriendsIds = context.read<UserService>().currentUser.friends;
+    final userId = context.read<UserService>().currentUser!.id;
+    final userFriendsIds = context.read<UserService>().currentUser!.friends;
     return Scaffold(
       appBar: AppBar(
-        leading :IconButton(
+        leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
             Navigator.of(context).pop();
@@ -103,7 +103,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
       body: Column(children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
-          child: SearchBar(
+          child: BeaconSearchBar(
             controller: searchTextEditingController,
             onChanged: filterSearchResults,
             width: MediaQuery.of(context).size.width,
@@ -113,10 +113,8 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
         Expanded(
             child: futureSearchResults == null
                 ? displayNoSearchResultsScreen(context)
-                : displayUsersFoundScreen(userFriendsIds, userId)),
+                : displayUsersFoundScreen(userFriendsIds!, userId!)),
       ]),
     );
   }
 }
-
-

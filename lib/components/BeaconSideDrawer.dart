@@ -6,7 +6,6 @@ import 'package:beacon/widgets/side_drawer/FriendCasualItem.dart';
 import 'package:beacon/widgets/side_drawer/FriendLiveItem.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 class BeaconSideDrawer extends StatelessWidget {
@@ -16,7 +15,7 @@ class BeaconSideDrawer extends StatelessWidget {
     final theme = Theme.of(context);
     final userService = Provider.of<UserService>(context);
     final beaconService = Provider.of<BeaconService>(context);
-    beaconService.loadAllBeacons(userService.currentUser.id);
+    beaconService.loadAllBeacons(userService.currentUser!.id);
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.825,
@@ -26,18 +25,18 @@ class BeaconSideDrawer extends StatelessWidget {
           length: 2,
           child: Scaffold(
             appBar: TabBar(
-                labelColor: theme.accentColor,
-                unselectedLabelColor: Colors.white,
-                labelStyle: theme.textTheme.headline3,
-                tabs: [
-                  Tab(
-                    text: 'Friends',
-                  ),
-                  Tab(
-                    text: 'Live Events',
-                  ),
-                ],
-              ),
+              labelColor: theme.secondaryHeaderColor,
+              unselectedLabelColor: Colors.white,
+              labelStyle: theme.textTheme.displaySmall,
+              tabs: [
+                Tab(
+                  text: 'Friends',
+                ),
+                Tab(
+                  text: 'Live Events',
+                ),
+              ],
+            ),
             body: TabBarView(
               children: [
                 SingleChildScrollView(
@@ -51,47 +50,38 @@ class BeaconSideDrawer extends StatelessWidget {
                               return circularProgress();
                             }
                             List<Widget> beacons = [];
-                            snapshot.data.forEach((CasualBeacon beacon) {
-                              if(beacon.endTime.isAfter(DateTime.now())) {
-                                beacons.add(FriendCasualItem(
-                                    beacon: beacon
+                            snapshot.data!.forEach((CasualBeacon beacon) {
+                              if (beacon.endTime!.isAfter(DateTime.now())) {
+                                beacons.add(FriendCasualItem(beacon: beacon));
+                                beacons.add(Divider(
+                                  color: Color(figmaColours.greyMedium),
+                                  height: 1,
                                 ));
-                                beacons.add(
-                                    Divider(
-                                      color: Color(figmaColours.greyMedium),
-                                      height: 1,
-                                    )
-                                );
                               }
                             });
                             return Column(
                               children: beacons,
                             );
-                          }
-                      ),
+                          }),
                       _divider(context: context, text: "Live"),
                       StreamBuilder<List<LiveBeacon>>(
-                        stream: beaconService.allLiveBeacons,
-                        builder: (context, snapshot) {
-                          while (!snapshot.hasData) {
-                            return circularProgress();
-                          }
-                          List<Widget> beacons = [];
-                          snapshot.data.forEach((LiveBeacon beacon) {
-                            beacons.add(FriendLiveItem(
-                              beacon: beacon
-                            ));
-                            beacons.add(
-                                Divider(
-                              color: Color(figmaColours.greyMedium),
-                              height: 1,
-                            ));
-                          });
-                          return Column(
-                            children: beacons,
-                          );
-                        }
-                      ),
+                          stream: beaconService.allLiveBeacons,
+                          builder: (context, snapshot) {
+                            while (!snapshot.hasData) {
+                              return circularProgress();
+                            }
+                            List<Widget> beacons = [];
+                            snapshot.data!.forEach((LiveBeacon beacon) {
+                              beacons.add(FriendLiveItem(beacon: beacon));
+                              beacons.add(Divider(
+                                color: Color(figmaColours.greyMedium),
+                                height: 1,
+                              ));
+                            });
+                            return Column(
+                              children: beacons,
+                            );
+                          }),
                     ],
                   ),
                 ),
@@ -108,16 +98,15 @@ class BeaconSideDrawer extends StatelessWidget {
     );
   }
 
-
-  Widget _divider({BuildContext context, String text}) {
+  Widget _divider({BuildContext? context, String? text}) {
     return Container(
       height: 30,
       width: double.infinity,
-      color: Theme.of(context).primaryColor,
+      color: Theme.of(context!).primaryColor,
       alignment: Alignment.center,
       child: Text(
-        text,
-        style: Theme.of(context).textTheme.bodyText1,
+        text!,
+        style: Theme.of(context).textTheme.bodyLarge,
       ),
     );
   }

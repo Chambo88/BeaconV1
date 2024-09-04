@@ -6,11 +6,11 @@ import 'package:intl/intl.dart';
 
 class EventTile extends StatelessWidget {
   const EventTile(
-      {Key key, this.event, this.mutualFriendCount, this.figmaColours})
+      {Key? key, this.event, this.mutualFriendCount, this.figmaColours})
       : super(key: key);
-  final EventModel event;
-  final String mutualFriendCount;
-  final FigmaColours figmaColours;
+  final EventModel? event;
+  final String? mutualFriendCount;
+  final FigmaColours? figmaColours;
 
   String getDateText(DateTime startTime) {
     if (DateTime.now().day == startTime.day &&
@@ -40,7 +40,7 @@ class EventTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dismissible(
       direction: DismissDirection.endToStart,
-      key: Key(event.eventId),
+      key: Key(event!.eventId!),
       onDismissed: (direction) {},
       background: Container(
         color: Colors.red,
@@ -59,7 +59,7 @@ class EventTile extends StatelessWidget {
                   ),
                   Text(
                     "Archive",
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headlineMedium,
                   )
                 ],
               ),
@@ -84,7 +84,7 @@ class EventTile extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
-                        event.eventName + " -",
+                        event!.eventName! + " -",
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -95,8 +95,8 @@ class EventTile extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 4.0),
                       child: Text(
-                        event.hostName,
-                        style: Theme.of(context).textTheme.bodyText2,
+                        event!.hostName!,
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ),
                     Row(children: [
@@ -106,7 +106,7 @@ class EventTile extends StatelessWidget {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15),
                             image: DecorationImage(
-                                image: NetworkImage(event.imageUrl),
+                                image: NetworkImage(event!.imageUrl!),
                                 fit: BoxFit.cover)),
                       ),
                       Expanded(
@@ -125,10 +125,11 @@ class EventTile extends StatelessWidget {
                                 Flexible(
                                   child: Container(
                                     child: Text(
-                                      getDateText(event.startTime)
+                                      getDateText(event!.startTime!)
                                           .replaceAll("", "\u{200B}"),
-                                      style:
-                                          Theme.of(context).textTheme.headline6,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       softWrap: false,
@@ -150,10 +151,11 @@ class EventTile extends StatelessWidget {
                                 Flexible(
                                   child: Container(
                                     child: Text(
-                                      event.locationName
+                                      event!.locationName!
                                           .replaceAll("", "\u{200B}"),
-                                      style:
-                                          Theme.of(context).textTheme.headline6,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       softWrap: false,
@@ -179,8 +181,8 @@ class EventTile extends StatelessWidget {
                                   child: Icon(Icons.music_note_outlined),
                                 ),
                                 Text(
-                                  event.mainGenre,
-                                  style: Theme.of(context).textTheme.headline6,
+                                  event!.mainGenre!,
+                                  style: Theme.of(context).textTheme.titleLarge,
                                 )
                               ],
                             ),
@@ -201,16 +203,16 @@ class EventTile extends StatelessWidget {
                                           : '',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Color(figmaColours.highlight),
+                                        color: Color(figmaColours!.highlight),
                                       ),
                                       children: [
                                         TextSpan(
                                           text: (mutualFriendCount != '0')
-                                              ? " | ${event.usersAttending.length.toString()}"
-                                              : "${event.usersAttending.length.toString()}",
+                                              ? " | ${event!.usersAttending!.length.toString()}"
+                                              : "${event!.usersAttending!.length.toString()}",
                                           style: Theme.of(context)
                                               .textTheme
-                                              .headline6,
+                                              .titleLarge,
                                         )
                                       ]),
                                   textWidthBasis: TextWidthBasis.longestLine,
@@ -229,7 +231,7 @@ class EventTile extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Divider(
                   height: 1,
-                  color: Color(figmaColours.greyLight),
+                  color: Color(figmaColours!.greyLight),
                 ),
               )
             ],

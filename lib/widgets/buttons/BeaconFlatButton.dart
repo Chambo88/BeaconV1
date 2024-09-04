@@ -1,12 +1,11 @@
 import 'package:beacon/util/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class BeaconFlatButton extends StatelessWidget {
-  final String title;
-  final VoidCallback onTap;
-  final IconData icon;
-  final Widget trailing;
+  final String? title;
+  final VoidCallback? onTap;
+  final IconData? icon;
+  final Widget? trailing;
   bool arrow;
   FigmaColours figmaColours = FigmaColours();
 
@@ -27,25 +26,30 @@ class BeaconFlatButton extends StatelessWidget {
         height: 50,
         child: Row(
           children: [
-            if (icon != null) Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
-              child: Icon(icon, color: Color(figmaColours.greyLight)),
-            ),
+            if (icon != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
+                child: Icon(icon, color: Color(figmaColours.greyLight)),
+              ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Text(
-                  title,
-                  style: theme.textTheme.headline4,
+                  title!,
+                  style: theme.textTheme.headlineMedium,
                 ),
               ),
             ),
-            if (arrow) Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
-              child: Icon(Icons.arrow_forward_ios, color: Colors.white, size: 18,),
-
-            ),
-            if (trailing != null) trailing,
+            if (arrow)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 12, 0),
+                child: Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.white,
+                  size: 18,
+                ),
+              ),
+            if (trailing != null) trailing!,
           ],
         ),
       ),

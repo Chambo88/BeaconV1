@@ -1,8 +1,1 @@
-{
-  "functions": {
-    "predeploy": [
-      "npm --prefix \"$RESOURCE_DIR\" run lint",
-      "npm --prefix \"$RESOURCE_DIR\" run build"
-    ]
-  }
-}
+{"functions":{"predeploy":["npm --prefix \"$RESOURCE_DIR\" run lint","npm --prefix \"$RESOURCE_DIR\" run build"]},"flutter":{"platforms":{"android":{"default":{"projectId":"beacon-9061b","appId":"1:875402290272:android:54e80a21eb1dfa63440f05","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"beacon-9061b","configurations":{"android":"1:875402290272:android:54e80a21eb1dfa63440f05","ios":"1:875402290272:ios:a79b24ca1093e369440f05","web":"1:875402290272:web:1fb2fad94d405a99440f05"}}}}}}

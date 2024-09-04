@@ -8,8 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AddToGroupsDialog extends StatefulWidget {
-
-  UserModel otherUser;
+  UserModel? otherUser;
   AddToGroupsDialog({
     @required this.otherUser,
   });
@@ -19,13 +18,11 @@ class AddToGroupsDialog extends StatefulWidget {
 }
 
 class _AddToGroupsDialogState extends State<AddToGroupsDialog> {
-
-  List<GroupModel> groupsModified;
+  List<GroupModel>? groupsModified;
   FigmaColours figmaColours = FigmaColours();
-  List<GroupModel> groupsForComparison;
-  List<GroupModel> groupsToRemoveFrom;
-  List<GroupModel>groupsToAddTo;
-
+  List<GroupModel>? groupsForComparison;
+  List<GroupModel>? groupsToRemoveFrom;
+  List<GroupModel>? groupsToAddTo;
 
   @override
   void initState() {
@@ -35,38 +32,35 @@ class _AddToGroupsDialogState extends State<AddToGroupsDialog> {
     groupsForComparison = [];
     groupsToRemoveFrom = [];
     groupsToAddTo = [];
-    for (GroupModel group in userService.currentUser.groups) {
-      if(group.members.contains(widget.otherUser.id)) {
-        groupsModified.add(group);
-        groupsForComparison.add(group);
+    for (GroupModel group in userService.currentUser!.groups!) {
+      if (group.members!.contains(widget.otherUser!.id!)) {
+        groupsModified!.add(group);
+        groupsForComparison!.add(group);
       }
     }
   }
 
   void getGroupsToAddTo() {
-    for (GroupModel group in groupsModified) {
-      if(!groupsForComparison.contains(group)) {
-        groupsToAddTo.add(group);
+    for (GroupModel group in groupsModified!) {
+      if (!groupsForComparison!.contains(group)) {
+        groupsToAddTo!.add(group);
       }
     }
   }
 
   void getGroupsToRemoveFrom() {
-
-    for (GroupModel group in groupsForComparison) {
-      if(!groupsModified.contains(group)) {
-        groupsToRemoveFrom.add(group);
+    for (GroupModel group in groupsForComparison!) {
+      if (!groupsModified!.contains(group)) {
+        groupsToRemoveFrom!.add(group);
       }
     }
   }
 
-
-
-  Color getCheckboxColor(Set<MaterialState> states) {
-    const Set<MaterialState> interactiveStates = <MaterialState>{
-      MaterialState.pressed,
-      MaterialState.hovered,
-      MaterialState.focused,
+  Color getCheckboxColor(Set<WidgetState> states) {
+    const Set<WidgetState> interactiveStates = <WidgetState>{
+      WidgetState.pressed,
+      WidgetState.hovered,
+      WidgetState.focused,
     };
     if (states.any(interactiveStates.contains)) {
       return Colors.blue;
@@ -77,15 +71,15 @@ class _AddToGroupsDialogState extends State<AddToGroupsDialog> {
   void excecuteChanges(UserService userService) {
     getGroupsToAddTo();
     getGroupsToRemoveFrom();
-    for(GroupModel group in groupsToAddTo) {
+    for (GroupModel group in groupsToAddTo!) {
       GroupModel temp = GroupModel.clone(group);
-      temp.addId(widget.otherUser.id);
+      temp.addId(widget.otherUser!.id!);
       userService.removeGroup(group);
       userService.addGroup(temp);
     }
-    for(GroupModel group in groupsToRemoveFrom) {
+    for (GroupModel group in groupsToRemoveFrom!) {
       GroupModel temp = GroupModel.clone(group);
-      temp.removeId(widget.otherUser.id);
+      temp.removeId(widget.otherUser!.id!);
       userService.removeGroup(group);
       userService.addGroup(temp);
     }
@@ -116,18 +110,16 @@ class _AddToGroupsDialogState extends State<AddToGroupsDialog> {
         width: MediaQuery.of(context).size.width * 0.8,
         child: Column(
           children: [
-
             Padding(
               padding: const EdgeInsets.all(12),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-
                   Align(
                     alignment: Alignment.center,
                     child: Text(
                       "Add to Groups",
-                      style: Theme.of(context).textTheme.headline3,
+                      style: Theme.of(context).textTheme.displaySmall,
                     ),
                   ),
                   Align(
@@ -149,8 +141,7 @@ class _AddToGroupsDialogState extends State<AddToGroupsDialog> {
             Expanded(
               child: Container(
                 child: ListView(
-
-                  children: userService.currentUser.groups.map((group) {
+                  children: userService.currentUser!.groups!.map((group) {
                     return Material(
                       child: ListTile(
                         tileColor: Color(figmaColours.greyDark),
@@ -159,20 +150,21 @@ class _AddToGroupsDialogState extends State<AddToGroupsDialog> {
                           color: Color(figmaColours.greyLight),
                         ),
                         title: Text(
-                          group.name,
-                          style: Theme.of(context).textTheme.headline4,
+                          group.name!,
+                          style: Theme.of(context).textTheme.headlineMedium,
                         ),
                         trailing: Checkbox(
-                          fillColor: MaterialStateProperty.resolveWith(getCheckboxColor),
+                          fillColor: WidgetStateProperty.resolveWith(
+                              getCheckboxColor),
                           checkColor: Colors.black,
-                          value: groupsModified.contains(group),
+                          value: groupsModified!.contains(group),
                           onChanged: (v) {
                             setState(
-                                  () {
-                                if (v) {
-                                  groupsModified.add(group);
+                              () {
+                                if (v!) {
+                                  groupsModified!.add(group);
                                 } else {
-                                  groupsModified.remove(group);
+                                  groupsModified!.remove(group);
                                 }
                               },
                             );
@@ -181,15 +173,15 @@ class _AddToGroupsDialogState extends State<AddToGroupsDialog> {
                       ),
                     );
                   }).toList(),
-
                 ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: GradientButton(
-                  child: Text("Accept",
-                    style: Theme.of(context).textTheme.headline4,
+                  child: Text(
+                    "Accept",
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   onPressed: () {
                     excecuteChanges(userService);
@@ -199,7 +191,6 @@ class _AddToGroupsDialogState extends State<AddToGroupsDialog> {
             )
           ],
         ),
-
       ),
     );
   }

@@ -7,7 +7,6 @@ import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/widgets/beacon_sheets/IconPickerSheet.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:beacon/widgets/tiles/SubTitleText.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,9 +18,9 @@ class CreateGroupPage extends StatefulWidget {
 class _CreateGroupPageState extends State<CreateGroupPage> {
   final _formKey = GlobalKey<FormState>();
   bool _enableButton = false;
-  GroupModel _group;
-  TextEditingController _groupNameTextController;
-  FigmaColours figmaColours;
+  GroupModel? _group;
+  TextEditingController? _groupNameTextController;
+  FigmaColours? figmaColours;
 
   @override
   void initState() {
@@ -34,27 +33,27 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
   @override
   void dispose() {
-    _groupNameTextController.dispose();
+    _groupNameTextController!.dispose();
     super.dispose();
   }
 
   void setEnabledButton() {
     setState(() {
-      _enableButton = _formKey.currentState.validate() &&
-          _groupNameTextController.text.isNotEmpty;
+      _enableButton = _formKey.currentState!.validate() &&
+          _groupNameTextController!.text.isNotEmpty;
     });
   }
 
   void _updateFriendsList(Set<String> friendsList) {
     setState(() {
-      _group.members = friendsList.toList();
+      _group!.members = friendsList.toList();
     });
     setEnabledButton();
   }
 
   void setIcon(IconData icon) {
     setState(() {
-      _group.icon = icon;
+      _group!.icon = icon;
     });
   }
 
@@ -65,6 +64,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
     return WillPopScope(
       onWillPop: () {
         Navigator.pop(context, false);
+        return Future.value(false);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -73,7 +73,8 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
             child: Text(
               "Cancel",
               style: TextStyle(
-                  color: theme.accentColor, fontWeight: FontWeight.bold),
+                  color: theme.secondaryHeaderColor,
+                  fontWeight: FontWeight.bold),
             ),
             onPressed: () {
               Navigator.pop(context, false);
@@ -86,12 +87,12 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                     child: Text(
                       "Save",
                       style: TextStyle(
-                          color: theme.accentColor,
+                          color: theme.secondaryHeaderColor,
                           fontWeight: FontWeight.bold),
                     ),
                     onPressed: () {
-                      _group.name = _groupNameTextController.value.text;
-                      userService.addGroup(_group);
+                      _group!.name = _groupNameTextController!.value.text;
+                      userService.addGroup(_group!);
                       Navigator.pop(context);
                     },
                   )
@@ -99,7 +100,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                     child: Text(
                       "Save",
                       style: TextStyle(
-                        color: Color(figmaColours.greyLight),
+                        color: Color(figmaColours!.greyLight),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -112,7 +113,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
           child: ListView.builder(
               shrinkWrap: true,
               itemCount:
-                  (_group.members != null) ? _group.members.length + 3 : 3,
+                  (_group!.members != null) ? _group!.members!.length + 3 : 3,
               itemBuilder: (BuildContext context, int index) {
                 if (index == 0) {
                   return getGroupNameTile(theme, userService);
@@ -124,10 +125,10 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                   return addMemberTile(theme, context);
                 }
                 return SelectedFriend(
-                    friend: _group.members[index - 3],
+                    friend: _group!.members![index - 3],
                     onRemove: () {
                       setState(() {
-                        _group.members.removeAt(index - 3);
+                        _group!.members!.removeAt(index - 3);
                       });
                       setEnabledButton();
                     });
@@ -141,13 +142,13 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
     return Padding(
       padding: const EdgeInsets.only(top: 30),
       child: TextFormField(
-        style: TextStyle(color: theme.accentColor, fontSize: 18),
+        style: TextStyle(color: theme.secondaryHeaderColor, fontSize: 18),
         decoration: new InputDecoration(
           prefixIconConstraints: BoxConstraints(minWidth: 0, minHeight: 0),
           // isDense: true,
           prefixIcon: Padding(
             padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-            child: Text("Name", style: theme.textTheme.headline4),
+            child: Text("Name", style: theme.textTheme.headlineMedium),
           ),
           hintText: "Add a group name",
         ),
@@ -162,7 +163,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
               return "Group names can't be more than 20 characters";
             }
           }
-          if (userService.currentUser.groups
+          if (userService.currentUser!.groups!
               .map((GroupModel group) => group.name)
               .contains(value)) {
             return 'You already have a group with that name.';
@@ -196,11 +197,11 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(28, 0, 16, 0),
-                child: Text("Icon", style: theme.textTheme.headline4),
+                child: Text("Icon", style: theme.textTheme.headlineMedium),
               ),
               Icon(
-                _group.icon,
-                color: Color(figmaColours.highlight),
+                _group!.icon,
+                color: Color(figmaColours!.highlight),
               ),
             ],
           ),
@@ -226,7 +227,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                 builder: (context) {
                   return FriendSelectorSheet(
                     onContinue: _updateFriendsList,
-                    friendsSelected: _group.members.toSet(),
+                    friendsSelected: _group!.members!.toSet(),
                   );
                 },
               );
@@ -238,16 +239,16 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   }
 
   Widget section({
-    @required ThemeData theme,
-    @required String title,
-    @required Widget child,
+    @required ThemeData? theme,
+    @required String? title,
+    @required Widget? child,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SubTitleText(text: title),
         Container(
-          color: theme.primaryColor,
+          color: theme!.primaryColor,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: child,
@@ -259,9 +260,9 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 }
 
 class SelectedFriend extends StatelessWidget {
-  final String friend;
-  final VoidCallback onRemove;
-  UserModel friendModel;
+  final String? friend;
+  final VoidCallback? onRemove;
+  UserModel? friendModel;
   final figmaColours = FigmaColours();
 
   SelectedFriend({
@@ -272,7 +273,7 @@ class SelectedFriend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _userService = Provider.of<UserService>(context);
-    friendModel = _userService.getAFriendModelFromId(friend);
+    friendModel = _userService.getAFriendModelFromId(friend!);
     return Padding(
       padding: const EdgeInsets.only(top: 4.0),
       child: Column(
@@ -285,8 +286,8 @@ class SelectedFriend extends StatelessWidget {
                 size: 20,
               ),
               title: Text(
-                "${friendModel.firstName} ${friendModel.lastName}",
-                style: Theme.of(context).textTheme.headline4,
+                "${friendModel!.firstName} ${friendModel!.lastName}",
+                style: Theme.of(context).textTheme.headlineMedium,
                 overflow: TextOverflow.ellipsis,
               ),
               trailing: IconButton(

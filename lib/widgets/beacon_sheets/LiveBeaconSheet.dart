@@ -10,7 +10,7 @@ import '../BeaconBottomSheet.dart';
 import '../ProfilePicWidget.dart';
 
 class LiveBeaconSheet extends BeaconSheet {
-  LiveBeaconSheet({@required LiveBeacon beacon}) : super(beacon);
+  LiveBeaconSheet({@required LiveBeacon? beacon}) : super(beacon!);
 
   FigmaColours figmaColours = FigmaColours();
 
@@ -18,8 +18,8 @@ class LiveBeaconSheet extends BeaconSheet {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     UserService userService = Provider.of<UserService>(context);
-    UserModel currentUser = userService.currentUser;
-    UserModel host = userService.getAFriendModelFromId(beacon.userId);
+    UserModel currentUser = userService.currentUser!;
+    UserModel host = userService.getAFriendModelFromId(beacon.userId!);
 
     return Wrap(children: [
       Container(
@@ -53,7 +53,7 @@ class LiveBeaconSheet extends BeaconSheet {
                               Flexible(
                                 child: Text(
                                   '${beacon.desc}',
-                                  style: theme.textTheme.headline5,
+                                  style: theme.textTheme.headlineSmall,
                                 ),
                               )
                             ],
@@ -82,15 +82,15 @@ class LiveBeaconSheet extends BeaconSheet {
 
 class Header extends StatelessWidget {
   const Header({
-    Key key,
+    Key? key,
     @required this.host,
     @required this.theme,
     @required this.figmaColours,
-  })  :  super(key: key);
+  }) : super(key: key);
 
-  final UserModel host;
-  final ThemeData theme;
-  final FigmaColours figmaColours;
+  final UserModel? host;
+  final ThemeData? theme;
+  final FigmaColours? figmaColours;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +112,7 @@ class Header extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        '${host.firstName} ${host.lastName}',
+                        '${host!.firstName} ${host!.lastName}',
                         style: TextStyle(
                           fontSize: 22,
                           color: Colors.white,
@@ -134,4 +134,3 @@ class Header extends StatelessWidget {
     );
   }
 }
-

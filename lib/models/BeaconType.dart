@@ -1,16 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-enum BeaconType {
-  live,
-  casual,
-  event
-}
+enum BeaconType { live, casual, event }
 
 extension BeaconTypeEx on BeaconType {
-
-  String get title {
-    switch(this) {
+  String? get title {
+    switch (this) {
       case BeaconType.live:
         return 'Live';
       case BeaconType.casual:
@@ -22,8 +16,8 @@ extension BeaconTypeEx on BeaconType {
     }
   }
 
-  String get description {
-    switch(this) {
+  String? get description {
+    switch (this) {
       case BeaconType.live:
         return 'Let your friends know where you are and what you’re up to';
       case BeaconType.casual:
@@ -35,8 +29,8 @@ extension BeaconTypeEx on BeaconType {
     }
   }
 
-  Color get color {
-    switch(this) {
+  Color? get color {
+    switch (this) {
       case BeaconType.live:
         return Color(0xFF00C365);
       case BeaconType.casual:
@@ -47,5 +41,4 @@ extension BeaconTypeEx on BeaconType {
         return Colors.white;
     }
   }
-
 }

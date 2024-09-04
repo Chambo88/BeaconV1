@@ -1,7 +1,7 @@
 import 'package:beacon/models/EventModel.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
-import 'package:beacon/widgets/SearchBar.dart';
+import 'package:beacon/widgets/BeaconSearchBar.dart';
 import 'package:beacon/widgets/progress_widget.dart';
 import 'package:beacon/widgets/tiles/EventTile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SearchPage extends StatefulWidget {
-  final Future<QuerySnapshot> eventData;
+  final Future<QuerySnapshot>? eventData;
 
   SearchPage({this.eventData});
 
@@ -39,17 +39,17 @@ class _SearchPageState extends State<SearchPage> {
       query = searchQuery.replaceAll(" ", "").toLowerCase();
       events.forEach((event) {
         //event name check
-        eventNameCleaned = event.eventName.toLowerCase().replaceAll(" ", "");
+        eventNameCleaned = event.eventName!.toLowerCase().replaceAll(" ", "");
         if (eventNameCleaned.contains(query)) {
           newResults.add(event);
-        } else if (event.locationName // location check
+        } else if (event.locationName! // location check
             .toLowerCase()
             .replaceAll(" ", "")
             .contains(query)) {
           newResults.add(event);
         } else {
           //genre check
-          event.genres.forEach((element) {
+          event.genres!.forEach((element) {
             if (element.toLowerCase().contains(query)) {
               newResults.add(event);
             }
@@ -80,7 +80,7 @@ class _SearchPageState extends State<SearchPage> {
               itemCount: filteredEvents.length,
               itemBuilder: (context, index) {
                 String mutualFriendCount = userService
-                    .getMutual(filteredEvents[index].usersAttending)
+                    .getMutual(filteredEvents[index].usersAttending!)
                     .length
                     .toString();
                 return EventTile(
@@ -100,18 +100,18 @@ class _SearchPageState extends State<SearchPage> {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: SearchBar(
+          title: BeaconSearchBar(
             controller: searchController,
             onChanged: onChanged,
             hintText: "Name, genre, place.. ",
           ),
         ),
-        body: FutureBuilder(
+        body: FutureBuilder<QuerySnapshot>(
           future: widget.eventData,
           builder: (context, dataSnapshot) {
             if (dataSnapshot.hasError) {
               print(dataSnapshot.error);
-              return Text(dataSnapshot.error);
+              return Text(dataSnapshot.error.toString());
             }
 
             if (dataSnapshot.connectionState != ConnectionState.done) {
@@ -120,9 +120,16 @@ class _SearchPageState extends State<SearchPage> {
 
             if (dataSnapshot.hasData) {
               if (!gotData) {
-                dataSnapshot.data.docs.forEach((document) {
-                  EventModel event = EventModel.fromJson(document.data());
-                  events.add(event);
+                dataSnapshot.data!.docs.forEach((document) {
+                  final data = document.data();
+
+                  if (data is Map<String, dynamic>) {
+                    EventModel event = EventModel.fromJson(data);
+                    events.add(event);
+                  } else {
+                    // Handle the case where the data is not of the expected type.
+                    throw Exception('Unexpected data format');
+                  }
                 });
                 gotData = true;
               }

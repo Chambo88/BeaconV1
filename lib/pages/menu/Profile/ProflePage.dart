@@ -19,57 +19,77 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   double spacing = 6.0;
-  File _editedImage;
-  String downloadURL;
+  File? _editedImage;
+  String? downloadURL;
+  ImageCropper ic = ImageCropper();
 
   Future getImage() async {
-
+    // Clear any previous edited image
     _editedImage = null;
 
-    var image = await ImagePicker.platform.pickImage(source: ImageSource.gallery);
+    // Pick image from gallery using ImagePicker
+    final XFile? image =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
     if (image != null) {
+      // Crop the image using the updated cropImage method
       _editedImage = await cropImage(File(image.path));
     }
 
+    // If the image was cropped and edited, navigate to the next page
     if (_editedImage != null) {
-      Navigator.of(context).push(
+      Navigator.of(context)
+          .push(
+            CustomPageRoute(
+              builder: (context) => EditProfilePicturePage(
+                image: PickedFile(image!.path),
+                editedImage: _editedImage,
+              ),
+            ),
+          )
+          .then((value) => setState(() {}));
+    }
+  }
 
-          CustomPageRoute(builder: (context) => EditProfilePicturePage(image: image, editedImage: _editedImage))).
-      then((value) => setState(() {
-      }));
+  Future<File?> cropImage(File imageFile) async {
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: imageFile.path,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+      ],
+      cropStyle: CropStyle.circle,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: Colors.black,
+          toolbarWidgetColor: Colors.white,
+          activeControlsWidgetColor: Colors.orange,
+          statusBarColor: Colors.black,
+          backgroundColor: Colors.black,
+          lockAspectRatio: true,
+        ),
+        IOSUiSettings(
+          title: 'Crop Image',
+        ),
+      ],
+    );
+
+    if (croppedFile != null) {
+      return File(croppedFile.path); // Return cropped file path
     }
 
+    return null; // Return null if cropping was canceled
   }
-
-  Future<File> cropImage(File imageFile) async {
-    return await ImageCropper.cropImage(sourcePath: imageFile.path,
-        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
-        aspectRatioPresets: [CropAspectRatioPreset.square],
-        compressQuality: 100,
-        cropStyle: CropStyle.circle,
-        androidUiSettings: AndroidUiSettings(
-            toolbarTitle: '',
-            toolbarColor: Colors.black,
-            toolbarWidgetColor: Theme.of(context).accentColor,
-            activeControlsWidgetColor: Theme.of(context).accentColor,
-            statusBarColor: Colors.black
-        ),
-        iosUiSettings: IOSUiSettings(
-          title: '',
-        )
-    );
-  }
-
 
   @override
   Widget build(BuildContext context) {
-    
     final theme = Theme.of(context);
     final AuthService _auth = context.watch<AuthService>();
-    UserModel user = context.read<UserService>().currentUser;
+    UserModel user = context.read<UserService>().currentUser!;
     return Scaffold(
       appBar: AppBar(
-        leading :IconButton(
+        leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
             Navigator.of(context).pop();
@@ -83,56 +103,48 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-            child: Stack(
-              children: [
-
-                ProfilePicture(
-                  user: user,
-                  onClicked: () {
-                    getImage();
-                  },
-                  size: 70,
-                ),
-                Positioned(
-                    bottom: -4,
-                    right: -4,
-                    child: Container(
-                      width: 50,
-                      height: 50,
-
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: Colors.black,
-                              width: 5.0
-                          )
+            child: Stack(children: [
+              ProfilePicture(
+                user: user,
+                onClicked: () {
+                  getImage();
+                },
+                size: 70,
+              ),
+              Positioned(
+                  bottom: -4,
+                  right: -4,
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.black, width: 5.0)),
+                    child: ClipOval(
+                      child: Container(
+                        color: theme.secondaryHeaderColor,
+                        child: IconButton(
+                            onPressed: () {
+                              getImage();
+                            },
+                            icon: Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 20,
+                            )),
                       ),
-                      child: ClipOval(
-                        child: Container(
-                          color: theme.accentColor,
-                          child: IconButton(
-                              onPressed: () {getImage();},
-                              icon: Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
-                                size: 20,
-                              )),
-                        ),
-                      ),
-                    )
-                ),]
-            ),
+                    ),
+                  )),
+            ]),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 16, 0, 12),
             child: Text(
-                "${user.firstName} ${user.lastName}",
+              "${user.firstName} ${user.lastName}",
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 25,
-                fontWeight: FontWeight.bold
-
-              ),
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold),
             ),
           ),
           SubTitleText(text: "Profile"),
@@ -140,13 +152,11 @@ class _ProfilePageState extends State<ProfilePage> {
             icon: Icons.edit_outlined,
             title: 'Name',
             onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => EditNamePage())).then((value) => setState(() {}));
-
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => EditNamePage()))
+                  .then((value) => setState(() {}));
             },
           ),
-
-
         ],
       ),
     );
@@ -159,5 +169,3 @@ class CustomPageRoute extends MaterialPageRoute {
   @override
   Duration get transitionDuration => const Duration(milliseconds: 0);
 }
-
-

@@ -1,9 +1,7 @@
 import 'package:beacon/components/BeaconSelector.dart';
 import 'package:beacon/components/BeaconSideDrawer.dart';
 import 'package:beacon/components/Map.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 
 class MapPage extends StatefulWidget {
   @override
@@ -12,7 +10,6 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
-
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     final theme = Theme.of(context);
 
@@ -30,7 +27,7 @@ class _MapPageState extends State<MapPage> {
             padding: EdgeInsets.only(bottom: 30, right: 10),
             child: RawMaterialButton(
               onPressed: () {
-                _scaffoldKey.currentState.openDrawer();
+                _scaffoldKey.currentState!.openDrawer();
               },
               elevation: 10.0,
               fillColor: theme.primaryColorLight,

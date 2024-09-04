@@ -24,9 +24,9 @@ enum CasualBeaconCreatorStage {
 }
 
 class CasualBeaconCreator extends StatefulWidget {
-  final VoidCallback onBack;
-  final BeaconCallback onCreated;
-  final VoidCallback onClose;
+  final VoidCallback? onBack;
+  final BeaconCallback? onCreated;
+  final VoidCallback? onClose;
 
   CasualBeaconCreator({
     @required this.onClose,
@@ -39,7 +39,7 @@ class CasualBeaconCreator extends StatefulWidget {
 }
 
 class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
-  UserService _userService;
+  UserService? _userService;
   NotificationService _notificationService = NotificationService();
   CasualBeacon _beacon = CasualBeacon();
   CasualBeaconCreatorStage _stage = CasualBeaconCreatorStage.description;
@@ -134,8 +134,8 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
           currentPageIndex: 3,
           onBackClick: (inviteAll, groups, friendList) {
             setState(() {
-              _friends = friendList;
-              _groups = groups;
+              _friends = friendList!;
+              _groups = groups!;
               _stage = CasualBeaconCreatorStage.location;
             });
           },
@@ -146,14 +146,14 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
 
           onContinue: (displayToAll, groups, friendList) {
             setState(() {
-              if (displayToAll) {
-                _beacon.usersThatCanSee = _userService.currentUser.friends;
-                _friends = _userService.currentUser.friends.toSet();
+              if (displayToAll!) {
+                _beacon.usersThatCanSee = _userService!.currentUser!.friends;
+                _friends = _userService!.currentUser!.friends!.toSet();
                 _displayToAll = displayToAll;
               } else {
                 _displayToAll = displayToAll;
-                _groups = groups;
-                _friends = friendList;
+                _groups = groups!;
+                _friends = friendList!;
                 _beacon.usersThatCanSee = friendList.toList();
               }
               _stage = CasualBeaconCreatorStage.invite;
@@ -165,15 +165,16 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
           totalPageCount: 5,
           currentPageIndex: 4,
           initFriends: _friends,
-          initGroups:
-              _displayToAll ? _userService.currentUser.groups.toSet() : _groups,
+          initGroups: _displayToAll
+              ? _userService!.currentUser!.groups!.toSet()
+              : _groups,
           initNotifyAll: _notifyAll,
           initNotifyFriends: _notifyFriends,
-          fullList: _userService.currentUser.friendModels,
+          fullList: _userService!.currentUser!.friendModels,
           onBackClick: (notifyFriends, notifyAll) {
             setState(() {
-              _notifyFriends = notifyFriends;
-              _notifyAll = notifyAll;
+              _notifyFriends = notifyFriends!;
+              _notifyAll = notifyAll!;
               _stage = CasualBeaconCreatorStage.whoCanSee;
             });
           },
@@ -183,17 +184,17 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
             setState(() {
               String beaconId = Uuid().v4();
               _beacon.id = beaconId;
-              UserModel currentUser = _userService.currentUser;
+              UserModel currentUser = _userService!.currentUser!;
               _beacon.userId = currentUser.id;
-              _beacon.peopleGoing = [currentUser.id];
+              _beacon.peopleGoing = [currentUser.id!];
               _notificationService.sendNotification(
                 users,
-                _userService.currentUser,
+                _userService!.currentUser!,
                 'venueBeaconInvite',
-                beaconTitle: _beacon.eventName,
-                beaconDesc: _beacon.desc,
-                beaconId: _beacon.id,
-                customId: _beacon.id,
+                beaconTitle: _beacon.eventName!,
+                beaconDesc: _beacon.desc!,
+                beaconId: _beacon.id!,
+                customId: _beacon.id!,
               );
               _notificationService.sendPushNotification(
                 users,
@@ -203,7 +204,7 @@ class _CasualBeaconCreatorState extends State<CasualBeaconCreator> {
                 body: "${_beacon.desc}",
                 type: "venueBeaconInvite",
               );
-              widget.onCreated(_beacon);
+              widget.onCreated!(_beacon);
             });
           },
         );

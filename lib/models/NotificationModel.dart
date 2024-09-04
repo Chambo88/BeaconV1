@@ -10,19 +10,17 @@
 //   event
 //
 
-
-
 //Pretty sure some sort of extension/inhertience thing would be better here for the different models
 class NotificationModel {
-  String sentFrom;
-  String type;
-  DateTime dateTime;
-  bool seen;
-  String id;
+  String? sentFrom;
+  String? type;
+  DateTime? dateTime;
+  bool? seen;
+  String? id;
   //for beaconNotifications
-  String beaconId;
-  String beaconDesc;
-  String beaconTitle;
+  String? beaconId;
+  String? beaconDesc;
+  String? beaconTitle;
 
   NotificationModel({
     this.type,
@@ -35,18 +33,16 @@ class NotificationModel {
     this.beaconId,
   });
 
-
   factory NotificationModel.fromMap(Map<String, dynamic> map) {
-
     return NotificationModel(
       sentFrom: map["sentFrom"],
       type: map["type"],
-      dateTime: DateTime.tryParse(map["dateTime"]?? ''),
-      beaconTitle: map["beaconTitle"]?? 'No title woops',
-      beaconDesc: map["beaconDesc"]?? '',
-      beaconId: map["beaconId"]?? null,
-      seen: map["seen"]?? false,
-      id: map["id"]?? "I messed up",
+      dateTime: DateTime.tryParse(map["dateTime"] ?? ''),
+      beaconTitle: map["beaconTitle"] ?? 'No title woops',
+      beaconDesc: map["beaconDesc"] ?? '',
+      beaconId: map["beaconId"] ?? null,
+      seen: map["seen"] ?? false,
+      id: map["id"] ?? "I messed up",
     );
   }
 }

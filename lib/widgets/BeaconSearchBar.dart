@@ -1,16 +1,15 @@
 import 'package:beacon/util/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
-class SearchBar extends StatelessWidget {
-  FigmaColours figmaColours = FigmaColours();
-  final TextEditingController controller;
-  final String hintText;
-  final Function(String) onChanged;
-  final double width;
-  final bool autofocus;
+class BeaconSearchBar extends StatelessWidget {
+  final FigmaColours? figmaColours = FigmaColours();
+  final TextEditingController? controller;
+  final String? hintText;
+  final Function(String)? onChanged;
+  final double? width;
+  final bool? autofocus;
 
-  SearchBar({
+  BeaconSearchBar({
     @required this.controller,
     @required this.onChanged,
     @required this.width,
@@ -20,7 +19,7 @@ class SearchBar extends StatelessWidget {
 
   TextField searchBar() {
     return TextField(
-      autofocus: autofocus,
+      autofocus: autofocus!,
       textAlignVertical: TextAlignVertical.center,
       autocorrect: false,
       controller: controller,
@@ -28,15 +27,15 @@ class SearchBar extends StatelessWidget {
       decoration: InputDecoration(
         prefixIcon: Icon(
           Icons.search,
-          color: Color(figmaColours.greyLight),
+          color: Color(figmaColours!.greyLight),
         ),
         isCollapsed: true,
         hintText: hintText ?? "",
         hintStyle: TextStyle(
-          color: Color(figmaColours.greyLight),
+          color: Color(figmaColours!.greyLight),
           fontSize: 18.0,
         ),
-        fillColor: Color(figmaColours.greyDark),
+        fillColor: Color(figmaColours!.greyDark),
         filled: true,
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(color: Colors.white.withOpacity(0)),
@@ -49,18 +48,18 @@ class SearchBar extends StatelessWidget {
         suffixIcon: IconButton(
           icon: Icon(
             Icons.clear,
-            color: Color(figmaColours.highlight),
+            color: Color(figmaColours!.highlight),
           ),
           onPressed: () {
-            onChanged('');
-            controller.clear();
+            onChanged!('');
+            controller!.clear();
           },
         ),
       ),
       onChanged: (value) {
-        onChanged(value);
+        onChanged!(value);
         if (value == '') {
-          controller.clear();
+          controller!.clear();
         }
       },
     );

@@ -10,13 +10,13 @@ import 'CreatorPage.dart';
 typedef void LocationCallback(dynamic location);
 
 class LocationPage extends StatefulWidget {
-  final LocationCallback onBackClick;
-  final VoidCallback onClose;
-  final LocationCallback onContinue;
-  final String continueText;
-  final int totalPageCount;
-  final int currentPageIndex;
-  final LocationModel initLocation;
+  final LocationCallback? onBackClick;
+  final VoidCallback? onClose;
+  final LocationCallback? onContinue;
+  final String? continueText;
+  final int? totalPageCount;
+  final int? currentPageIndex;
+  final LocationModel? initLocation;
 
   LocationPage({
     @required this.onBackClick,
@@ -33,9 +33,9 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
-  List<Location> locations = [];
-  UserLocationModel _userLocation;
-  LocationModel _selectedLocation;
+  List<Location>? locations = [];
+  UserLocationModel? _userLocation;
+  LocationModel? _selectedLocation;
 
   @override
   void initState() {
@@ -46,9 +46,6 @@ class _LocationPageState extends State<LocationPage> {
   }
 
   bool isNumeric(String s) {
-    if (s == null) {
-      return false;
-    }
     return double.tryParse(s) != null;
   }
 
@@ -60,12 +57,12 @@ class _LocationPageState extends State<LocationPage> {
     return CreatorPage(
       title: 'Place',
       onClose: widget.onClose,
-      onBackClick: () => widget.onBackClick(_selectedLocation),
+      onBackClick: () => widget.onBackClick!(_selectedLocation),
       continueText: widget.continueText,
       totalPageCount: widget.totalPageCount,
       currentPageIndex: widget.currentPageIndex,
       onContinuePressed: () {
-        if (_selectedLocation != null) widget.onContinue(_selectedLocation);
+        if (_selectedLocation != null) widget.onContinue!(_selectedLocation);
       },
       child: _userLocation != null
           ? Column(
@@ -81,34 +78,34 @@ class _LocationPageState extends State<LocationPage> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                '${_selectedLocation.name} ',
-                                style: theme.textTheme.headline5,
+                                '${_selectedLocation!.name} ',
+                                style: theme.textTheme.headlineSmall,
                               ),
-                              Text('${_selectedLocation.street}'),
+                              Text('${_selectedLocation!.street}'),
                             ],
                           ),
                         )
                       : FutureBuilder<List<Placemark>>(
                           future: placemarkFromCoordinates(
-                            _userLocation.latitude,
-                            _userLocation.longitude,
+                            _userLocation!.latitude!,
+                            _userLocation!.longitude!,
                           ),
                           builder: (context, snapshot) {
                             while (!snapshot.hasData) {
                               return circularProgress();
                             }
                             LocationModel newLocation = LocationModel(
-                                lat: _userLocation.latitude,
-                                long: _userLocation.longitude,
-                                name: snapshot.data[0].street,
-                                street: snapshot.data[0].street,
-                                fullAdress: snapshot.data[0].street +
+                                lat: _userLocation!.latitude,
+                                long: _userLocation!.longitude,
+                                name: snapshot.data![0].street,
+                                street: snapshot.data![0].street,
+                                fullAdress: snapshot.data![0].street! +
                                     ", " +
-                                    snapshot.data[0].subLocality +
+                                    snapshot.data![0].subLocality! +
                                     ", " +
-                                    snapshot.data[0].locality +
+                                    snapshot.data![0].locality! +
                                     ", " +
-                                    snapshot.data[0].country);
+                                    snapshot.data![0].country!);
                             _selectedLocation = newLocation;
                             return ListTile(
                               leading: Icon(
@@ -120,10 +117,10 @@ class _LocationPageState extends State<LocationPage> {
                                 children: [
                                   Text(
                                     'Current Location',
-                                    style: theme.textTheme.headline5,
+                                    style: theme.textTheme.headlineSmall,
                                   ),
                                   Text(
-                                    '${snapshot.data[0].street}',
+                                    '${snapshot.data![0].street}',
                                   ),
                                 ],
                               ),
@@ -139,19 +136,19 @@ class _LocationPageState extends State<LocationPage> {
                           return LocationSelectorSheet(
                             onSelected: (location) async {
                               locations = await locationFromAddress(
-                                  location.description);
+                                  location.description!);
                               List<Placemark> placeMark =
                                   await placemarkFromCoordinates(
-                                locations[0].latitude,
-                                locations[0].longitude,
+                                locations![0].latitude,
+                                locations![0].longitude,
                               );
                               LocationModel newLocation = LocationModel(
-                                lat: locations[0].latitude,
-                                long: locations[0].longitude,
+                                lat: locations![0].latitude,
+                                long: locations![0].longitude,
                                 fullAdress: location.description,
-                                name: isNumeric(location.terms[0].value)
-                                    ? location.terms[1].value
-                                    : location.terms[0].value,
+                                name: isNumeric(location.terms![0].value!)
+                                    ? location.terms![1].value
+                                    : location.terms![0].value,
                                 street: placeMark[0].street,
                               );
                               _selectedLocation = newLocation;

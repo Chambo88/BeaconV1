@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SubTitleText extends StatelessWidget {
-
-  String text;
+  String? text;
 
   SubTitleText({
     @required this.text,
@@ -16,13 +15,12 @@ class SubTitleText extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 0, 8),
           child: Text(
-              text,
-              style: theme.textTheme.subtitle1,
+            text!,
+            style: theme.textTheme.titleMedium,
             overflow: TextOverflow.clip,
           ),
         ),
       ],
     );
-
   }
 }

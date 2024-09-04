@@ -1,4 +1,3 @@
-
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/Notifications/NotificationTab.dart';
 import 'package:beacon/pages/menu/notificationsSettingsPage.dart';
@@ -6,7 +5,6 @@ import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,10 +16,10 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
-  List<Widget> tiles;
-  Set<String> notificationsTempUnread;
+  List<Widget>? tiles;
+  Set<String>? notificationsTempUnread;
   FigmaColours figmaColours = FigmaColours();
-  int currentIndex;
+  int? currentIndex;
 
   @override
   void initState() {
@@ -29,7 +27,6 @@ class _NotificationPageState extends State<NotificationPage> {
     super.initState();
     currentIndex = 0;
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +47,9 @@ class _NotificationPageState extends State<NotificationPage> {
           ],
           automaticallyImplyLeading: false,
           bottom: TabBar(
-            labelColor: theme.accentColor,
+            labelColor: theme.secondaryHeaderColor,
             unselectedLabelColor: Colors.white,
-            labelStyle: theme.textTheme.headline3,
+            labelStyle: theme.textTheme.displaySmall,
             onTap: (index) {
               currentIndex = index;
               setState(() {});
@@ -77,7 +74,7 @@ class _NotificationPageState extends State<NotificationPage> {
     );
   }
 
-  Widget getFriendRequestIcon () {
+  Widget getFriendRequestIcon() {
     return Container(
       width: 40,
       child: new Stack(
@@ -85,8 +82,12 @@ class _NotificationPageState extends State<NotificationPage> {
         children: <Widget>[
           Center(
             child: Icon(
-              (currentIndex == 1)? Icons.person_add : Icons.person_add_outlined,
-              color: (currentIndex == 1)? Color(FigmaColours().highlight) : Colors.white,
+              (currentIndex == 1)
+                  ? Icons.person_add
+                  : Icons.person_add_outlined,
+              color: (currentIndex == 1)
+                  ? Color(FigmaColours().highlight)
+                  : Colors.white,
             ),
           ),
           getFriendRequestDot(context),
@@ -95,59 +96,58 @@ class _NotificationPageState extends State<NotificationPage> {
     );
   }
 
-
   StreamBuilder getFriendRequestDot(BuildContext context) {
-    UserModel currentUser = context.read<UserService>().currentUser;
+    UserModel currentUser = context.read<UserService>().currentUser!;
     return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser.id)
-          .collection('notifications')
-          .where('type', isEqualTo: 'friendRequest')
-          .snapshots()?.take(30),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          print(snapshot.error);
-        }
-        while (!snapshot.hasData) {
-          return Container();
-        }
-
-        if (snapshot.connectionState == ConnectionState.done) {}
-        int notificationCount = 0;
-        snapshot.data.docs.forEach((doc){
-          if(doc.data()["seen"] == false) {
-            notificationCount += 1;
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser.id)
+            .collection('notifications')
+            .where('type', isEqualTo: 'friendRequest')
+            .snapshots()
+            .take(30),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            print(snapshot.error);
           }
-        });
-        if (notificationCount == 0) {
-          return Positioned(child: Container());
-        }
+          while (!snapshot.hasData) {
+            return Container();
+          }
 
-        return Positioned(
-          right: 0,
-          top: 0,
-          child: new Container(
-            padding: EdgeInsets.all(1),
-            decoration: new BoxDecoration(
-              color: Color(FigmaColours().highlight),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            constraints: BoxConstraints(
-              minWidth: 12,
-              minHeight: 12,
-            ),
-            child: new Text(
-              notificationCount.toString(),
-              style: new TextStyle(
-                color: Colors.white,
-                fontSize: 10,
+          if (snapshot.connectionState == ConnectionState.done) {}
+          int notificationCount = 0;
+          snapshot.data.docs.forEach((doc) {
+            if (doc.data()["seen"] == false) {
+              notificationCount += 1;
+            }
+          });
+          if (notificationCount == 0) {
+            return Positioned(child: Container());
+          }
+
+          return Positioned(
+            right: 0,
+            top: 0,
+            child: new Container(
+              padding: EdgeInsets.all(1),
+              decoration: new BoxDecoration(
+                color: Color(FigmaColours().highlight),
+                borderRadius: BorderRadius.circular(8),
               ),
-              textAlign: TextAlign.center,
+              constraints: BoxConstraints(
+                minWidth: 12,
+                minHeight: 12,
+              ),
+              child: new Text(
+                notificationCount.toString(),
+                style: new TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
-        );
-      }
-    );
+          );
+        });
   }
 }

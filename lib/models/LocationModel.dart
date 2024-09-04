@@ -1,9 +1,9 @@
 class LocationModel {
-  double lat;
-  double long;
-  String fullAdress;
-  String name;
-  String street;
+  double? lat;
+  double? long;
+  String? fullAdress;
+  String? name;
+  String? street;
   LocationModel({
     this.lat,
     this.long,

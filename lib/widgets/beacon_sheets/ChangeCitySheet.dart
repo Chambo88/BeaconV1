@@ -1,4 +1,3 @@
-import 'package:beacon/Assests/Icons.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../BeaconBottomSheet.dart';
 
-
 class ChangeCitySheet extends StatelessWidget {
-
   ChangeCitySheet();
   FigmaColours figmaColours = FigmaColours();
 
@@ -17,37 +14,34 @@ class ChangeCitySheet extends StatelessWidget {
     final theme = Theme.of(context);
     UserService userService = Provider.of<UserService>(context);
     return Container(
-      height: MediaQuery.of(context).size.height ,
+      height: MediaQuery.of(context).size.height,
       child: BeaconBottomSheet(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 10),
-                        child: Text(
-                          "See events in",
-                          style: theme.textTheme.headline2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+              Stack(children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      "See events in",
+                      style: theme.textTheme.displayMedium,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                        icon: Icon(Icons.close_rounded),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    )
-
-                  ]
-              ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    icon: Icon(Icons.close_rounded),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                )
+              ]),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -61,10 +55,8 @@ class ChangeCitySheet extends StatelessWidget {
                           height: 1,
                         ),
                         ListTile(
-                          title: Text(
-                            "Christchurch",
-                            style: theme.textTheme.headline3
-                          ),
+                          title: Text("Christchurch",
+                              style: theme.textTheme.displaySmall),
                           onTap: () {
                             userService.setCity("Christchurch");
                             Navigator.of(context).pop();
@@ -80,7 +72,7 @@ class ChangeCitySheet extends StatelessWidget {
                         Center(
                           child: Text(
                             "More coming soon!",
-                            style: Theme.of(context).textTheme.headline3,
+                            style: Theme.of(context).textTheme.displaySmall,
                           ),
                         ),
                       ],
@@ -90,7 +82,6 @@ class ChangeCitySheet extends StatelessWidget {
               )
             ],
           ),
-
         ),
       ),
     );

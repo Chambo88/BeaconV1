@@ -5,28 +5,27 @@ import 'package:beacon/widgets/ProfilePicWidget.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSelectorSheet.dart';
 import 'package:beacon/widgets/buttons/BeaconFlatButton.dart';
 import 'package:beacon/widgets/tiles/BeaconCreatorSubTitle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'CreatorPage.dart';
 
 typedef void InviteCallback(
-  bool displayToAll,
-  Set<GroupModel> groupList,
-  Set<String> friendsList,
+  bool? displayToAll,
+  Set<GroupModel>? groupList,
+  Set<String>? friendsList,
 );
 
 class WhoCanSeePage extends StatefulWidget {
-  final InviteCallback onBackClick;
-  final VoidCallback onClose;
-  final InviteCallback onContinue;
-  final String continueText;
-  final int totalPageCount;
-  final int currentPageIndex;
-  final Set<GroupModel> initGroups;
-  final Set<String> initFriends;
-  final bool initDisplayToAll;
+  final InviteCallback? onBackClick;
+  final VoidCallback? onClose;
+  final InviteCallback? onContinue;
+  final String? continueText;
+  final int? totalPageCount;
+  final int? currentPageIndex;
+  final Set<GroupModel>? initGroups;
+  final Set<String>? initFriends;
+  final bool? initDisplayToAll;
 
   WhoCanSeePage({
     @required this.onBackClick,
@@ -45,7 +44,7 @@ class WhoCanSeePage extends StatefulWidget {
 }
 
 class _WhoCanSeePageState extends State<WhoCanSeePage> {
-  UserService _userService;
+  UserService? _userService;
 
   var _displayToAll = false;
   var _groupList = Set<GroupModel>();
@@ -55,13 +54,13 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
   void initState() {
     super.initState();
     _groupList = {};
-    _friendsList = widget.initFriends;
-    _displayToAll = widget.initDisplayToAll;
+    _friendsList = widget.initFriends!;
+    _displayToAll = widget.initDisplayToAll!;
   }
 
   bool enableButton() {
     // return _displayToAll || _groupList.isNotEmpty || _friendsList.isNotEmpty;
-    return _displayToAll ||  _friendsList.isNotEmpty;
+    return _displayToAll || _friendsList.isNotEmpty;
   }
 
   @override
@@ -72,15 +71,18 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
     return CreatorPage(
       title: "Who's welcome?",
       onClose: widget.onClose,
-      onBackClick: () {return widget.onBackClick(_displayToAll, _groupList, _friendsList);},
+      onBackClick: () {
+        return widget.onBackClick!(_displayToAll, _groupList, _friendsList);
+      },
       continueText: widget.continueText,
       totalPageCount: widget.totalPageCount,
       currentPageIndex: widget.currentPageIndex,
       onContinuePressed: enableButton()
           ? () {
-        // return widget.onContinue(_displayToAll, _friendsList);
-        return widget.onContinue(_displayToAll, _groupList, _friendsList);
-      }
+              // return widget.onContinue(_displayToAll, _friendsList);
+              return widget.onContinue!(
+                  _displayToAll, _groupList, _friendsList);
+            }
           : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -92,12 +94,12 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
             trailing: Padding(
               padding: const EdgeInsets.only(right: 10),
               child: Switch(
-                  value: _displayToAll,
-                  onChanged: (value) {
-                    setState(() {
-                      _displayToAll = value;
-                    });
-                  },
+                value: _displayToAll,
+                onChanged: (value) {
+                  setState(() {
+                    _displayToAll = value;
+                  });
+                },
               ),
             ),
             onTap: () {
@@ -129,21 +131,24 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
   //   return allFriends;
   // }
 
-
   List<Widget> _selectedFriendTiles(BuildContext context) {
     UserService userService = Provider.of<UserService>(context);
     return _friendsList.map((friend) {
-      UserModel friendModel = userService.getAFriendModelFromId(friend, user: userService.currentUser);
-      if(friendModel.id == userService.currentUser.id) {
+      UserModel friendModel = userService.getAFriendModelFromId(friend,
+          user: userService.currentUser);
+      if (friendModel.id == userService.currentUser!.id) {
         return Container();
       }
       return ListTile(
         title: Text(
           "${friendModel.firstName} ${friendModel.lastName}",
-          style: Theme.of(context).textTheme.headline5,
+          style: Theme.of(context).textTheme.headlineSmall,
           overflow: TextOverflow.ellipsis,
         ),
-        leading: ProfilePicture(user: friendModel, size: 18,),
+        leading: ProfilePicture(
+          user: friendModel,
+          size: 18,
+        ),
       );
     }).toList();
   }
@@ -155,14 +160,14 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
   }
 
   void _handleGroupSelectionChanged(
-      GroupModel group, bool selected, StateSetter setState) {
-    setState(() {
-      if (!selected) {
+      GroupModel? group, bool? selected, StateSetter? setState) {
+    setState!(() {
+      if (!selected!) {
         // _groupList.add(group);
-        _friendsList.addAll(group.members);
+        _friendsList.addAll(group!.members!);
       } else {
         // _groupList.remove(group);
-        _friendsList.removeAll(group.members);
+        _friendsList.removeAll(group!.members!);
       }
     });
   }
@@ -203,7 +208,7 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
       height: 85.0,
       padding: EdgeInsets.symmetric(vertical: 5.0),
       color: Theme.of(context).primaryColor,
-      child: _userService.currentUser.groups.isEmpty
+      child: _userService!.currentUser!.groups!.isEmpty
           ? Center(
               child: Text(
                 "You have no groups",
@@ -211,17 +216,18 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
             )
           : ListView(
               scrollDirection: Axis.horizontal,
-              children: _userService.currentUser.groups.map((GroupModel group) {
-                if(_friendsList.containsAll(group.members)) {
+              children:
+                  _userService!.currentUser!.groups!.map((GroupModel group) {
+                if (_friendsList.containsAll(group.members!)) {
                   _groupList.add(group);
                 } else {
-                  if(_groupList.contains(group)) {
+                  if (_groupList.contains(group)) {
                     _groupList.remove(group);
                   }
                 }
                 return SingleGroup(
                   group: group,
-                  selected: _friendsList.containsAll(group.members),
+                  selected: _friendsList.containsAll(group.members!),
                   onGroupChanged: _handleGroupSelectionChanged,
                   setState: setState,
                 );
@@ -232,9 +238,9 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
 }
 
 typedef void GroupListChangeCallBack(
-  GroupModel group,
-  bool selected,
-  StateSetter setState,
+  GroupModel? group,
+  bool? selected,
+  StateSetter? setState,
 );
 
 class SingleGroup extends StatelessWidget {
@@ -245,10 +251,10 @@ class SingleGroup extends StatelessWidget {
     this.setState,
   }) : super(key: ObjectKey(group));
 
-  final GroupModel group;
-  final bool selected;
-  final StateSetter setState;
-  final GroupListChangeCallBack onGroupChanged;
+  final GroupModel? group;
+  final bool? selected;
+  final StateSetter? setState;
+  final GroupListChangeCallBack? onGroupChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -261,7 +267,7 @@ class SingleGroup extends StatelessWidget {
               color: Color(0xFF4FE30B),
               shape: CircleBorder(
                 side: BorderSide(
-                  color: selected ? Colors.purple : Color(0xFF4FE30B),
+                  color: selected! ? Colors.purple : Color(0xFF4FE30B),
                   width: 2,
                 ),
               ), // button color
@@ -271,11 +277,11 @@ class SingleGroup extends StatelessWidget {
                   width: 60,
                   height: 60,
                   child: Icon(
-                    group.icon,
+                    group!.icon,
                   ),
                 ),
                 onTap: () {
-                  onGroupChanged(
+                  onGroupChanged!(
                     group,
                     selected,
                     setState,
@@ -285,7 +291,7 @@ class SingleGroup extends StatelessWidget {
             ),
           ),
           Text(
-            group.name,
+            group!.name!,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 12,

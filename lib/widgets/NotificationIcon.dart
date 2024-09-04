@@ -1,4 +1,3 @@
-
 import 'package:beacon/util/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:beacon/services/AuthService.dart';
@@ -6,11 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class NotificationIcon extends StatefulWidget {
-
   @override
   _NotificationIconState createState() => _NotificationIconState();
 
-  bool active;
+  bool? active;
   NotificationIcon({this.active});
 }
 
@@ -18,8 +16,8 @@ class _NotificationIconState extends State<NotificationIcon> {
   FigmaColours figmaColours = FigmaColours();
 
   Widget notificationCircleCounter(BuildContext context) {
-    final currentUser =  context.read<AuthService>().getUserId;
-    return StreamBuilder(
+    final currentUser = context.read<AuthService>().getUserId;
+    return StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
             .doc(currentUser.uid)
@@ -34,7 +32,7 @@ class _NotificationIconState extends State<NotificationIcon> {
             return Positioned(child: Container());
           }
           if (snapshot.connectionState == ConnectionState.done) {}
-          int notificationCount = snapshot.data.docs.length;
+          int notificationCount = snapshot.data!.docs.length;
           if (notificationCount == 0) {
             return Positioned(child: Container());
           }
@@ -63,6 +61,7 @@ class _NotificationIconState extends State<NotificationIcon> {
           );
         });
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -72,8 +71,12 @@ class _NotificationIconState extends State<NotificationIcon> {
         children: <Widget>[
           Center(
             child: new Icon(
-              widget.active? Icons.notifications: Icons.notifications_outlined,
-              color: widget.active? Color(FigmaColours().highlight) : Colors.white,
+              widget.active!
+                  ? Icons.notifications
+                  : Icons.notifications_outlined,
+              color: widget.active!
+                  ? Color(FigmaColours().highlight)
+                  : Colors.white,
             ),
           ),
           notificationCircleCounter(context),

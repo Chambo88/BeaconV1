@@ -1,7 +1,7 @@
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
-import 'package:beacon/widgets/SearchBar.dart';
+import 'package:beacon/widgets/BeaconSearchBar.dart';
 import 'package:beacon/widgets/beacon_sheets/FriendSettingsSheet.dart';
 import 'package:beacon/widgets/tiles/userListTile.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +15,11 @@ class FriendsPage extends StatefulWidget {
 }
 
 class _FriendsPageState extends State<FriendsPage> {
-  TextEditingController searchTextEditingController;
-  List<UserModel> userModelsResult;
-  List<UserResult> userResultsTiles;
-  FigmaColours figmaColours;
-  UserService userService;
+  TextEditingController? searchTextEditingController;
+  List<UserModel>? userModelsResult;
+  List<UserResult>? userResultsTiles;
+  FigmaColours? figmaColours;
+  UserService? userService;
 
   @override
   void initState() {
@@ -28,12 +28,12 @@ class _FriendsPageState extends State<FriendsPage> {
     userService = context.read<UserService>();
     userModelsResult = [];
     userResultsTiles = [];
-    userService.currentUser.friendModels.forEach((user) {
+    userService!.currentUser!.friendModels!.forEach((user) {
       UserResult userResult = UserResult(
         user: user,
         onRemoved: removeUser,
       );
-      userResultsTiles.add(userResult);
+      userResultsTiles!.add(userResult);
     });
 
     super.initState();
@@ -41,18 +41,18 @@ class _FriendsPageState extends State<FriendsPage> {
 
   @override
   void dispose() {
-    searchTextEditingController.dispose();
+    searchTextEditingController!.dispose();
     super.dispose();
   }
 
   void filterSearchResults(String query) {
-    userResultsTiles.clear();
+    userResultsTiles!.clear();
     List<UserResult> userResultsTilesTemp = [];
     query = query.toLowerCase().replaceAll(' ', '');
-    for (UserModel user in userService.currentUser.friendModels) {
-      if ((user.firstName.toLowerCase() + user.lastName.toLowerCase())
+    for (UserModel user in userService!.currentUser!.friendModels!) {
+      if ((user.firstName!.toLowerCase() + user.lastName!.toLowerCase())
               .startsWith(query) ||
-          user.lastName.toLowerCase().startsWith(query)) {
+          user.lastName!.toLowerCase().startsWith(query)) {
         UserResult userResult = UserResult(
           user: user,
           onRemoved: removeUser,
@@ -65,8 +65,8 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   void removeUser(UserModel user) {
-    userModelsResult.remove(user);
-    filterSearchResults(searchTextEditingController.text);
+    userModelsResult!.remove(user);
+    filterSearchResults(searchTextEditingController!.text);
   }
 
   ListView displayFriends() {
@@ -74,16 +74,15 @@ class _FriendsPageState extends State<FriendsPage> {
       physics: BouncingScrollPhysics(),
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      children: userResultsTiles,
+      children: userResultsTiles!,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
-        leading :IconButton(
+        leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
             Navigator.of(context).pop();
@@ -95,12 +94,12 @@ class _FriendsPageState extends State<FriendsPage> {
             padding: const EdgeInsets.only(right: 3, top: 5),
             child: Ink(
               decoration: ShapeDecoration(
-                color: Color(figmaColours.greyDark),
+                color: Color(figmaColours!.greyDark),
                 shape: CircleBorder(),
               ),
               child: IconButton(
                 icon: const Icon(Icons.person_add),
-                color: Color(figmaColours.highlight),
+                color: Color(figmaColours!.highlight),
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => AddFriendsPage()));
@@ -114,7 +113,7 @@ class _FriendsPageState extends State<FriendsPage> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(7, 0, 7, 0),
-            child: SearchBar(
+            child: BeaconSearchBar(
               controller: searchTextEditingController,
               onChanged: filterSearchResults,
               width: MediaQuery.of(context).size.width,
@@ -130,8 +129,8 @@ class _FriendsPageState extends State<FriendsPage> {
 typedef void removeUser(UserModel user);
 
 class UserResult extends StatefulWidget {
-  final UserModel user;
-  final removeUser onRemoved;
+  final UserModel? user;
+  final removeUser? onRemoved;
   UserResult({this.user, @required this.onRemoved});
 
   @override

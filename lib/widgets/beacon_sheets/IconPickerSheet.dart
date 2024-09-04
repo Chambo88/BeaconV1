@@ -6,7 +6,7 @@ import '../BeaconBottomSheet.dart';
 typedef void iconSelected(IconData icon);
 
 class IconPickerSheet extends StatelessWidget {
-  final iconSelected onSelected;
+  final iconSelected? onSelected;
 
   IconPickerSheet({@required this.onSelected});
 
@@ -26,7 +26,7 @@ class IconPickerSheet extends StatelessWidget {
                 ),
                 title: Text('Icons',
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.headline4),
+                    style: theme.textTheme.headlineMedium),
               ),
               Expanded(
                   child: GridView.count(
@@ -38,7 +38,7 @@ class IconPickerSheet extends StatelessWidget {
                       children: BeaconIcons.iconDataList.map((e) {
                         return InkWell(
                             onTap: () {
-                              onSelected(e);
+                              onSelected!(e);
                               Navigator.pop(context);
                             },
                             child: Icon(e));

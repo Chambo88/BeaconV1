@@ -1,34 +1,42 @@
 {
   "project_info": {
-    "project_number": "${PROJECT_NUMBER}",
-    "project_id": "${PROJECT_ID}",
-    "storage_bucket": "${STORAGE_BUCKET}"
+    "project_number": "875402290272",
+    "firebase_url": "https://beacon-9061b-default-rtdb.firebaseio.com",
+    "project_id": "beacon-9061b",
+    "storage_bucket": "beacon-9061b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "${MOBILESDK_APP_ID}",
+        "mobilesdk_app_id": "1:875402290272:android:54e80a21eb1dfa63440f05",
         "android_client_info": {
-          "package_name": "${PACKAGE_NAME}"
+          "package_name": "co.nz.beacon.beacon"
         }
       },
       "oauth_client": [
         {
-          "client_id": "${CLIENT_ID}",
+          "client_id": "875402290272-frn6sachq94fn1bco2k6n08pt5b2mg23.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "${API_KEY}"
+          "current_key": "AIzaSyDUa5-E552KLCS7dHuXGJVGnLuLRtecAq0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "${CLIENT_ID}",
+              "client_id": "875402290272-frn6sachq94fn1bco2k6n08pt5b2mg23.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "875402290272-7ptr3c8a3jfgtq52bgpdp9h1jkmr1cf7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "co.nz.beacon.beacon"
+              }
             }
           ]
         }

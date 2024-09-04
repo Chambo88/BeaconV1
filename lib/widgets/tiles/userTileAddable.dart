@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class UserResultAddable extends StatefulWidget {
-  final UserModel anotherUser;
+  final UserModel? anotherUser;
 
   UserResultAddable({this.anotherUser});
 
@@ -17,88 +17,86 @@ class UserResultAddable extends StatefulWidget {
 }
 
 class _UserResultAddableState extends State<UserResultAddable> {
-  int mutualFriends;
+  int? mutualFriends;
   FigmaColours figmaColours = FigmaColours();
 
   int getMutualFriends(List<String> userFriends, List<String> friendsFriends) {
     int num = 0;
-    if (userFriends != null && friendsFriends != null) {
-      for (var user in userFriends) {
-        for (var user2 in friendsFriends) {
-          if (user == user2) {
-            num++;
-            break;
-          }
+    for (var user in userFriends) {
+      for (var user2 in friendsFriends) {
+        if (user == user2) {
+          num++;
+          break;
         }
       }
     }
-    return num;
+      return num;
   }
 
   //Get The Trailing IconBUtton
   Widget checkFriendShipAndPendingStatus(UserService userService) {
     //Build cancel button this if friends request is pending
 
-    if(userService.currentUser.friends.contains(widget.anotherUser.id)) {
+    if (userService.currentUser!.friends!.contains(widget.anotherUser!.id)) {
       return Container();
     }
 
-    if(userService.currentUser.receivedFriendRequests.contains(widget.anotherUser.id)) {
+    if (userService.currentUser!.receivedFriendRequests!
+        .contains(widget.anotherUser!.id!)) {
       return SmallGradientButton(
           child: Text(
             "accept",
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           onPressed: () async {
-            userService.acceptFriendRequest(widget.anotherUser);
+            userService.acceptFriendRequest(widget.anotherUser!);
             setState(() {});
           });
     }
 
-    if (userService.currentUser.sentFriendRequests
-        .contains(widget.anotherUser.id)) {
+    if (userService.currentUser!.sentFriendRequests!
+        .contains(widget.anotherUser!.id)) {
       return SmallGradientButton(
           child: Text(
             "pending",
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
           onPressed: () async {
-            userService.removeSentFriendRequest(widget.anotherUser);
+            userService.removeSentFriendRequest(widget.anotherUser!);
             setState(() {});
           });
       // );
       // return SmallOutlinedButton(
       //     title: "pending",
-
     } else {
       return SmallOutlinedButton(
           title: "add",
           icon: Icons.person_add_alt_1_outlined,
           onPressed: () async {
-            userService.sendFriendRequest(widget.anotherUser);
+            userService.sendFriendRequest(widget.anotherUser!);
             setState(() {});
           });
     }
   }
 
   bool alreadyFriends(UserService userService) {
-    if (userService.currentUser.friends.contains(widget.anotherUser)) {
+    if (userService.currentUser!.friends!.contains(widget.anotherUser)) {
       return true;
     }
     return false;
   }
-
 
   @override
   Widget build(BuildContext context) {
     var userService = Provider.of<UserService>(context);
     bool alreadyMates = alreadyFriends(userService);
     mutualFriends = getMutualFriends(
-        userService.currentUser.friends, widget.anotherUser.friends);
+        userService.currentUser!.friends!, widget.anotherUser!.friends!);
     return userListTile(
-      user: widget.anotherUser,
-      subText: alreadyMates? "Friends" : "$mutualFriends mutual friends",
-      trailing: alreadyMates? null : checkFriendShipAndPendingStatus(userService),
+      user: widget.anotherUser!,
+      subText: alreadyMates ? "Friends" : "$mutualFriends mutual friends",
+      trailing:
+          alreadyMates ? null : checkFriendShipAndPendingStatus(userService),
     );
   }
 }

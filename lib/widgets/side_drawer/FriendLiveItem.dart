@@ -4,7 +4,6 @@ import 'package:beacon/services/CameraLocationService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:beacon/widgets/beacon_sheets/LiveBeaconSheet.dart';
-import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
 import 'package:beacon/widgets/buttons/SummonButton.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -13,7 +12,7 @@ import '../ProfilePicWidget.dart';
 import 'BeaconItem.dart';
 
 class FriendLiveItem extends StatelessWidget {
-  final LiveBeacon beacon;
+  final LiveBeacon? beacon;
   final figmaColours = FigmaColours();
 
   FriendLiveItem({@required this.beacon});
@@ -24,9 +23,9 @@ class FriendLiveItem extends StatelessWidget {
     final locationService = Provider.of<CameraLocationService>(context);
     final userService = Provider.of<UserService>(context);
 
-    UserModel user = userService.getAFriendModelFromId(beacon.userId);
+    UserModel user = userService.getAFriendModelFromId(beacon!.userId!);
 
-    if (beacon.userId == userService.currentUser.id) {
+    if (beacon!.userId == userService.currentUser!.id) {
       return Container();
     }
 
@@ -37,8 +36,8 @@ class FriendLiveItem extends StatelessWidget {
           cameraPosition: CameraPosition(
             zoom: 12,
             target: LatLng(
-              beacon.lat,
-              beacon.long,
+              beacon!.lat!,
+              beacon!.long!,
             ),
           ),
         );
@@ -49,7 +48,7 @@ class FriendLiveItem extends StatelessWidget {
           isScrollControlled: true,
           builder: (context) {
             return LiveBeaconSheet(
-              beacon: beacon,
+              beacon: beacon!,
             );
           },
         );
@@ -77,16 +76,16 @@ class FriendLiveItem extends StatelessWidget {
                             "${user.firstName} ${user.lastName}",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.headline4,
+                            style: theme.textTheme.headlineMedium,
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 4),
                           child: Text(
-                            beacon.desc,
+                            beacon!.desc!,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodyText1,
+                            style: theme.textTheme.bodyLarge,
                           ),
                         ),
                         Row(

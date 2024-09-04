@@ -1,38 +1,26 @@
-import 'package:beacon/library/ColorHelper.dart';
-import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/services/UserService.dart';
 import 'package:beacon/util/theme.dart';
-import 'package:beacon/widgets/buttons/GradientButton.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
 class DateRangeDialog extends StatefulWidget {
+  DateTime? initStart;
+  DateTime? initEnd;
 
-  DateTime initStart;
-  DateTime initEnd;
-
-  DateRangeDialog({
-    this.initStart,
-    this.initEnd
-
-  });
+  DateRangeDialog({this.initStart, this.initEnd});
 
   @override
   _DateRangeDialogState createState() => _DateRangeDialogState();
 }
 
-class _DateRangeDialogState extends State< DateRangeDialog> {
-
+class _DateRangeDialogState extends State<DateRangeDialog> {
   FigmaColours figmaColours = FigmaColours();
-  PickerDateRange initDateRange;
-
+  PickerDateRange? initDateRange;
 
   @override
   void initState() {
-    if(widget.initStart != null) {
-      if(widget.initEnd != null) {
+    if (widget.initStart != null) {
+      if (widget.initEnd != null) {
         initDateRange = PickerDateRange(widget.initStart, widget.initEnd);
       } else {
         initDateRange = PickerDateRange(widget.initStart, null);
@@ -44,7 +32,6 @@ class _DateRangeDialogState extends State< DateRangeDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final userService = context.read<UserService>();
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -65,48 +52,50 @@ class _DateRangeDialogState extends State< DateRangeDialog> {
         ),
         height: MediaQuery.of(context).size.height * 0.70,
         width: MediaQuery.of(context).size.width * 0.9,
-        child:
-          SfDateRangePickerTheme(
-            data: SfDateRangePickerThemeData(
-              brightness: Brightness.dark,
-              backgroundColor: Color(figmaColours.greyDark),
-            ),
-            child: Container(
-              margin: EdgeInsets.symmetric(vertical: 10),
-                child: SfDateRangePicker(
-                  onSubmit: (object) {
-                    Navigator.of(context).pop(object);
-                  },
-                  onCancel: () {
-                    Navigator.of(context).pop();
-                  },
-                  selectionMode: DateRangePickerSelectionMode.range,
-                  initialSelectedRange: initDateRange,
-                  enablePastDates: false,
-                  showNavigationArrow: true,
-                  showActionButtons: true,
-                  allowViewNavigation: false,
-                  navigationMode: DateRangePickerNavigationMode.scroll,
-                  navigationDirection: DateRangePickerNavigationDirection.vertical,
-                  headerStyle: DateRangePickerHeaderStyle(
-                    backgroundColor: Color(figmaColours.greyDark),
-                    textStyle: TextStyle(fontSize: 18)
-                  ),
-                  monthViewSettings:
-                  DateRangePickerMonthViewSettings(
-                    enableSwipeSelection: true,
-                      viewHeaderHeight: 40,
-                    viewHeaderStyle: DateRangePickerViewHeaderStyle(
-                      textStyle: TextStyle(
-                        fontSize: 16
-                      )
-                    )
-                  ),
-
-                )
-            ),
+        child: SfDateRangePickerTheme(
+          data: SfDateRangePickerThemeData(
+            backgroundColor: Color(figmaColours.greyDark),
+            selectionColor:
+                Colors.white.withOpacity(0.3), // Set selection color
+            rangeSelectionColor: Colors.white.withOpacity(0.15),
+            todayHighlightColor: Colors.white,
+            startRangeSelectionColor: Colors.white,
+            endRangeSelectionColor: Colors.white,
+            headerTextStyle: TextStyle(
+                color: Colors.white, fontSize: 18), // Header text color
+            viewHeaderTextStyle: TextStyle(
+                color: Colors.white, fontSize: 16), // Month header text color
+            selectionTextStyle:
+                TextStyle(color: Colors.white), // Selected date text color
           ),
-
+          child: Container(
+              margin: EdgeInsets.symmetric(vertical: 10),
+              child: SfDateRangePicker(
+                onSubmit: (object) {
+                  Navigator.of(context).pop(object);
+                },
+                onCancel: () {
+                  Navigator.of(context).pop();
+                },
+                selectionMode: DateRangePickerSelectionMode.range,
+                initialSelectedRange: initDateRange,
+                enablePastDates: false,
+                showNavigationArrow: true,
+                showActionButtons: true,
+                allowViewNavigation: false,
+                navigationMode: DateRangePickerNavigationMode.scroll,
+                navigationDirection:
+                    DateRangePickerNavigationDirection.vertical,
+                headerStyle: DateRangePickerHeaderStyle(
+                    backgroundColor: Color(figmaColours.greyDark),
+                    textStyle: TextStyle(fontSize: 18)),
+                monthViewSettings: DateRangePickerMonthViewSettings(
+                    enableSwipeSelection: true,
+                    viewHeaderHeight: 40,
+                    viewHeaderStyle: DateRangePickerViewHeaderStyle(
+                        textStyle: TextStyle(fontSize: 16))),
+              )),
+        ),
       ),
     );
   }

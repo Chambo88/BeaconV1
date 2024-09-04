@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:beacon/Assests/Icons.dart';
 import 'package:beacon/components/beacon_creator/CasualBeaconCreator.dart';
 import 'package:beacon/components/beacon_creator/LiveBeaconCreator.dart';
@@ -12,9 +11,7 @@ import 'package:beacon/models/BeaconType.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
 import 'package:beacon/widgets/tiles/BeaconCreatorSubTitle.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 class BeaconSelector extends StatefulWidget {
@@ -23,14 +20,14 @@ class BeaconSelector extends StatefulWidget {
 }
 
 class _BeaconSelectorState extends State<BeaconSelector> {
-  UserService _userService;
+  UserService? _userService;
   BeaconService _beaconService = BeaconService();
   var _showBeaconEditor = false;
-  String _beaconTypeSelected;
+  String? _beaconTypeSelected;
   BeaconIcons iconStuff = BeaconIcons();
   FigmaColours figmaColours = FigmaColours();
-  CasualBeacon casualBeaconToEdit;
-  UserLocationService _locationService;
+  CasualBeacon? casualBeaconToEdit;
+  UserLocationService? _locationService;
 
   final TextEditingController _beaconDescriptionController =
       TextEditingController();
@@ -67,7 +64,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             _toggleBeaconEditor();
           },
           elevation: 2.0,
-          fillColor: _userService.currentUser.liveBeaconActive
+          fillColor: _userService!.currentUser!.liveBeaconActive!
               ? Colors.green
               : Colors.grey,
           constraints: BoxConstraints.tight(Size(80, 80)),
@@ -80,7 +77,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   Widget _liveBeacon(BeaconType type, BuildContext context) {
     UserLocationService userLocationService =
         Provider.of<UserLocationService>(context);
-    UserModel currentUser = Provider.of<UserService>(context).currentUser;
+    UserModel currentUser = Provider.of<UserService>(context).currentUser!;
     BeaconService beaconService = BeaconService();
     return InkWell(
         onTap: () {
@@ -101,7 +98,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                   width: 115,
                   child: Text(
                     "Extinguish",
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   onPressed: () {
                     userLocationService.setActive(false);
@@ -145,7 +142,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                                         text: "${type.title} - ",
                                         style: Theme.of(context)
                                             .textTheme
-                                            .headline4,
+                                            .headlineMedium,
                                         children: [
                                       TextSpan(
                                           text: "active",
@@ -164,10 +161,10 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                             child: Container(
                               width: 250,
                               child: Text(
-                                currentUser.liveBeaconDesc,
+                                currentUser.liveBeaconDesc!,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.bodyText1,
+                                style: Theme.of(context).textTheme.bodyLarge,
                               ),
                             ),
                           )
@@ -222,16 +219,16 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 5),
                       child: Text(
-                        type.title,
-                        style: Theme.of(context).textTheme.headline4,
+                        type.title!,
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
                     ),
                     Expanded(
                       child: Container(
                         width: 250,
                         child: Text(
-                          type.description,
-                          style: Theme.of(context).textTheme.bodyText1,
+                          type.description!,
+                          style: Theme.of(context).textTheme.bodyLarge,
                         ),
                       ),
                     )
@@ -251,7 +248,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Widget _beaconTypeSelector(BuildContext context) {
-    UserModel currentUser = Provider.of<UserService>(context).currentUser;
+    UserModel currentUser = Provider.of<UserService>(context).currentUser!;
     return Column(
       children: [
         Container(
@@ -259,7 +256,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           child: Center(
             child: Text(
               'Beacon',
-              style: Theme.of(context).textTheme.headline2,
+              style: Theme.of(context).textTheme.displayMedium,
               textAlign: TextAlign.center,
             ),
           ),
@@ -268,7 +265,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                (currentUser.liveBeaconActive)
+                (currentUser.liveBeaconActive!)
                     ? _liveBeacon(BeaconType.live, context)
                     : _beaconType(context, BeaconType.live),
                 _beaconType(context, BeaconType.casual),
@@ -282,7 +279,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
   }
 
   Widget getUserCasualBeacons() {
-    if (_userService.currentUser.casualBeacons.isEmpty) {
+    if (_userService!.currentUser!.casualBeacons!.isEmpty) {
       return Container();
     }
     List<Widget> tiles = [
@@ -292,7 +289,7 @@ class _BeaconSelectorState extends State<BeaconSelector> {
         height: 1,
       )
     ];
-    _userService.currentUser.casualBeacons.forEach((CasualBeacon beacon) {
+    _userService!.currentUser!.casualBeacons!.forEach((CasualBeacon beacon) {
       tiles.add(casualBeaconSelectorTile(beacon));
       tiles.add(Divider(
         color: Color(figmaColours.greyMedium),
@@ -323,8 +320,8 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             setState(() {
               _showBeaconEditor = false;
             });
-            _beaconService.addBeacon(beacon, _userService.currentUser);
-            _locationService.setActive(true);
+            _beaconService.addBeacon(beacon, _userService!.currentUser);
+            _locationService!.setActive(true);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -350,8 +347,8 @@ class _BeaconSelectorState extends State<BeaconSelector> {
             setState(() {
               _showBeaconEditor = false;
             });
-            beacon.usersThatCanSee.add(_userService.currentUser.id);
-            _beaconService.addBeacon(beacon, _userService.currentUser);
+            beacon.usersThatCanSee!.add(_userService!.currentUser!.id!);
+            _beaconService.addBeacon(beacon, _userService!.currentUser);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -385,9 +382,9 @@ class _BeaconSelectorState extends State<BeaconSelector> {
       child: Container(
         margin: EdgeInsets.only(left: 20, right: 20, top: 30),
         decoration: BoxDecoration(
-          color: Theme.of(context).backgroundColor,
+          color: Theme.of(context).scaffoldBackgroundColor,
           border: Border.all(
-            color: Theme.of(context).backgroundColor,
+            color: Theme.of(context).scaffoldBackgroundColor,
           ),
           borderRadius: BorderRadius.all(
             Radius.circular(20),
@@ -425,14 +422,14 @@ class _BeaconSelectorState extends State<BeaconSelector> {
                 width: 30.0,
                 height: 30.0,
                 decoration: new BoxDecoration(
-                  color: casualBeacon.type.color,
+                  color: casualBeacon.type!.color,
                   shape: BoxShape.circle,
                 ),
               ),
             ),
             Text(
-              casualBeacon.eventName,
-              style: Theme.of(context).textTheme.headline4,
+              casualBeacon.eventName!,
+              style: Theme.of(context).textTheme.headlineMedium,
               overflow: TextOverflow.ellipsis,
             ),
             Spacer(),

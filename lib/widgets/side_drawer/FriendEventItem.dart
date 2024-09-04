@@ -1,10 +1,5 @@
-import 'package:beacon/models/BeaconModel.dart';
-import 'package:beacon/widgets/BeaconBottomSheet.dart';
 // import 'package:beacon/widgets/beacon_sheets/EventBeaconSheet.dart';
-import 'package:beacon/widgets/buttons/SmallOutlinedButton.dart';
-import 'package:flutter/material.dart';
 
-import 'BeaconItem.dart';
 //
 // class FriendEventItem extends StatelessWidget {
 //   final EventBeacon beacon;
@@ -46,7 +41,7 @@ import 'BeaconItem.dart';
 //                       child: Center(
 //                         child: Text(
 //                           beacon.id,
-//                           style: theme.textTheme.headline3,
+//                           style: theme.textTheme.displaySmall,
 //                         ),
 //                       ),
 //                     ),
@@ -59,10 +54,10 @@ import 'BeaconItem.dart';
 //                     children: [
 //                       Text(
 //                         beacon.userName,
-//                         style: theme.textTheme.headline5,
+//                         style: theme.textTheme.headlineSmall,
 //                       ),
 //                       Text('17:00 - 20:00', // TODO replace with time,
-//                           style: theme.textTheme.caption)
+//                           style: theme.textTheme.labelLarge)
 //                     ],
 //                   ),
 //                 ),
@@ -73,7 +68,7 @@ import 'BeaconItem.dart';
 //                     padding: const EdgeInsets.only(bottom: 5),
 //                     child: Text(
 //                       beacon.desc,
-//                       style: theme.textTheme.bodyText2,
+//                       style: theme.textTheme.bodyMedium,
 //                       textAlign: TextAlign.left,
 //                     ),
 //                   ),
@@ -90,12 +85,12 @@ import 'BeaconItem.dart';
 //                     padding: const EdgeInsets.only(right: 3),
 //                     child: Text(
 //                       '16',
-//                       style: theme.textTheme.caption,
+//                       style: theme.textTheme.labelLarge,
 //                     ),
 //                   ),
 //                   Text(
 //                     'Mutual',
-//                     style: theme.textTheme.bodyText2,
+//                     style: theme.textTheme.bodyMedium,
 //                   )
 //                 ],
 //               ),

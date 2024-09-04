@@ -1,18 +1,12 @@
 package co.nz.beacon.beacon
-import io.flutter.app.FlutterApplication
-import io.flutter.plugin.common.PluginRegistry
-import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback
-import io.flutter.view.FlutterMain
-import io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingBackgroundService;
 
-class Application : FlutterApplication(), PluginRegistrantCallback {
+import android.app.Application
+import io.flutter.app.FlutterApplication
+
+class Application : FlutterApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        FlutterFirebaseMessagingBackgroundService.setPluginRegistrant(this);
-        FlutterMain.startInitialization(this)
-    }
-
-    override fun registerWith(registry: PluginRegistry?) {
+        // No need for manual background message handling here anymore
     }
 }

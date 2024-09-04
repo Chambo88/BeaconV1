@@ -1,4 +1,3 @@
-import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/pages/menu/Profile/ProflePage.dart';
 import 'package:beacon/pages/menu/notificationsSettingsPage.dart';
@@ -25,7 +24,9 @@ class _MenuPageState extends State<MenuPage> {
   double spacing = 6.0;
   FigmaColours figmaColours = FigmaColours();
 
-  Future<dynamic> signOutDialog(BuildContext context,) {
+  Future<dynamic> signOutDialog(
+    BuildContext context,
+  ) {
     return showDialog(
         context: context,
         builder: (BuildContext) {
@@ -45,7 +46,7 @@ class _MenuPageState extends State<MenuPage> {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     UserService _userService = context.read<UserService>();
-    UserModel user = _userService.currentUser;
+    UserModel user = _userService.currentUser!;
     final AuthService _auth = context.watch<AuthService>();
     return Scaffold(
       appBar: AppBar(
@@ -62,9 +63,8 @@ class _MenuPageState extends State<MenuPage> {
                 icon: const Icon(Icons.person_add),
                 color: Color(figmaColours.highlight),
                 onPressed: () {
-                  Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => AddFriendsPage()));
-
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => AddFriendsPage()));
                 },
               ),
             ),
@@ -75,47 +75,44 @@ class _MenuPageState extends State<MenuPage> {
         padding: const EdgeInsets.only(top: 10),
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 25),
-                child: ProfilePicture(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 25),
+                  child: ProfilePicture(
                     user: user,
                     onClicked: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => ProfilePage()));
-
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => ProfilePage()));
                     },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 25),
-                child: TextButton(
-                  child: Text("${user.firstName} ${user.lastName}",
-                    style: TextStyle(
-                      fontSize: 18
-                    ),
                   ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => ProfilePage())).then((value) => setState(() {}));
-                  },
                 ),
-              ),
-            ]
-          ),
-
-
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 25),
+                  child: TextButton(
+                    child: Text(
+                      "${user.firstName} ${user.lastName}",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(
+                              builder: (context) => ProfilePage()))
+                          .then((value) => setState(() {}));
+                    },
+                  ),
+                ),
+              ]),
           SubTitleText(text: "People"),
           BeaconFlatButton(
             icon: CommunityMaterialIcons.account_group_outline,
             title: 'Groups',
             onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => GroupSettings())
-              ).then((value) {
+              Navigator.of(context)
+                  .push(
+                      MaterialPageRoute(builder: (context) => GroupSettings()))
+                  .then((value) {
                 _userService.updateGroups();
               });
             },
@@ -124,27 +121,26 @@ class _MenuPageState extends State<MenuPage> {
             icon: Icons.people_outline_outlined,
             title: 'Friends',
             onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => FriendsPage()));
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => FriendsPage()));
             },
           ),
-
-
           SubTitleText(text: "Settings"),
           BeaconFlatButton(
             icon: Icons.account_circle_outlined,
             title: 'Edit Profile',
             onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => ProfilePage())).then((value) => setState(() {}));
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => ProfilePage()))
+                  .then((value) => setState(() {}));
             },
           ),
           BeaconFlatButton(
             icon: Icons.notifications_outlined,
             title: 'Notifications',
             onTap: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => NotificationSettingsPage()));
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => NotificationSettingsPage()));
             },
           ),
           BeaconFlatButton(
@@ -152,11 +148,10 @@ class _MenuPageState extends State<MenuPage> {
             title: 'Sign out',
             onTap: () async {
               signOutDialog(context).then((value) async {
-                if (value)  {
+                if (value) {
                   await _auth.signOut();
                 }
               });
-
             },
           ),
         ],

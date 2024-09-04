@@ -13,76 +13,76 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class NotificationTab extends StatelessWidget {
-
   Set<String> notificationsTempUnread = {};
   FigmaColours figmaColours = FigmaColours();
-  List<Widget> tiles;
-
+  List<Widget>? tiles;
 
   @override
   Widget build(BuildContext context) {
-    UserModel currentUser = context.read<UserService>().currentUser;
-      return StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(currentUser.id)
-            .collection('notifications')
-            .orderBy('orderBy', descending: true)
-            .snapshots()
-            ?.take(20)
-            ?.map((snapShot) => snapShot.docs.map((document) {
-          return NotificationModel.fromMap(document.data());
-        }).toList()),
-        builder: (context, snapshot) {
-          tiles = [
-            Divider(
+    UserModel currentUser = context.read<UserService>().currentUser!;
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .collection('notifications')
+          .orderBy('orderBy', descending: true)
+          .snapshots()
+          .take(20)
+          .map((snapShot) => snapShot.docs.map((document) {
+                return NotificationModel.fromMap(document.data());
+              }).toList()),
+      builder: (context, snapshot) {
+        tiles = [
+          Divider(
+            color: Color(figmaColours.greyLight),
+            height: 1,
+          )
+        ];
+        if (snapshot.hasError) {
+          print(snapshot.error);
+        }
+        while (!snapshot.hasData) {
+          return circularProgress();
+        }
+        if (snapshot.connectionState == ConnectionState.done) {}
+        (snapshot.data as List<NotificationModel>)
+            .forEach((NotificationModel notificationModel) {
+          if (notificationModel.type != 'friendRequest') {
+            if (notificationModel.seen == false) {
+              notificationsTempUnread.add(notificationModel.id!);
+              NotificationService()
+                  .setNotificationRead(notificationModel.id!, currentUser);
+            }
+            tiles!.add(GetNotificationTile(
+                notification: notificationModel,
+                notificationUnread: notificationsTempUnread));
+            tiles!.add(Divider(
               color: Color(figmaColours.greyLight),
               height: 1,
-            )
-          ];
-          if (snapshot.hasError) {
-            print(snapshot.error);
+            ));
           }
-          while (!snapshot.hasData) {
-            return circularProgress();
-          }
-          if (snapshot.connectionState == ConnectionState.done) {}
-          snapshot.data.forEach((NotificationModel notificationModel) {
-            if (notificationModel.type != 'friendRequest') {
-              if (notificationModel.seen == false) {
-                notificationsTempUnread.add(notificationModel.id);
-                NotificationService()
-                    .setNotificationRead(notificationModel.id, currentUser);
-              }
-              tiles.add(GetNotificationTile(
-                  notification: notificationModel,
-                  notificationUnread: notificationsTempUnread));
-              tiles.add(Divider(
-                color: Color(figmaColours.greyLight),
-                height: 1,
-              ));
-            }
-          });
-          return ListView(
-            children: tiles,
-          );
-        },
-      );
+        });
+        return ListView(
+          children: tiles!,
+        );
+      },
+    );
   }
 }
 
 //Gets the sender data and returns the right type of notification
 class GetNotificationTile extends StatelessWidget {
-  NotificationModel notification;
-  Set<String> notificationUnread;
-  bool justFriendRequests;
+  NotificationModel? notification;
+  Set<String>? notificationUnread;
+  bool? justFriendRequests;
 
-  GetNotificationTile(
-      {@required this.notification,
-        this.notificationUnread,});
+  GetNotificationTile({
+    @required this.notification,
+    this.notificationUnread,
+  });
 
   Widget getTile(UserModel sentFrom) {
-    switch (notification.type) {
+    switch (notification!.type) {
       case "acceptedFriendRequest":
         {
           return AcceptedFriendRequest(
@@ -121,8 +121,8 @@ class GetNotificationTile extends StatelessWidget {
 
   //checking to see if the userModel is already in the user, If Not get it from FB
   Widget isUserInDownloadedModels(UserModel currentUser) {
-    for (UserModel friends in currentUser.friendModels) {
-      if (notification.sentFrom == friends.id) {
+    for (UserModel friends in currentUser.friendModels!) {
+      if (notification!.sentFrom! == friends.id) {
         return getTile(friends);
       }
     }
@@ -131,7 +131,7 @@ class GetNotificationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserModel currentUser = context.read<UserService>().currentUser;
+    UserModel currentUser = context.read<UserService>().currentUser!;
     return isUserInDownloadedModels(currentUser);
   }
 
@@ -139,13 +139,13 @@ class GetNotificationTile extends StatelessWidget {
     return FutureBuilder(
         future: FirebaseFirestore.instance
             .collection('users')
-            .doc(notification.sentFrom)
+            .doc(notification!.sentFrom!)
             .get(),
         builder: (context, sentFrom) {
           while (!sentFrom.hasData) {
             return Container(height: 70);
           }
-          UserModel sender = UserModel.fromDocument(sentFrom.data);
+          UserModel sender = UserModel.fromDocument(sentFrom.data!);
           return getTile(sender);
         });
   }

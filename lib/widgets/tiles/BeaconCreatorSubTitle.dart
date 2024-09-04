@@ -11,7 +11,7 @@ class BeaconCreatorSubTitle extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16, top: 7, bottom: 7),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.bodyText1,
+        style: Theme.of(context).textTheme.bodyLarge,
         textAlign: TextAlign.start,
         overflow: TextOverflow.ellipsis,
       ),

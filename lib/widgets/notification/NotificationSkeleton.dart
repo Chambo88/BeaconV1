@@ -1,13 +1,9 @@
-
 import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/util/theme.dart';
 import 'package:flutter/material.dart';
 
 import '../ProfilePicWidget.dart';
-
-
-
 
 //The general notification shape, add extra buttons that end up in the bottom right and a rich text segment for the body
 //used by venueInvite etc. Im pretty sure this should be some sort of inheretince/decorator type structure
@@ -16,17 +12,15 @@ import '../ProfilePicWidget.dart';
 //TODO should probably implement this in the profile picture class and get the icon from the notifType class and the icon through here
 
 class NotificationSkeleton extends StatelessWidget {
-
-
-  DateTime currentTime;
-  NotificationModel notification;
+  DateTime? currentTime;
+  NotificationModel? notification;
   FigmaColours figmaColours = FigmaColours();
-  UserModel sender;
-  List<Widget> extraButtons = [];
-  RichText body;
-  String timeDiff;
+  UserModel? sender;
+  List<Widget>? extraButtons = [];
+  RichText? body;
+  String? timeDiff;
   bool moreOptionsButton;
-  Set<String> notificationUnread;
+  Set<String>? notificationUnread;
 
   NotificationSkeleton({
     this.notification,
@@ -37,19 +31,18 @@ class NotificationSkeleton extends StatelessWidget {
     @required this.notificationUnread,
   });
 
-
   String CalculateTime() {
     currentTime = DateTime.now();
-    int diff = currentTime.difference(notification.dateTime).inDays;
+    int diff = currentTime!.difference(notification!.dateTime!).inDays;
     String timeType = 'd';
-    if(diff == 0) {
-      diff = currentTime.difference(notification.dateTime).inHours;
+    if (diff == 0) {
+      diff = currentTime!.difference(notification!.dateTime!).inHours;
       timeType = 'h';
-      if(diff == 0) {
-        diff = currentTime.difference(notification.dateTime).inMinutes;
+      if (diff == 0) {
+        diff = currentTime!.difference(notification!.dateTime!).inMinutes;
         timeType = 'm';
-        if(diff == 0) {
-          diff = currentTime.difference(notification.dateTime).inSeconds;
+        if (diff == 0) {
+          diff = currentTime!.difference(notification!.dateTime!).inSeconds;
           timeType = 's';
         }
       }
@@ -58,15 +51,14 @@ class NotificationSkeleton extends StatelessWidget {
   }
 
   Color getColourContainer(ThemeData theme) {
-    if(notification != null) {
-      if(notificationUnread.contains(notification.id) || !notification.seen) {
+    if (notification != null) {
+      if (notificationUnread!.contains(notification!.id) ||
+          !notification!.seen!) {
         return theme.primaryColor;
       }
     }
     return Colors.black;
   }
-
-
 
   Widget NotifSkeleton(UserModel sentFrom, ThemeData theme) {
     timeDiff = CalculateTime();
@@ -111,14 +103,12 @@ class NotificationSkeleton extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(28, 8, 0, 8),
-                child:Text(timeDiff),
+                child: Text(timeDiff!),
               ),
               Spacer(),
-            ]..addAll(extraButtons),
+            ]..addAll(extraButtons!),
           ),
-
         ],
-
       ),
     );
   }
@@ -126,6 +116,6 @@ class NotificationSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    return NotifSkeleton(sender, theme);
+    return NotifSkeleton(sender!, theme);
   }
 }

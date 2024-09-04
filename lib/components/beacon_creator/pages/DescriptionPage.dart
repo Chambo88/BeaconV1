@@ -5,15 +5,15 @@ import 'CreatorPage.dart';
 typedef void DescriptionCallback(String title, String desc);
 
 class DescriptionPage extends StatefulWidget {
-  final VoidCallback onBackClick;
-  final VoidCallback onClose;
-  final DescriptionCallback onContinue;
-  final String continueText;
-  final int totalPageCount;
-  final int currentPageIndex;
-  final bool hasTitleField;
-  final String initTitle;
-  final String initDesc;
+  final VoidCallback? onBackClick;
+  final VoidCallback? onClose;
+  final DescriptionCallback? onContinue;
+  final String? continueText;
+  final int? totalPageCount;
+  final int? currentPageIndex;
+  final bool? hasTitleField;
+  final String? initTitle;
+  final String? initDesc;
 
   DescriptionPage({
     @required this.onBackClick,
@@ -39,8 +39,8 @@ class _DescriptionPageState extends State<DescriptionPage> {
   @override
   void initState() {
     super.initState();
-    _titleController.text = widget.initTitle;
-    _descriptionController.text = widget.initDesc;
+    _titleController.text = widget.initTitle!;
+    _descriptionController.text = widget.initDesc!;
     _setNextEnabled();
   }
 
@@ -53,7 +53,7 @@ class _DescriptionPageState extends State<DescriptionPage> {
 
   _setNextEnabled() {
     setState(() {
-      _nextEnabled = !widget.hasTitleField || _titleController.text.isNotEmpty;
+      _nextEnabled = !widget.hasTitleField! || _titleController.text.isNotEmpty;
     });
   }
 
@@ -67,12 +67,12 @@ class _DescriptionPageState extends State<DescriptionPage> {
       totalPageCount: widget.totalPageCount,
       currentPageIndex: widget.currentPageIndex,
       onContinuePressed: _nextEnabled
-          ? () => widget.onContinue(
+          ? () => widget.onContinue!(
               _titleController.text, _descriptionController.text)
           : null,
       child: Column(
         children: [
-          if (widget.hasTitleField)
+          if (widget.hasTitleField!)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18.0),
               child: TextField(

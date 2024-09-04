@@ -1,15 +1,12 @@
 import 'package:beacon/models/NotificationModel.dart';
 import 'package:beacon/models/UserModel.dart';
-import 'package:beacon/widgets/buttons/SmallGradientButton.dart';
-import 'package:beacon/widgets/buttons/SmallGreyButton.dart';
 import 'package:beacon/widgets/notification/NotificationSkeleton.dart';
 import 'package:flutter/material.dart';
 
 class Summoned extends StatefulWidget {
-
-  UserModel sender;
-  NotificationModel notification;
-  Set<String> notificationUnread;
+  UserModel? sender;
+  NotificationModel? notification;
+  Set<String>? notificationUnread;
 
   Summoned({
     @required this.sender,
@@ -25,16 +22,15 @@ class _SummonedState extends State<Summoned> {
   RichText getBodyText(ThemeData theme) {
     return RichText(
         overflow: TextOverflow.ellipsis,
-      text: TextSpan(children: [
-        TextSpan(
-            text: '''${widget.sender.firstName} ${widget.sender.lastName}''',
-            style: theme.textTheme.headline4),
-        TextSpan(
-            text: ''' summoned you to join them! ''',
-            style: theme.textTheme.bodyText2),
-        ])
-
-    );
+        text: TextSpan(children: [
+          TextSpan(
+              text:
+                  '''${widget.sender!.firstName!} ${widget.sender!.lastName}''',
+              style: theme.textTheme.headlineMedium),
+          TextSpan(
+              text: ''' summoned you to join them! ''',
+              style: theme.textTheme.bodyMedium),
+        ]));
   }
 
   List<Widget> getTypeButtons() {

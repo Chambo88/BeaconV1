@@ -29,10 +29,10 @@ class _MapState extends State<MapComponent> {
         beaconIcon = onValue;
 
         final Marker marker = Marker(
-            markerId: MarkerId(beacon.id),
+            markerId: MarkerId(beacon.id!),
             position: LatLng(
-              beacon.lat,
-              beacon.long,
+              beacon.lat!,
+              beacon.long!,
             ),
             icon: beaconIcon,
             onTap: () {
@@ -52,7 +52,7 @@ class _MapState extends State<MapComponent> {
         if (this.mounted) {
           setState(() {
             // adding a new marker to map
-            _liveMarkers[MarkerId(beacon.id)] = marker;
+            _liveMarkers[MarkerId(beacon.id!)] = marker;
           });
         }
       });
@@ -66,9 +66,9 @@ class _MapState extends State<MapComponent> {
     DateTime currentTime = DateTime.now();
     beaconList.forEach((beacon) {
       ///if the beacon has ended dont load
-      if (beacon.endTime.isAfter(currentTime)) {
+      if (beacon.endTime!.isAfter(currentTime)) {
         ///is beacon currerntly going?
-        if (beacon.startTime.isBefore(currentTime)) {
+        if (beacon.startTime!.isBefore(currentTime)) {
           upcoming.add(beacon);
         } else {
           active.add(beacon);
@@ -91,10 +91,10 @@ class _MapState extends State<MapComponent> {
         beaconIcon = onValue;
 
         final Marker marker = Marker(
-            markerId: MarkerId(beacon.id),
+            markerId: MarkerId(beacon.id!),
             position: LatLng(
-              beacon.location.lat,
-              beacon.location.long,
+              beacon.location!.lat!,
+              beacon.location!.long!,
             ),
             icon: beaconIcon,
             onTap: () {
@@ -113,7 +113,7 @@ class _MapState extends State<MapComponent> {
         if (this.mounted) {
           setState(() {
             // adding a new marker to map
-            _liveMarkers[MarkerId(beacon.id)] = marker;
+            _liveMarkers[MarkerId(beacon.id!)] = marker;
           });
         }
       });
@@ -133,7 +133,7 @@ class _MapState extends State<MapComponent> {
   @override
   Widget build(BuildContext context) {
     final userLocationModel = Provider.of<UserLocationModel>(context);
-    final userId = context.read<UserService>().currentUser.id;
+    final userId = context.read<UserService>().currentUser!.id;
     var cameraLocationService = Provider.of<CameraLocationService>(context);
     context.read<BeaconService>().loadAllBeacons(userId);
     final liveBeacons = context.watch<BeaconService>().allLiveBeacons;
@@ -146,8 +146,8 @@ class _MapState extends State<MapComponent> {
         ? GoogleMap(
             initialCameraPosition: CameraPosition(
               target: LatLng(
-                userLocationModel.latitude,
-                userLocationModel.longitude,
+                userLocationModel.latitude!,
+                userLocationModel.longitude!,
               ),
               zoom: 12.0,
             ),
@@ -159,10 +159,10 @@ class _MapState extends State<MapComponent> {
                   CameraUpdate.newCameraPosition(event),
                 );
               });
-              casualBeacons.listen((event) {
+              casualBeacons!.listen((event) {
                 _activeOrUpcoming(event);
               });
-              liveBeacons.listen((event) {
+              liveBeacons!.listen((event) {
                 _updateLiveBeaconMarkers(event);
               });
             },

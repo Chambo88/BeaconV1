@@ -1,4 +1,5 @@
 import 'package:beacon/models/UserLocationModel.dart';
+import 'package:beacon/models/UserModel.dart';
 import 'package:beacon/services/BeaconService.dart';
 import 'package:beacon/services/CameraLocationService.dart';
 import 'package:beacon/services/NotificationService.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'pages/HomePage.dart';
+import 'dart:async';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +41,7 @@ class MyApp extends StatelessWidget {
           create: (_) => AuthService(FirebaseAuth.instance),
         ),
         Provider<RemoteConfigService>(
-          create: (_) => RemoteConfigService(RemoteConfig.instance),
+          create: (_) => RemoteConfigService(FirebaseRemoteConfig.instance),
         ),
         Provider<UserService>(
           create: (_) => UserService(),
@@ -50,18 +52,21 @@ class MyApp extends StatelessWidget {
         Provider<UserLocationService>(
           create: (_) => UserLocationService(),
         ),
-        StreamProvider<UserLocationModel>(
+        StreamProvider<UserLocationModel?>(
+          initialData: null,
           create: (context) =>
               context.read<UserLocationService>().userLocationStream,
         ),
         Provider<CameraLocationService>(
           create: (_) => CameraLocationService(),
         ),
-        StreamProvider<CameraPosition>(
+        StreamProvider<CameraPosition?>(
+          initialData: null,
           create: (context) =>
               context.read<CameraLocationService>().cameraLocationStream,
         ),
         StreamProvider(
+          initialData: null,
           create: (context) => context.read<AuthService>().authStateChanges,
         ),
       ],
@@ -71,37 +76,40 @@ class MyApp extends StatelessWidget {
           theme: CustomTheme.theme,
           home: AuthenticationWrapper()
           // MyHomePage(title: 'Beacon MVP'),
-      ),
+          ),
     );
   }
 }
 
 class AuthenticationWrapper extends StatelessWidget {
   const AuthenticationWrapper({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final _currentUser = context.watch<User>();
-    UserLocationService userLocationService = Provider.of<UserLocationService>(context);
-    if (_currentUser != null) {
-      {
+    final User? _currentUser = context.watch<User?>();
 
-        return FutureBuilder(
-          future: context.read<UserService>().initUser(_currentUser.uid),
-          builder: (context, snapshot) {
-            while(!snapshot.hasData) {
-              ///TODO return a loadingn screem akin to twitter on launch
-              return Center(child: circularProgress());
-            }
-            userLocationService.userId = _currentUser.uid;
-            userLocationService.setActive(snapshot.data.liveBeaconActive);
-            return BuildHomePage();
-          },
-        );
-      }
+    if (_currentUser == null) {
+      // User is not logged in, navigate to the sign-in page
+      return SignInPage();
     }
-    return SignInPage();
+    UserLocationService userLocationService =
+        Provider.of<UserLocationService>(context);
+
+    return FutureBuilder(
+      future: context.read<UserService>().initUser(_currentUser.uid),
+      builder: (context, snapshot) {
+        while (!snapshot.hasData) {
+          ///TODO return a loadingn screem akin to twitter on launch
+          print("\n\nEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n\n");
+          return Center(child: circularProgress());
+        }
+        userLocationService.userId = _currentUser.uid;
+        userLocationService
+            .setActive((snapshot.data! as UserModel).liveBeaconActive!);
+        return BuildHomePage();
+      },
+    );
   }
 }

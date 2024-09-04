@@ -5,18 +5,18 @@ import 'package:flutter/cupertino.dart';
 class GroupModel {
   //this will  need changing when people become classes, strings for temporary
   //also add icons
-  List<String> members;
-  IconData icon;
-  String name;
+  List<String>? members;
+  IconData? icon;
+  String? name;
 
   GroupModel({this.name, this.members, this.icon});
 
   void removeId(String id) {
-    members.remove(id);
+    members?.remove(id);
   }
 
   void addId(String id) {
-    members.add(id);
+    members?.add(id);
   }
 
   @override
@@ -24,14 +24,14 @@ class GroupModel {
     return ((other is GroupModel) &&
         other.name == name &&
         ListEquality().equals(other.members, members) &&
-        IconConverter.toJSONString(other.icon) ==
-            IconConverter.toJSONString(icon));
+        IconConverter.toJSONString(other.icon!) ==
+            IconConverter.toJSONString(icon!));
   }
 
   Map<String, dynamic> toJson() => {
         'name': name,
         'members': members,
-        'icon': icon == null ? '' : IconConverter.toJSONString(icon)
+        'icon': icon == null ? '' : IconConverter.toJSONString(icon!)
       };
 
   GroupModel.fromJson(Map<String, dynamic> json)
@@ -41,7 +41,7 @@ class GroupModel {
 
   GroupModel.clone(GroupModel object)
       : name = object.name,
-        members = [...object.members],
+        members = [...?object.members],
         icon = object.icon;
 
   @override

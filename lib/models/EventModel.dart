@@ -1,29 +1,28 @@
-import 'dart:ffi';
 
 import 'package:beacon/models/UserModel.dart';
 
 class EventModel {
-  String eventId;
-  String hostId;
-  String hostName;
-  DateTime startTime;
-  DateTime endTime;
-  double startTimeMili;
-  String eventName;
-  List<String> genres;
-  String mainGenre;
-  List<String> usersAttending;
-  double lat;
-  double long;
-  String locationName;
-  String fullAddress;
-  String desc;
-  double price;
-  String listenUrl;
-  String imageUrl;
-  String hostLogoUrl;
-  String city;
-  List<UserModel> mutualFriends;
+  String? eventId;
+  String? hostId;
+  String? hostName;
+  DateTime? startTime;
+  DateTime? endTime;
+  double? startTimeMili;
+  String? eventName;
+  List<String>? genres;
+  String? mainGenre;
+  List<String>? usersAttending;
+  double? lat;
+  double? long;
+  String? locationName;
+  String? fullAddress;
+  String? desc;
+  double? price;
+  String? listenUrl;
+  String? imageUrl;
+  String? hostLogoUrl;
+  String? city;
+  List<UserModel>? mutualFriends;
 
   EventModel(
       {this.eventId,
@@ -107,7 +106,7 @@ class EventModel {
     this.city = json['city'];
   }
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic>? toJson() => {
         'eventName': eventName,
         'desc': desc,
         'hostName': hostName,
@@ -120,7 +119,7 @@ class EventModel {
         'fullAddress': fullAddress,
         'genres': genres,
         'startTime': startTime.toString(),
-        'startTimeMili': startTime.millisecondsSinceEpoch,
+        'startTimeMili': startTime?.millisecondsSinceEpoch ?? 0,
         'endTime': endTime.toString(),
         'usersAttending': usersAttending,
         'mainGenre': mainGenre,

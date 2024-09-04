@@ -12,7 +12,7 @@ import '../BeaconBottomSheet.dart';
 import '../ProfilePicWidget.dart';
 
 class CasualBeaconSheet extends BeaconSheet {
-  CasualBeaconSheet({@required BeaconModel beacon}) : super(beacon);
+  CasualBeaconSheet({@required BeaconModel? beacon}) : super(beacon!);
 
   FigmaColours figmaColours = FigmaColours();
   List<UserModel> friendsAttending = [];
@@ -50,10 +50,10 @@ class CasualBeaconSheet extends BeaconSheet {
 
   Widget attendingTile(UserModel currentUser, CasualBeacon _beacon,
       ThemeData theme, BuildContext context) {
-    String numPeopleGoing = _beacon.peopleGoing.length.toString();
+    String numPeopleGoing = _beacon.peopleGoing!.length.toString();
     friendsAttending.clear();
-    for (UserModel friend in currentUser.friendModels) {
-      if (_beacon.peopleGoing.contains(friend.id)) {
+    for (UserModel friend in currentUser.friendModels!) {
+      if (_beacon.peopleGoing!.contains(friend.id)) {
         friendsAttending.add(friend);
       }
     }
@@ -108,7 +108,7 @@ class CasualBeaconSheet extends BeaconSheet {
           //   padding: const EdgeInsets.only(right: 8),
           //   child: Text(
           //     'See all',
-          //     style: theme.textTheme.bodyText2,
+          //     style: theme.textTheme.bodyMedium,
           //   ),
           // ),
           Icon(
@@ -134,12 +134,13 @@ class CasualBeaconSheet extends BeaconSheet {
         ),
         TextSpan(
             text: 'going',
-            style: theme.textTheme.headline4,
+            style: theme.textTheme.headlineMedium,
             children: (numFriendsGoing == '0')
                 ? []
                 : [
                     TextSpan(
-                        text: ', including ', style: theme.textTheme.headline4),
+                        text: ', including ',
+                        style: theme.textTheme.headlineMedium),
                     TextSpan(
                       text: '$numFriendsGoing ',
                       style: TextStyle(
@@ -147,7 +148,8 @@ class CasualBeaconSheet extends BeaconSheet {
                           color: Color(figmaColours.highlight),
                           fontSize: 18),
                     ),
-                    TextSpan(text: 'friends', style: theme.textTheme.headline4),
+                    TextSpan(
+                        text: 'friends', style: theme.textTheme.headlineMedium),
                   ])
       ]),
     );
@@ -155,10 +157,10 @@ class CasualBeaconSheet extends BeaconSheet {
 
   @override
   Widget build(BuildContext context) {
-    CasualBeacon _beacon = beacon;
+    CasualBeacon _beacon = beacon as CasualBeacon;
     UserService userService = Provider.of<UserService>(context);
-    UserModel currentUser = userService.currentUser;
-    UserModel host = _getHostUserModel(beacon.userId, context);
+    UserModel currentUser = userService.currentUser!;
+    UserModel host = _getHostUserModel(beacon.userId!, context);
     final theme = Theme.of(context);
     return Wrap(children: [
       Container(
@@ -192,7 +194,7 @@ class CasualBeaconSheet extends BeaconSheet {
                             Flexible(
                               child: Text(
                                 '${_beacon.desc}',
-                                style: theme.textTheme.headline5,
+                                style: theme.textTheme.headlineSmall,
                               ),
                             )
                           ],
@@ -234,12 +236,12 @@ class CasualBeaconSheet extends BeaconSheet {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _beacon.location.name,
-                  style: theme.textTheme.headline4,
+                  _beacon.location!.name!,
+                  style: theme.textTheme.headlineMedium,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Text(_beacon.location.fullAdress,
+                  child: Text(_beacon.location!.fullAdress!,
                       style: TextStyle(
                         color: Color(figmaColours.greyLight),
                         fontSize: 16,
@@ -260,11 +262,11 @@ class CasualBeaconSheet extends BeaconSheet {
         children: [
           Text(
             'Host - ',
-            style: theme.textTheme.bodyText1,
+            style: theme.textTheme.bodyLarge,
           ),
           Text(
             '${host.firstName} ${host.lastName}',
-            style: theme.textTheme.headline4,
+            style: theme.textTheme.headlineMedium,
             overflow: TextOverflow.ellipsis,
           ),
           Spacer(),
@@ -276,18 +278,18 @@ class CasualBeaconSheet extends BeaconSheet {
 
 class Header extends StatelessWidget {
   const Header({
-    Key key,
+    Key? key,
     @required this.host,
-    @required CasualBeacon beacon,
+    @required CasualBeacon? beacon,
     @required this.theme,
     @required this.figmaColours,
   })  : _beacon = beacon,
         super(key: key);
 
-  final UserModel host;
-  final CasualBeacon _beacon;
-  final ThemeData theme;
-  final FigmaColours figmaColours;
+  final UserModel? host;
+  final CasualBeacon? _beacon;
+  final ThemeData? theme;
+  final FigmaColours? figmaColours;
 
   @override
   Widget build(BuildContext context) {
@@ -309,7 +311,7 @@ class Header extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        _beacon.eventName,
+                        _beacon!.eventName!,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 22,
@@ -326,10 +328,10 @@ class Header extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        '${DateFormat('E, MMM d').format(_beacon.startTime)}, ${DateFormat('Hm').format(_beacon.startTime)} - '
-                        '${DateFormat('Hm').format(_beacon.endTime)}',
+                        '${DateFormat('E, MMM d').format(_beacon!.startTime!)}, ${DateFormat('Hm').format(_beacon!.startTime!)} - '
+                        '${DateFormat('Hm').format(_beacon!.endTime!)}',
                         style: TextStyle(
-                            color: Color(figmaColours.highlight),
+                            color: Color(figmaColours!.highlight),
                             fontWeight: FontWeight.bold,
                             fontSize: 18),
                       ),

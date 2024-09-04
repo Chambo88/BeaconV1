@@ -18,15 +18,15 @@ class EventsPage extends StatefulWidget {
 }
 
 class _EventsPageState extends State<EventsPage> {
-  FigmaColours _figmaColours;
-  int currentIndex;
-  Future<QuerySnapshot> eventData;
+  FigmaColours? _figmaColours;
+  int? currentIndex;
+  Future<QuerySnapshot>? eventData;
 
   @override
   void initState() {
     _figmaColours = FigmaColours();
     currentIndex = 0;
-    String city = widget.context.read<UserService>().currentUser.city;
+    String city = widget.context.read<UserService>().currentUser!.city!;
     eventData = getData(city);
     super.initState();
   }
@@ -57,15 +57,15 @@ class _EventsPageState extends State<EventsPage> {
                       (currentUser.city == '')
                           ? "Select a city"
                           : "What's on in - ",
-                      style: Theme.of(context).textTheme.headline2,
+                      style: Theme.of(context).textTheme.displayMedium,
                     ),
                     Flexible(
                       child: Container(
                         child: Text(
-                          currentUser.city,
+                          currentUser.city!,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                              color: Color(_figmaColours.highlight),
+                              color: Color(_figmaColours!.highlight),
                               fontSize: 22,
                               fontWeight: FontWeight.bold),
                         ),
@@ -112,7 +112,7 @@ class _EventsPageState extends State<EventsPage> {
   @override
   Widget build(BuildContext context) {
     UserService _userService = Provider.of<UserService>(context);
-    UserModel currentUser = _userService.currentUser;
+    UserModel currentUser = _userService.currentUser!;
     ThemeData theme = Theme.of(context);
     return DefaultTabController(
       initialIndex: 0,
@@ -126,25 +126,25 @@ class _EventsPageState extends State<EventsPage> {
               padding: const EdgeInsets.only(right: 3, top: 5),
               child: Ink(
                 decoration: ShapeDecoration(
-                  color: Color(_figmaColours.greyDark),
+                  color: Color(_figmaColours!.greyDark),
                   shape: CircleBorder(),
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.search),
-                  color: Color(_figmaColours.highlight),
+                  color: Color(_figmaColours!.highlight),
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) =>
-                            SearchPage(eventData: eventData)));
+                            SearchPage(eventData: eventData!)));
                   },
                 ),
               ),
             ),
           ],
           bottom: TabBar(
-            labelColor: theme.accentColor,
+            labelColor: theme.secondaryHeaderColor,
             unselectedLabelColor: Colors.white,
-            labelStyle: theme.textTheme.headline3,
+            labelStyle: theme.textTheme.displaySmall,
             onTap: (index) {
               currentIndex = index;
               setState(() {});
@@ -165,8 +165,8 @@ class _EventsPageState extends State<EventsPage> {
         body: TabBarView(
           children: [
             EventsTab(
-              city: currentUser.city,
-              eventData: eventData,
+              city: currentUser.city!,
+              eventData: eventData!,
             ),
             FriendsTab(),
             GoingTab(),

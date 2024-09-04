@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'OutlinedGradientButton.dart';
 
 class SmallOutlinedButton extends StatelessWidget {
-  final String title;
-  final VoidCallback onPressed;
-  final IconData icon;
-  final Widget child;
+  final String? title;
+  final VoidCallback? onPressed;
+  final IconData? icon;
+  final Widget? child;
   final double height;
   final double width;
 
@@ -30,10 +30,11 @@ class SmallOutlinedButton extends StatelessWidget {
         strokeWidth: 1,
         radius: 6,
         gradient: ColorHelper.getBeaconGradient(),
-        child: child?? Text(
-          title,
-          style: Theme.of(context).textTheme.headline5,
-        ),
+        child: child ??
+            Text(
+              title!,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
         onPressed: onPressed,
         icon: icon,
         iconSize: 20,

@@ -15,25 +15,20 @@ class UserService {
   FirebaseFirestore _fireStoreDataBase = FirebaseFirestore.instance;
   NotificationService _notificationService = NotificationService();
   BeaconService _beaconService = BeaconService();
-  UserModel currentUser;
+  UserModel? currentUser;
 
-  Future<UserModel> initUser(String userId) async {
+  Future<UserModel?> initUser(String userId) async {
     var doc = await _fireStoreDataBase.collection('users').doc(userId).get();
-
-    if (doc == null) {
-      print("user is NULL, in UserModelFrom doc");
-      return null;
-    }
 
     List<GroupModel> _groups = [];
     List<dynamic> _data;
     List<UserModel> _friendModels = [];
     List<String> _friends = [];
-    Set<String> _tokens = Set.from(doc.data()["tokens"] ?? []);
+    Set<String> _tokens = Set.from(doc.data()!["tokens"] ?? []);
     List<CasualBeacon> casualBeacons = [];
 
-    if (doc.data().containsKey('groups')) {
-      _data = List.from(doc.data()["groups"]);
+    if (doc.data()!.containsKey('groups')) {
+      _data = List.from(doc.data()!["groups"]);
       _data.forEach((element) {
         _groups.add(GroupModel.fromJson(element));
       });
@@ -41,13 +36,13 @@ class UserService {
       _groups = [];
     }
 
-    if (doc.data().containsKey('friends')) {
-      _friends = List.from(doc.data()["friends"]);
+    if (doc.data()!.containsKey('friends')) {
+      _friends = List.from(doc.data()!["friends"]);
     }
 
     if (_friends.isNotEmpty) {
       List<QuerySnapshot> ok =
-          await getSnapshotsFromListOfIds(List.from(doc.data()["friends"]));
+          await getSnapshotsFromListOfIds(List.from(doc.data()!["friends"]));
       ok.forEach((listOfDocs) {
         listOfDocs.docs.forEach((document) {
           UserModel user = UserModel.fromDocument(document);
@@ -59,79 +54,86 @@ class UserService {
     ///Get users casual beacons
     QuerySnapshot casualBeaconsData =
         await _beaconService.getUserUpcomingCasualBeacons(userId);
-    if (casualBeaconsData != null) {
-      casualBeaconsData.docs.forEach((element) {
-        CasualBeacon beacon = CasualBeacon.fromJson(element.data());
+    casualBeaconsData.docs.forEach((element) {
+      final data = element.data();
+
+      if (data is Map<String, dynamic>) {
+        CasualBeacon beacon = CasualBeacon.fromJson(data);
+
         ///check when it starts, move to archive if its already been
-        if (beacon.endTime.isBefore(DateTime.now())) {
+        if (beacon.endTime!.isBefore(DateTime.now())) {
           _beaconService.archiveCasualBeacon(beacon);
         } else {
           casualBeacons.add(beacon);
         }
-      });
-    }
+        // Do something with the beacon
+      } else {
+        // Handle the case where the data is not of the expected type
+        print('Unexpected data format: $data');
+      }
+    });
 
     if (Platform.isAndroid) {
-      String token = await NotificationService().getToken();
+      String? token = await NotificationService().getToken();
       if (!_tokens.contains(token)) {
-        _tokens.add(token);
+        _tokens.add(token!);
         NotificationService().setToken(token, userId);
       }
     }
 
-
     currentUser = UserModel(
         id: doc.id,
-        email: doc.data()['email'],
-        firstName: doc.data()['firstName'],
-        lastName: doc.data()['lastName'],
+        email: doc.data()!['email'],
+        firstName: doc.data()!['firstName'],
+        lastName: doc.data()!['lastName'],
         groups: _groups,
         friends: _friends,
         friendModels: _friendModels,
         tokens: _tokens,
-        sentFriendRequests: List.from(doc.data()["sentFriendRequests"] ?? []),
-        eventsAttending: List.from(doc.data()["eventsAttending"] ?? []),
-        hostsFollowed: List.from(doc.data()["hostsFollowed"] ?? []),
+        sentFriendRequests: List.from(doc.data()!["sentFriendRequests"] ?? []),
+        eventsAttending: List.from(doc.data()!["eventsAttending"] ?? []),
+        hostsFollowed: List.from(doc.data()!["hostsFollowed"] ?? []),
         receivedFriendRequests:
-            List.from(doc.data()["receivedFriendRequests"] ?? []),
-        imageURL: doc.data()['imageURL'] ?? '',
+            List.from(doc.data()!["receivedFriendRequests"] ?? []),
+        imageURL: doc.data()!['imageURL'] ?? '',
         casualBeacons: casualBeacons,
-        city: doc.data()['city'] ?? '',
-        beaconsAttending: List.from(doc.data()["beaconsAttending"] ?? []),
-        liveBeaconActive: doc.data()['liveBeaconActive'] ?? false,
-        liveBeaconDesc: doc.data()['liveBeaconDesc']?? '',
+        city: doc.data()!['city'] ?? '',
+        beaconsAttending: List.from(doc.data()!["beaconsAttending"] ?? []),
+        liveBeaconActive: doc.data()!['liveBeaconActive'] ?? false,
+        liveBeaconDesc: doc.data()!['liveBeaconDesc'] ?? '',
         //TODO refactor the way settings are stored into a map
         notificationSettings: NotificationSettingsModel(
-          summons: doc.data()['notificationSummons'] ?? true,
-          all: doc.data()['notificationAll'] ?? true,
-          comingToBeacon: doc.data()['notificationComingToBeacon'] ?? true,
-          blocked: List.from(doc.data()['notificationBlocked'] ?? []),
-          venueInvite: doc.data()['notificationVenue'] ?? true,
+          summons: doc.data()!['notificationSummons'] ?? true,
+          all: doc.data()!['notificationAll'] ?? true,
+          comingToBeacon: doc.data()!['notificationComingToBeacon'] ?? true,
+          blocked: List.from(doc.data()!['notificationBlocked'] ?? []),
+          venueInvite: doc.data()!['notificationVenue'] ?? true,
         ));
     return currentUser;
   }
 
   setCity(String city) async {
-    currentUser.city = city;
-    _fireStoreDataBase.collection('users').doc(currentUser.id).update({'city' : city});
+    currentUser!.city = city;
+    _fireStoreDataBase
+        .collection('users')
+        .doc(currentUser!.id)
+        .update({'city': city});
   }
 
-
-  summonUser(UserModel friend, {UserModel user}) {
-    _notificationService.sendPushNotification([friend],
-        currentUser,
+  summonUser(UserModel friend, {UserModel? user}) {
+    _notificationService.sendPushNotification([friend], currentUser!,
         title:
             '${friend.firstName} ${friend.lastName} has summoned you to join them!',
         body: '',
         type: 'summon');
-    _notificationService.sendNotification([friend], currentUser, 'summon');
+    _notificationService.sendNotification([friend], currentUser!, 'summon');
   }
 
   List<UserModel> getMutual(List<String> idList) {
     List<UserModel> mutuals = [];
-    for(String id in idList) {
-      currentUser.friendModels.forEach((element) {
-        if(element.id == id) {
+    for (String id in idList) {
+      currentUser!.friendModels!.forEach((element) {
+        if (element.id == id) {
           mutuals.add(element);
         }
       });
@@ -139,37 +141,36 @@ class UserService {
     return mutuals;
   }
 
-
-  UserModel getAFriendModelFromId(String id, {UserModel user}) {
-    for (UserModel friend in currentUser.friendModels) {
+  UserModel getAFriendModelFromId(String id, {UserModel? user}) {
+    for (UserModel friend in currentUser!.friendModels!) {
       if (friend.id == id) {
         return friend;
       }
     }
-    if (currentUser.id == id) {
-      return currentUser;
+    if (currentUser!.id == id) {
+      return currentUser!;
     }
     return UserModel.dummy();
   }
 
-  removeFriend(UserModel friend, {UserModel user}) async {
-    currentUser.friends.remove(friend.id);
-    currentUser.friendModels.remove(friend);
+  removeFriend(UserModel friend, {UserModel? user}) async {
+    currentUser!.friends!.remove(friend.id);
+    currentUser!.friendModels!.remove(friend);
 
     //remove friend from their groups
-    for (GroupModel group in friend.groups) {
-      if (group.members.contains(currentUser.id)) {
+    for (GroupModel group in friend.groups!) {
+      if (group.members!.contains(currentUser!.id)) {
         GroupModel temp = GroupModel.clone(group);
-        temp.members.remove(currentUser.id);
+        temp.members!.remove(currentUser!.id);
         removeGroup(group, user: friend);
         addGroup(temp, user: friend);
       }
     }
 
-    for (GroupModel group in currentUser.groups) {
-      if (group.members.contains(friend.id)) {
+    for (GroupModel group in currentUser!.groups!) {
+      if (group.members!.contains(friend.id)) {
         GroupModel temp = GroupModel.clone(group);
-        temp.members.remove(friend.id);
+        temp.members!.remove(friend.id);
         removeGroup(
           group,
         );
@@ -180,18 +181,18 @@ class UserService {
     }
 
     ///remove from otherUsersBeacons
-    _beaconService.removeUserFromAllAnotherUsersBeacons(currentUser, friend);
-    _beaconService.removeUserFromAllAnotherUsersBeacons(friend, currentUser);
+    _beaconService.removeUserFromAllAnotherUsersBeacons(currentUser!, friend);
+    _beaconService.removeUserFromAllAnotherUsersBeacons(friend, currentUser!);
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(currentUser.id)
+        .doc(currentUser!.id)
         .update({
       "friends": FieldValue.arrayRemove([friend.id]),
     });
 
     await FirebaseFirestore.instance.collection('users').doc(friend.id).update({
-      "friends": FieldValue.arrayRemove([currentUser.id]),
+      "friends": FieldValue.arrayRemove([currentUser!.id]),
     });
   }
 
@@ -225,7 +226,7 @@ class UserService {
   updateBeacon(LiveBeacon beacon) async {
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(currentUser.id)
+        .doc(currentUser!.id)
         .set({
       'beacon': {
         'active': beacon.active,
@@ -234,47 +235,47 @@ class UserService {
         'long': beacon.long,
         'description': beacon.desc,
         'users': beacon.usersThatCanSee,
-        'userId': currentUser.id,
-        'userName': currentUser.firstName + " " + currentUser.lastName,
+        'userId': currentUser!.id,
+        'userName': currentUser!.firstName! + " " + currentUser!.lastName!,
       }
     }, SetOptions(merge: true));
   }
 
   updateGroups() async {
     List<Map<String, dynamic>> updatedGroups = [];
-    currentUser.groups.forEach((element) {
+    currentUser!.groups!.forEach((element) {
       updatedGroups.add(element.toJson());
     });
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(currentUser.id)
+        .doc(currentUser!.id)
         .update({"groups": updatedGroups});
   }
 
-  addGroup(GroupModel group, {UserModel user}) async {
+  addGroup(GroupModel group, {UserModel? user}) async {
     // If user is null then current user
     if (user == null) {
-      currentUser.groups.insert(0, group);
+      currentUser!.groups!.insert(0, group);
     }
-    String userId = user != null ? user.id : currentUser.id;
+    String userId = user != null ? user.id! : currentUser!.id!;
     await FirebaseFirestore.instance.collection('users').doc(userId).update({
       "groups": FieldValue.arrayUnion([group.toJson()]),
     });
   }
 
-  removeGroup(GroupModel group, {UserModel user}) async {
+  removeGroup(GroupModel group, {UserModel? user}) async {
     if (user == null) {
-      currentUser.groups.remove(group);
+      currentUser!.groups!.remove(group);
     }
-    String userId = user != null ? user.id : currentUser.id;
+    String userId = user != null ? user.id! : currentUser!.id!;
     await FirebaseFirestore.instance.collection('users').doc(userId).update({
       "groups": FieldValue.arrayRemove([group.toJson()]),
     });
   }
 
-  changeName(String firstName, String lastName, {UserModel user}) async {
-    currentUser.firstName = firstName;
-    currentUser.lastName = lastName;
+  changeName(String firstName, String lastName, {UserModel? user}) async {
+    currentUser!.firstName = firstName;
+    currentUser!.lastName = lastName;
     List<String> caseSearchList = [];
 
     String userName = (firstName + lastName).toLowerCase();
@@ -292,7 +293,7 @@ class UserService {
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(currentUser.id)
+        .doc(currentUser!.id)
         .update({
       "firstName": firstName,
       "lastName": lastName,
@@ -300,29 +301,29 @@ class UserService {
     });
   }
 
-  changeProfilePic(File file, {UserModel user}) async {
+  changeProfilePic(File file, {UserModel? user}) async {
     Reference firebaseStoragRef =
-        FirebaseStorage.instance.ref("user/profle_pic/${currentUser.id}.jpg");
+        FirebaseStorage.instance.ref("user/profle_pic/${currentUser!.id}.jpg");
     UploadTask uploadTask = firebaseStoragRef.putFile(file);
     TaskSnapshot taskSnapshot = await uploadTask;
     String downloadURL = await taskSnapshot.ref.getDownloadURL();
-    currentUser.imageURL = downloadURL;
+    currentUser!.imageURL = downloadURL;
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(currentUser.id)
+        .doc(currentUser!.id)
         .update({"imageURL": downloadURL});
   }
 
   ///sends as a notification to the potential friend with doc id as the current users ID
-  sendFriendRequest(UserModel potentialFriend, {UserModel user}) async {
+  sendFriendRequest(UserModel potentialFriend, {UserModel? user}) async {
     // If user is null then current user
     if (user == null) {
-      currentUser.sentFriendRequests.add(potentialFriend.id);
+      currentUser!.sentFriendRequests!.add(potentialFriend.id!);
     }
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(currentUser.id)
+        .doc(currentUser!.id)
         .update({
       "sentFriendRequests": FieldValue.arrayUnion([potentialFriend.id]),
     });
@@ -331,32 +332,31 @@ class UserService {
         .collection('users')
         .doc(potentialFriend.id)
         .update({
-      "receivedFriendRequests": FieldValue.arrayUnion([currentUser.id]),
+      "receivedFriendRequests": FieldValue.arrayUnion([currentUser!.id]),
     });
 
     _notificationService.sendNotification(
-        [potentialFriend], currentUser, 'friendRequest',
-        customId: currentUser.id);
+        [potentialFriend], currentUser!, 'friendRequest',
+        customId: currentUser!.id!);
 
-    _notificationService.sendPushNotification([potentialFriend],
-        currentUser,
+    _notificationService.sendPushNotification([potentialFriend], currentUser!,
         title:
-            "${currentUser.firstName} ${currentUser.lastName} sent you a friend request",
+            "${currentUser!.firstName} ${currentUser!.lastName} sent you a friend request",
         body: "",
         type: "friendRequest");
   }
 
-  acceptFriendRequest(UserModel friend, {UserModel user}) async {
+  acceptFriendRequest(UserModel friend, {UserModel? user}) async {
     if (user == null) {
-      currentUser.friends.add(friend.id);
-      currentUser.friendModels.add(friend);
-      currentUser.receivedFriendRequests.remove(friend.id);
+      currentUser!.friends!.add(friend.id!);
+      currentUser!.friendModels!.add(friend);
+      currentUser!.receivedFriendRequests!.remove(friend.id);
     }
 
     // Update receiver
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(currentUser.id)
+        .doc(currentUser!.id)
         .update({
       "friends": FieldValue.arrayUnion([friend.id]),
       'receivedFriendRequests': FieldValue.arrayRemove([friend.id]),
@@ -364,50 +364,49 @@ class UserService {
 
     // Update requester
     await FirebaseFirestore.instance.collection('users').doc(friend.id).update({
-      "friends": FieldValue.arrayUnion([currentUser.id]),
-      "sentFriendRequests": FieldValue.arrayRemove([currentUser.id]),
+      "friends": FieldValue.arrayUnion([currentUser!.id]),
+      "sentFriendRequests": FieldValue.arrayRemove([currentUser!.id]),
     });
 
     //send server notification
     _notificationService
-        .sendNotification([friend], currentUser, 'acceptedFriendRequest');
+        .sendNotification([friend], currentUser!, 'acceptedFriendRequest');
     // Send Push notification
-    _notificationService.sendPushNotification([friend],
-        currentUser,
+    _notificationService.sendPushNotification([friend], currentUser!,
         title:
-            "${currentUser.firstName} ${currentUser.lastName} accepted your friend request",
+            "${currentUser!.firstName} ${currentUser!.lastName} accepted your friend request",
         body: "",
         type: "friendRequest");
   }
 
-  declineFriendRequest(UserModel friend, {UserModel user}) async {
+  declineFriendRequest(UserModel friend, {UserModel? user}) async {
     // If user is null then current user
     if (user == null) {
-      currentUser.receivedFriendRequests.remove(friend.id);
+      currentUser!.receivedFriendRequests!.remove(friend.id);
     }
 
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(currentUser.id)
+        .doc(currentUser!.id)
         .update({
       'receivedFriendRequests': FieldValue.arrayRemove([friend.id]),
     });
 
     //remove from the other users firestores sent Notifications list
     await FirebaseFirestore.instance.collection('users').doc(friend.id).update({
-      'sentFriendRequests': FieldValue.arrayRemove([currentUser.id])
+      'sentFriendRequests': FieldValue.arrayRemove([currentUser!.id])
     });
   }
 
-  removeSentFriendRequest(UserModel potentialFriend, {UserModel user}) async {
+  removeSentFriendRequest(UserModel potentialFriend, {UserModel? user}) async {
     // If user is null then current user
     if (user == null) {
-      currentUser.sentFriendRequests.remove(potentialFriend.id);
+      currentUser!.sentFriendRequests!.remove(potentialFriend.id);
     }
     // Add to receivers friend list
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(currentUser.id)
+        .doc(currentUser!.id)
         .update({
       "sentFriendRequests": FieldValue.arrayRemove([potentialFriend.id]),
     });
@@ -416,31 +415,31 @@ class UserService {
         .collection('users')
         .doc(potentialFriend.id)
         .update({
-      'receivedFriendRequests': FieldValue.arrayRemove([currentUser.id]),
+      'receivedFriendRequests': FieldValue.arrayRemove([currentUser!.id]),
     });
 
     await FirebaseFirestore.instance
         .collection('users')
         .doc(potentialFriend.id)
         .collection('notifications')
-        .doc(currentUser.id)
+        .doc(currentUser!.id)
         .delete();
   }
 
   changeFollowHost(String hostId) async {
-    if(currentUser.hostsFollowed.contains(hostId)) {
-      currentUser.hostsFollowed.remove(hostId);
+    if (currentUser!.hostsFollowed!.contains(hostId)) {
+      currentUser!.hostsFollowed!.remove(hostId);
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(currentUser.id)
+          .doc(currentUser!.id)
           .update({
         'hostsFollowed': FieldValue.arrayRemove([hostId]),
       });
     } else {
-      currentUser.hostsFollowed.add(hostId);
+      currentUser!.hostsFollowed!.add(hostId);
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(currentUser.id)
+          .doc(currentUser!.id)
           .update({
         'hostsFollowed': FieldValue.arrayUnion([hostId]),
       });
@@ -448,19 +447,19 @@ class UserService {
   }
 
   changeEventAttending(String eventId) async {
-    if(currentUser.eventsAttending.contains(eventId)) {
-      currentUser.eventsAttending.remove(eventId);
+    if (currentUser!.eventsAttending!.contains(eventId)) {
+      currentUser!.eventsAttending!.remove(eventId);
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(currentUser.id)
+          .doc(currentUser!.id)
           .update({
         'eventsAttending': FieldValue.arrayRemove([eventId]),
       });
     } else {
-      currentUser.eventsAttending.add(eventId);
+      currentUser!.eventsAttending!.add(eventId);
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(currentUser.id)
+          .doc(currentUser!.id)
           .update({
         'eventsAttending': FieldValue.arrayUnion([eventId]),
       });

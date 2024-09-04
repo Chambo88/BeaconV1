@@ -3,7 +3,6 @@ import 'package:beacon/components/beacon_creator/pages/WhoCanSeePage.dart';
 import 'package:beacon/models/BeaconModel.dart';
 import 'package:beacon/models/GroupModel.dart';
 import 'package:beacon/models/UserLocationModel.dart';
-import 'package:beacon/services/UserLoactionService.dart';
 import 'package:beacon/services/UserService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +13,9 @@ typedef void BeaconCallback(LiveBeacon beacon);
 enum LiveBeaconCreatorStage { invite, description }
 
 class LiveBeaconCreator extends StatefulWidget {
-  final BeaconCallback onCreated;
-  final VoidCallback onBack;
-  final VoidCallback onClose;
+  final BeaconCallback? onCreated;
+  final VoidCallback? onBack;
+  final VoidCallback? onClose;
 
   LiveBeaconCreator({
     @required this.onClose,
@@ -29,10 +28,10 @@ class LiveBeaconCreator extends StatefulWidget {
 }
 
 class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
-  UserService _userService;
+  UserService? _userService;
   LiveBeacon _beacon = LiveBeacon(active: true);
   LiveBeaconCreatorStage _stage = LiveBeaconCreatorStage.description;
-  UserLocationModel _userLocation;
+  UserLocationModel? _userLocation;
 
   // Holding here as well as the beacon model in case the user goes back
   // e.g (initGroup, initFriends)
@@ -60,8 +59,8 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
           currentPageIndex: 1,
           onBackClick: (displayToAll, groups, friendList) {
             setState(() {
-              _friends = friendList;
-              _displayToAll = displayToAll;
+              _friends = friendList!;
+              _displayToAll = displayToAll!;
               _stage = LiveBeaconCreatorStage.description;
             });
           },
@@ -70,23 +69,23 @@ class _LiveBeaconCreatorState extends State<LiveBeaconCreator> {
           onClose: widget.onClose,
           onContinue: (displayToAll, groups, friendList) {
             setState(() {
-              if (displayToAll) {
-                _beacon.usersThatCanSee = _userService.currentUser.friends;
-                _beacon.lat = _userLocation.latitude;
-                _beacon.long = _userLocation.longitude;
+              if (displayToAll!) {
+                _beacon.usersThatCanSee = _userService!.currentUser!.friends;
+                _beacon.lat = _userLocation!.latitude;
+                _beacon.long = _userLocation!.longitude;
                 _beacon.active = true;
-                _beacon.id = _userService.currentUser.id;
-                _beacon.userId = _userService.currentUser.id;
-                widget.onCreated(_beacon);
+                _beacon.id = _userService!.currentUser!.id!;
+                _beacon.userId = _userService!.currentUser!.id;
+                widget.onCreated!(_beacon);
               } else {
-                _friends = friendList;
+                _friends = friendList!;
                 _beacon.usersThatCanSee = friendList.toList();
-                _beacon.lat = _userLocation.latitude;
-                _beacon.long = _userLocation.longitude;
+                _beacon.lat = _userLocation!.latitude;
+                _beacon.long = _userLocation!.longitude;
                 _beacon.active = true;
-                _beacon.id = _userService.currentUser.id;
-                _beacon.userId = _userService.currentUser.id;
-                widget.onCreated(_beacon);
+                _beacon.id = _userService!.currentUser!.id;
+                _beacon.userId = _userService!.currentUser!.id;
+                widget.onCreated!(_beacon);
               }
               _stage = LiveBeaconCreatorStage.invite;
             });
