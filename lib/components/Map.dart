@@ -132,7 +132,7 @@ class _MapState extends State<MapComponent> {
 
   @override
   Widget build(BuildContext context) {
-    final userLocationModel = Provider.of<UserLocationModel>(context);
+    final userLocationModel = Provider.of<UserLocationModel?>(context);
     final userId = context.read<UserService>().currentUser!.id;
     var cameraLocationService = Provider.of<CameraLocationService>(context);
     context.read<BeaconService>().loadAllBeacons(userId);

@@ -80,29 +80,11 @@ class _CreatorPageState extends State<CreatorPage> {
                 style: theme.textTheme.headlineMedium,
               ),
               gradient: ColorHelper.getBeaconGradient(),
-              onPressed: widget.onContinuePressed!,
+              onPressed: widget.onContinuePressed,
             ),
           ),
         ],
-      ),
-      AnimatedPositioned(
-        duration: Duration(milliseconds: 1000),
-        bottom: 80,
-        left: 0,
-        right: 0,
-        child: Container(
-          width: double.infinity,
-          padding: EdgeInsets.fromLTRB(18, 18, 18, 18),
-          child: GradientButton(
-            child: Text(
-              widget.continueText!,
-              style: theme.textTheme.headlineMedium,
-            ),
-            gradient: ColorHelper.getBeaconGradient(),
-            onPressed: widget.onContinuePressed!,
-          ),
-        ),
-      ),
+      )
     ]);
   }
 }

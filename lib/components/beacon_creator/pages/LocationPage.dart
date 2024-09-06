@@ -79,9 +79,11 @@ class _LocationPageState extends State<LocationPage> {
                             children: [
                               Text(
                                 '${_selectedLocation!.name} ',
-                                style: theme.textTheme.headlineSmall,
+                                style: theme.textTheme.headlineSmall
+                                    ?.copyWith(color: Colors.white),
                               ),
-                              Text('${_selectedLocation!.street}'),
+                              Text('${_selectedLocation!.street}',
+                                  style: TextStyle(color: Colors.white)),
                             ],
                           ),
                         )
@@ -121,6 +123,9 @@ class _LocationPageState extends State<LocationPage> {
                                   ),
                                   Text(
                                     '${snapshot.data![0].street}',
+                                    style: TextStyle(
+                                        color: const Color.fromARGB(
+                                            255, 101, 101, 101)),
                                   ),
                                 ],
                               ),
@@ -130,7 +135,7 @@ class _LocationPageState extends State<LocationPage> {
                     setState(() {
                       showModalBottomSheet(
                         context: context,
-                        backgroundColor: Colors.transparent,
+                        backgroundColor: Colors.black,
                         isScrollControlled: true,
                         builder: (context) {
                           return LocationSelectorSheet(

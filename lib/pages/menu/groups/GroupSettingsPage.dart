@@ -118,7 +118,7 @@ class _GroupSettingsState extends State<GroupSettings> {
                       color: Color(figmaColours!.greyLight),
                     ),
                     title: Transform.translate(
-                      offset: Offset(-16, 0),
+                      offset: Offset(0, 0),
                       child: Text(
                         userService.currentUser!.groups![index].name!,
                         style: Theme.of(context).textTheme.headlineMedium,

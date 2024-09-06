@@ -90,13 +90,14 @@ class _LocationSelectorSheetState extends State<LocationSelectorSheet> {
               itemCount: _predictions.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  leading: CircleAvatar(
-                    child: Icon(
-                      Icons.pin_drop,
-                      color: Colors.white,
-                    ),
+                  leading: Icon(
+                    Icons.pin_drop,
+                    color: Colors.grey,
                   ),
-                  title: Text(_predictions[index].description!),
+                  title: Text(
+                    _predictions[index].description!,
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onTap: () {
                     widget.onSelected!(_predictions[index]);
                     Navigator.pop(context);

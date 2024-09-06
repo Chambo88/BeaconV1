@@ -68,7 +68,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          leadingWidth: 70,
+          leadingWidth: 100,
           leading: TextButton(
             child: Text(
               "Cancel",

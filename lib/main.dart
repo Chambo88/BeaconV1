@@ -35,6 +35,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor:
+          Colors.black, // Change this to your desired color
+      systemNavigationBarIconBrightness:
+          Brightness.light, // Change icon brightness if needed
+    ));
     return MultiProvider(
       providers: [
         Provider<AuthService>(
@@ -49,7 +55,7 @@ class MyApp extends StatelessWidget {
         Provider<BeaconService>(
           create: (_) => BeaconService(),
         ),
-        Provider<UserLocationService>(
+        Provider<UserLocationService?>(
           create: (_) => UserLocationService(),
         ),
         StreamProvider<UserLocationModel?>(
@@ -102,7 +108,6 @@ class AuthenticationWrapper extends StatelessWidget {
       builder: (context, snapshot) {
         while (!snapshot.hasData) {
           ///TODO return a loadingn screem akin to twitter on launch
-          print("\n\nEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n\n");
           return Center(child: circularProgress());
         }
         userLocationService.userId = _currentUser.uid;

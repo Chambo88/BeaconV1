@@ -30,7 +30,7 @@ class _UserResultAddableState extends State<UserResultAddable> {
         }
       }
     }
-      return num;
+    return num;
   }
 
   //Get The Trailing IconBUtton
@@ -58,7 +58,7 @@ class _UserResultAddableState extends State<UserResultAddable> {
         .contains(widget.anotherUser!.id)) {
       return SmallGradientButton(
           child: Text(
-            "pending",
+            "sent",
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           onPressed: () async {

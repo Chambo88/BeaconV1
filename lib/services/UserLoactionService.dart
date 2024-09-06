@@ -27,7 +27,7 @@ class UserLocationService {
 
   var _userLocationController = StreamController<UserLocationModel>();
 
-  Stream<UserLocationModel> get userLocationStream =>
+  Stream<UserLocationModel?> get userLocationStream =>
       _userLocationController.stream;
 
   UserLocationService() {

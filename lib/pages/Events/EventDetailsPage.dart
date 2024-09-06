@@ -227,7 +227,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                       height: 30,
                       onPressed: () {},
                       child: Text(
-                        "Get Tickets",
+                        "Tickets",
                         style: theme.textTheme.headlineSmall,
                       ),
                     ),

@@ -46,16 +46,16 @@ class WhoCanSeePage extends StatefulWidget {
 class _WhoCanSeePageState extends State<WhoCanSeePage> {
   UserService? _userService;
 
-  var _displayToAll = false;
+  var _displayToAll;
   var _groupList = Set<GroupModel>();
-  var _friendsList = Set<String>();
+  var _friendsList;
 
   @override
   void initState() {
     super.initState();
     _groupList = {};
-    _friendsList = widget.initFriends!;
-    _displayToAll = widget.initDisplayToAll!;
+    _friendsList = widget.initFriends ?? Set<String>();
+    _displayToAll = widget.initDisplayToAll ?? false;
   }
 
   bool enableButton() {
@@ -65,7 +65,6 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     _userService = Provider.of<UserService>(context);
 
     return CreatorPage(
@@ -133,7 +132,7 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
 
   List<Widget> _selectedFriendTiles(BuildContext context) {
     UserService userService = Provider.of<UserService>(context);
-    return _friendsList.map((friend) {
+    return _friendsList.map<Widget>((friend) {
       UserModel friendModel = userService.getAFriendModelFromId(friend,
           user: userService.currentUser);
       if (friendModel.id == userService.currentUser!.id) {
@@ -205,7 +204,7 @@ class _WhoCanSeePageState extends State<WhoCanSeePage> {
 
   Container _groupSelector() {
     return Container(
-      height: 85.0,
+      height: 100.0,
       padding: EdgeInsets.symmetric(vertical: 5.0),
       color: Theme.of(context).primaryColor,
       child: _userService!.currentUser!.groups!.isEmpty
@@ -264,20 +263,24 @@ class SingleGroup extends StatelessWidget {
         children: [
           ClipOval(
             child: Material(
-              color: Color(0xFF4FE30B),
+              color:
+                  selected! ? Colors.purple : Color.fromARGB(255, 36, 36, 36),
               shape: CircleBorder(
                 side: BorderSide(
-                  color: selected! ? Colors.purple : Color(0xFF4FE30B),
+                  color: selected!
+                      ? Colors.purple
+                      : Color.fromARGB(255, 36, 36, 36),
                   width: 2,
                 ),
               ), // button color
               child: InkWell(
-                splashColor: Colors.greenAccent, //
+                splashColor: Colors.purple, //
                 child: SizedBox(
                   width: 60,
                   height: 60,
                   child: Icon(
                     group!.icon,
+                    color: Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
                 onTap: () {
